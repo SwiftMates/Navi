@@ -8,11 +8,11 @@
 import SwiftUI
 import OSLog
 
-public struct NaviCoordinatorProperties {
+public struct NaviControllerProperties {
     
     public var path: NavigationPath
 
-    var naviStackOrigins: [NaviStackOriginKeys: Int]
+    var naviStackOrigins: [NavigationOriginKeys: Int]
     var naviLogger: Logger
 
     // MARK: - Lifecycle

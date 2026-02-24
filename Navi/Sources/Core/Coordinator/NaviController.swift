@@ -9,30 +9,30 @@ import SwiftUI
 import OSLog
 
 @MainActor
-public protocol NaviCoordinator: AnyObject {
+public protocol NaviController: AnyObject {
 
-    var properties: NaviCoordinatorProperties { get set }
+    var properties: NaviControllerProperties { get set }
 
     // MARK: Navigation
 
-    func push(to destination: any Navigable)
+    func push(to destination: any DestinationRepresentable)
     func pop()
-    func pop(to destinationKey: NaviStackOriginKeys)
+    func pop(to destinationKey: NavigationOriginKeys)
     func popToRoot()
 
     // MARK: Deeplinking
 
-    func deeplink(to newPath: [any Navigable])
+    func deeplink(to newPath: [any DestinationRepresentable])
 }
 
 // MARK: - Default implementation
 
 @MainActor
-public extension NaviCoordinator {
+public extension NaviController {
 
     // MARK: - Public methods
 
-    func push(to destination: any Navigable) {
+    func push(to destination: any DestinationRepresentable) {
         properties.path.append(destination)
         if let key = destination.navigationOrigin {
             properties.naviStackOrigins[key] = properties.path.count
@@ -51,7 +51,7 @@ public extension NaviCoordinator {
         syncStackOrigins(removeAll: true)
     }
 
-    func pop(to destinationKey: NaviStackOriginKeys) {
+    func pop(to destinationKey: NavigationOriginKeys) {
         guard let originIndex = properties.naviStackOrigins[destinationKey] else {
             properties.naviLogger.fault("Navi origin key was not found ---> \(String(describing: destinationKey))")
             assertionFailure("Navi origin key was not found ---> \(destinationKey)")
@@ -65,7 +65,7 @@ public extension NaviCoordinator {
 
     // MARK: - Deep-link
 
-    func deeplink(to newPath: [any Navigable]) {
+    func deeplink(to newPath: [any DestinationRepresentable]) {
         popToRoot()
         newPath.forEach { push(to: $0) }
     }

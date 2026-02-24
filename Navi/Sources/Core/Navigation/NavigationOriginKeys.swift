@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct NaviStackOriginKeys: Hashable, Sendable {
+public struct NavigationOriginKeys: Hashable, Sendable {
     let id = UUID()
     var debugName: String?
 }
