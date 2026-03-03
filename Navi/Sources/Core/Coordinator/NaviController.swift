@@ -64,7 +64,7 @@ public extension NaviController {
     }
     
     func pop(last indexCount: Int) {
-        guard indexCount >= properties.path.count else {
+        guard indexCount <= properties.path.count else {
             properties.naviLogger.fault("Cannot remove more element from the path than what it has ---> \(indexCount) is bigger than \(self.properties.path.count)")
             return
         }
