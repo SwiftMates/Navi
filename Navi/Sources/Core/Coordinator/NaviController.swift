@@ -19,7 +19,6 @@ public protocol NaviController: AnyObject {
     func pop()
     func popToRoot()
     func pop(to destinationKey: NavigationOriginKeys)
-    func pop(last indexCount: Int)
 
     // MARK: Deeplinking
 
@@ -63,7 +62,7 @@ public extension NaviController {
         pop(last: indexToRemove)
     }
     
-    func pop(last indexCount: Int) {
+    private func pop(last indexCount: Int) {
         guard indexCount <= properties.path.count else {
             properties.naviLogger.fault("Cannot remove more element from the path than what it has ---> \(indexCount) is bigger than \(self.properties.path.count)")
             return
