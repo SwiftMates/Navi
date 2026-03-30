@@ -22,7 +22,7 @@ public protocol NaviController: AnyObject {
 
     // MARK: Deeplinking
 
-    func deeplink(to newPath: [any DestinationRepresentable])
+    func deepLink(to newPath: [any DestinationRepresentable])
 }
 
 // MARK: - Default implementation
@@ -73,7 +73,7 @@ public extension NaviController {
 
     // MARK: - Deep-link
 
-    func deeplink(to newPath: [any DestinationRepresentable]) {
+    func deepLink(to newPath: [any DestinationRepresentable]) {
         popToRoot()
         newPath.forEach { push(to: $0) }
     }
