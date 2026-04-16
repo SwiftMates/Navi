@@ -1,4 +1,6 @@
-# Navi 🧭
+<img width="500" alt="Navi_package_logo_cropped" src="https://github.com/user-attachments/assets/817f6e98-da67-4bf0-94eb-01448a7148a1" />
+
+---
 
 **A lightweight, Swift 6–native navigation helper for SwiftUI**
 
@@ -40,7 +42,7 @@ SwiftUI navigation has evolved significantly, but handling **non-trivial navigat
 SwiftUI's `NavigationStack` is powerful, but as your app grows, you may encounter some friction:
 
 | Challenge | Native NavigationStack | Navi |
-|:----------|:---------------------:|------:|
+|:----------|:---------------------:|:------:|
 | **Boilerplate** | Requires manual `NavigationPath` management | Handles path management for you |
 | **Programmatic navigation** | Verbose, requires passing bindings | Simple, centralized API |
 | **Type safety** | Easy to lose type info with `NavigationPath` | Maintains type-safe navigation |
