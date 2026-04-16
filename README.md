@@ -1,8 +1,6 @@
 <img width="500" alt="Navi_package_logo_cropped" src="https://github.com/user-attachments/assets/817f6e98-da67-4bf0-94eb-01448a7148a1" />
 
----
-
-**A lightweight, Swift 6–native navigation helper for SwiftUI**
+**A lightweight, Swift 6 native navigation package for SwiftUI's NavigationStack**
 
 `Navi` is a **simple, lightweight Swift package** that makes working with **SwiftUI's `NavigationStack`** easier, cleaner, and more flexible — **without imposing any architecture or heavy abstractions**.
 
@@ -27,7 +25,7 @@ Whether you're building a **small pet project** or a **production-grade app**, N
 
 ## 🚀 Motivation
 
-SwiftUI navigation has evolved significantly, but handling **non-trivial navigation flows** (deep links, programmatic navigation, conditional routing, etc.) can still lead to:
+SwiftUI navigation has evolved significantly, but handling **non-trivial navigation flows** (deep links, programmatic navigation, pop back to specific screen, etc.) can still lead to:
 
 - Scattered navigation logic
 - Tight coupling between views
@@ -53,7 +51,7 @@ SwiftUI's `NavigationStack` is powerful, but as your app grows, you may encounte
 
 ### In short:
 
-> **Navi** helps when your navigation logic grows beyond a few screens — without forcing you into a specific architecture.
+**Navi** helps when your navigation logic grows beyond a few screens — without forcing you into a specific architecture.
 
 Navi doesn't replace `NavigationStack` — it **enhances** it.
 
@@ -94,7 +92,7 @@ dependencies: [
 
 Navi follows a few simple principles:
 - Minimal API surface — Learn it in minutes
-- No forced architecture — Use with MVVM, TCA, or plain SwiftUI
+- No forced architecture — Use with MVVM, Coordinators, TCA, or plain SwiftUI
 - Composable & flexible — Use only what you need
 - Easy to remove or replace — No lock-in
 - No runtime magic — Predictable behavior
