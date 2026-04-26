@@ -18,7 +18,7 @@ public protocol NaviController: AnyObject {
     func push(to destination: any DestinationRepresentable)
     func pop()
     func popToRoot()
-    func pop(to destinationKey: NavigationOriginKeys)
+    func pop(to destinationKey: NavigationOriginKey)
 
     // MARK: Deeplinking
 
@@ -51,7 +51,7 @@ public extension NaviController {
         syncStackOrigins(removeAll: true)
     }
 
-    func pop(to destinationKey: NavigationOriginKeys) {
+    func pop(to destinationKey: NavigationOriginKey) {
         guard let originIndex = properties.naviStackOrigins[destinationKey] else {
             properties.naviLogger.fault("Navi origin key was not found ---> \(String(describing: destinationKey))")
             assertionFailure("Navi origin key was not found ---> \(destinationKey)")
@@ -60,15 +60,6 @@ public extension NaviController {
 
         let indexToRemove = properties.path.count - originIndex
         pop(last: indexToRemove)
-    }
-    
-    private func pop(last indexCount: Int) {
-        guard indexCount <= properties.path.count else {
-            properties.naviLogger.fault("Cannot remove more element from the path than what it has ---> \(indexCount) is bigger than \(self.properties.path.count)")
-            return
-        }
-        properties.path.removeLast(indexCount)
-        syncStackOrigins()
     }
 
     // MARK: - Deep-link
@@ -88,5 +79,14 @@ public extension NaviController {
                 properties.naviStackOrigins.removeValue(forKey: key)
             }
         }
+    }
+    
+    private func pop(last indexCount: Int) {
+        guard indexCount <= properties.path.count else {
+            properties.naviLogger.fault("Cannot remove more element from the path than what it has ---> \(indexCount) is bigger than \(self.properties.path.count)")
+            return
+        }
+        properties.path.removeLast(indexCount)
+        syncStackOrigins()
     }
 }

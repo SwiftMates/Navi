@@ -8,11 +8,11 @@
 import Foundation
 
 public protocol DestinationRepresentable: Hashable {
-    var navigationOrigin: NavigationOriginKeys? { get }
+    var navigationOrigin: NavigationOriginKey? { get }
 }
 
 // MARK: - Default Implementation
 
 public extension DestinationRepresentable {
-    var navigationOrigin: NavigationOriginKeys? { nil }
+    var navigationOrigin: NavigationOriginKey? { nil }
 }

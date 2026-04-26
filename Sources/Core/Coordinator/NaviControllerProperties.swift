@@ -12,7 +12,7 @@ public struct NaviControllerProperties {
     
     public var path: NavigationPath
 
-    var naviStackOrigins: [NavigationOriginKeys: Int]
+    var naviStackOrigins: [NavigationOriginKey: Int]
     var naviLogger: Logger
 
     // MARK: - Lifecycle

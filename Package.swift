@@ -16,6 +16,9 @@ let package = Package(
         .target(
             name: "Navi"
         ),
+        .testTarget(
+            name: "Navi-Tests",
+            dependencies: ["Navi"]),
     ],
     swiftLanguageModes: [.v6]
 )
