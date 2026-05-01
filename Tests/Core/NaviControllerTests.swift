@@ -136,4 +136,22 @@ struct NaviControllerTests {
         #expect(controller.properties.path.count == 0)
         #expect(controller.properties.naviStackOrigins.isEmpty)
     }
+
+    @Test("deepLink replaces existing path and keeps only new-path origin metadata")
+    func testDeepLinkReplacesExistingState()  {
+        let controller: TestNaviController = TestNaviController()
+        controller.push(to: TestDestination.screenC)
+        controller.push(to: TestDestination.screenA)
+
+        let newPath: [any DestinationRepresentable] = [
+            TestDestination.screenA,
+            TestDestination.screenB
+        ]
+
+        controller.deepLink(to: newPath)
+
+        #expect(controller.properties.path.count == 2)
+        #expect(controller.properties.naviStackOrigins[.screenB] == 2)
+        #expect(controller.properties.naviStackOrigins[.screenC] == nil)
+    }
 }
