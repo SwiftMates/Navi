@@ -15,13 +15,13 @@ import Foundation
 @MainActor
 struct NaviControllerTests {
     // MARK: - Nested types
-    
+
     enum TestDestination: DestinationRepresentable {
         case screenA
         case screenB
         case screenC
         case screenD
-        
+
         var navigationOrigin: NavigationOriginKey? {
             switch self {
             case .screenB: return NavigationOriginKey.screenB
@@ -31,8 +31,8 @@ struct NaviControllerTests {
         }
     }
 
-    @Test("push adds destinations and sets stack origins")
-    func testPush()  {
+    @Test
+    func `push should add destinations and set stack origins when destinations are pushed`() {
         let controller: TestNaviController = TestNaviController()
         controller.push(to: TestDestination.screenB)
         controller.push(to: TestDestination.screenA)
@@ -40,8 +40,8 @@ struct NaviControllerTests {
         #expect(controller.properties.naviStackOrigins[.screenB] == 1)
     }
 
-    @Test("pop removes the last destination and updates origins")
-    func testPop()  {
+    @Test
+    func `pop should remove the last destination and keep remaining origins when stack is not empty`() {
         let controller: TestNaviController = TestNaviController()
         controller.push(to: TestDestination.screenB)
         controller.push(to: TestDestination.screenA)
@@ -50,8 +50,8 @@ struct NaviControllerTests {
         #expect(controller.properties.naviStackOrigins[.screenB] == 1)
     }
 
-    @Test("popToRoot clears the path and origins")
-    func testPopToRoot()  {
+    @Test
+    func `popToRoot should clear path and origins when stack has destinations`() {
         let controller: TestNaviController = TestNaviController()
         controller.push(to: TestDestination.screenB)
         controller.push(to: TestDestination.screenA)
@@ -60,8 +60,8 @@ struct NaviControllerTests {
         #expect(controller.properties.naviStackOrigins.isEmpty)
     }
 
-    @Test("pop(to:) navigates back to the origin key destination if present")
-    func testPopToOriginKey()  {
+    @Test
+    func `pop should navigate back to origin key destination when origin exists in stack`() {
         let controller: TestNaviController = TestNaviController()
         controller.push(to: TestDestination.screenA)
         controller.push(to: TestDestination.screenB)
@@ -72,8 +72,8 @@ struct NaviControllerTests {
         #expect(controller.properties.naviStackOrigins[.screenC] == nil)
     }
 
-    @Test("deepLink replaces the path with the new sequence of destinations")
-    func testDeepLink()  {
+    @Test
+    func `deepLink should replace path with new sequence and update origins when new path is provided`() {
         let controller: TestNaviController = TestNaviController()
         let newPath: [any DestinationRepresentable] = [
             TestDestination.screenA,
@@ -86,16 +86,16 @@ struct NaviControllerTests {
         #expect(controller.properties.naviStackOrigins[.screenB] == 3)
     }
 
-    @Test("pop on empty path is a no-op")
-    func testPopOnEmptyPath()  {
+    @Test
+    func `pop should do nothing when path is empty`() {
         let controller: TestNaviController = TestNaviController()
         controller.pop()
         #expect(controller.properties.path.count == 0)
         #expect(controller.properties.naviStackOrigins.isEmpty)
     }
 
-    @Test("pop removes origin metadata for destinations removed from path")
-    func testPopPrunesRemovedOrigin()  {
+    @Test
+    func `pop should prune removed origin metadata when popping destination with origin`() {
         let controller: TestNaviController = TestNaviController()
         controller.push(to: TestDestination.screenB)
         controller.push(to: TestDestination.screenC)
@@ -105,8 +105,8 @@ struct NaviControllerTests {
         #expect(controller.properties.naviStackOrigins[.screenC] == nil)
     }
 
-    @Test("pop(to:) does not modify the stack when destination is already topmost")
-    func testPopToTopmostOriginIsNoOp()  {
+    @Test
+    func `pop should not modify stack when target origin is already topmost`() {
         let controller: TestNaviController = TestNaviController()
         controller.push(to: TestDestination.screenA)
         controller.push(to: TestDestination.screenB)
@@ -117,8 +117,8 @@ struct NaviControllerTests {
         #expect(controller.properties.naviStackOrigins[.screenC] == 3)
     }
 
-    @Test("push updates origin index when the same origin appears again")
-    func testPushUpdatesExistingOriginIndex()  {
+    @Test
+    func `push should update existing origin index when same origin appears again`() {
         let controller: TestNaviController = TestNaviController()
         controller.push(to: TestDestination.screenB)
         controller.push(to: TestDestination.screenA)
@@ -127,8 +127,8 @@ struct NaviControllerTests {
         #expect(controller.properties.naviStackOrigins[.screenB] == 3)
     }
 
-    @Test("deepLink to empty path clears path and origins")
-    func testDeepLinkToEmptyPath()  {
+    @Test
+    func `deepLink should clear path and origins when new path is empty`() {
         let controller: TestNaviController = TestNaviController()
         controller.push(to: TestDestination.screenB)
         controller.push(to: TestDestination.screenC)
@@ -137,8 +137,8 @@ struct NaviControllerTests {
         #expect(controller.properties.naviStackOrigins.isEmpty)
     }
 
-    @Test("deepLink replaces existing path and keeps only new-path origin metadata")
-    func testDeepLinkReplacesExistingState()  {
+    @Test
+    func `deepLink should replace existing state and keep only new path origins when new path is provided`() {
         let controller: TestNaviController = TestNaviController()
         controller.push(to: TestDestination.screenC)
         controller.push(to: TestDestination.screenA)
@@ -154,4 +154,11 @@ struct NaviControllerTests {
         #expect(controller.properties.naviStackOrigins[.screenB] == 2)
         #expect(controller.properties.naviStackOrigins[.screenC] == nil)
     }
+}
+
+// MARK: - Navigation Origin Keys
+
+extension NavigationOriginKey {
+    static let screenB = NavigationOriginKey(debugName: "screenB")
+    static let screenC = NavigationOriginKey(debugName: "screenC")
 }

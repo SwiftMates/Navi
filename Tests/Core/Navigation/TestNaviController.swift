@@ -8,5 +8,5 @@
 @testable import Navi
 
 final class TestNaviController: NaviController {
-    public var properties: NaviControllerProperties = .init()
+    public var properties = NaviControllerProperties()
 }
