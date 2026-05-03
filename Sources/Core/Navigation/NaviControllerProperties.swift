@@ -8,8 +8,13 @@
 import SwiftUI
 import OSLog
 
+/// A container that stores mutable navigation state for a ``NaviController``.
+///
+/// `NaviControllerProperties` owns the current `NavigationPath` and internal bookkeeping
+/// used by the controller to support keyed stack navigation.
 public struct NaviControllerProperties {
     
+    /// The current navigation path rendered by SwiftUI navigation containers.
     public var path: NavigationPath
 
     var naviStackOrigins: [NavigationOriginKey: Int]
@@ -17,6 +22,9 @@ public struct NaviControllerProperties {
 
     // MARK: - Lifecycle
 
+    /// Creates a new set of controller properties with an empty navigation path.
+    ///
+    /// The initializer also prepares internal origin tracking and logger instances.
     public init() {
         self.path = NavigationPath()
         self.naviStackOrigins = [:]
