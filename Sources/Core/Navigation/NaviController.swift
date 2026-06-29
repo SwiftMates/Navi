@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import OSLog
 
 @MainActor
 /// A main-actor-bound navigation controller protocol for managing a SwiftUI `NavigationPath`.
@@ -58,8 +57,10 @@ public extension NaviController {
     /// - Parameter destination: The destination to append to the navigation path.
     func push(to destination: any DestinationRepresentable) {
         properties.path.append(destination)
+        properties.logger.logInfo("Path appended with destination: \(destination).")
         if let key = destination.navigationOrigin {
             properties.naviStackOrigins[key] = properties.path.count
+            properties.logger.logInfo("Navigation origin '\(key)' set to path index: \(properties.path.count) with destination: \(destination).")
         }
     }
 
@@ -67,6 +68,7 @@ public extension NaviController {
     func pop() {
         if properties.path.isEmpty == false {
             properties.path.removeLast()
+            properties.logger.logInfo("Last path element removed.")
             syncStackOrigins()
         }
     }
@@ -75,6 +77,7 @@ public extension NaviController {
     func popToRoot() {
         properties.path = NavigationPath()
         syncStackOrigins(removeAll: true)
+        properties.logger.logInfo("Navigation path cleared.")
     }
 
     /// Pops the stack back to the destination associated with the given origin key.
@@ -84,8 +87,8 @@ public extension NaviController {
     /// - Parameter destinationKey: The origin key used to identify the pop target.
     func pop(to destinationKey: NavigationOriginKey) {
         guard let originIndex = properties.naviStackOrigins[destinationKey] else {
-            properties.naviLogger.fault("Navi origin key was not found ---> \(String(describing: destinationKey))")
-            assertionFailure("Navi origin key was not found ---> \(destinationKey)")
+            properties.logger.logError("Navi origin key was not found ---> \(String(describing: destinationKey)).")
+            assertionFailure("Navi origin key was not found ---> \(destinationKey).")
             return
         }
 
@@ -103,6 +106,7 @@ public extension NaviController {
     func deepLink(to newPath: [any DestinationRepresentable]) {
         popToRoot()
         newPath.forEach { push(to: $0) }
+        properties.logger.logInfo("Deep-link path set to: \(newPath).")
     }
 
     // MARK: - Private methods
@@ -110,16 +114,18 @@ public extension NaviController {
     private func syncStackOrigins(removeAll: Bool = false) {
         if removeAll {
             properties.naviStackOrigins.removeAll()
+            properties.logger.logInfo("All navigation origins cleared.")
         } else {
             for (key, index) in properties.naviStackOrigins where index > properties.path.count {
                 properties.naviStackOrigins.removeValue(forKey: key)
+                properties.logger.logInfo("Navigation origin removed: \(key) from index: \(index).")
             }
         }
     }
     
     private func pop(last indexCount: Int) {
         guard indexCount <= properties.path.count else {
-            properties.naviLogger.fault("Cannot remove more element from the path than what it has ---> \(indexCount) is bigger than \(self.properties.path.count)")
+            properties.logger.logError("Cannot remove more element from the path than what it has ---> \(indexCount) is bigger than \(self.properties.path.count).")
             return
         }
         properties.path.removeLast(indexCount)

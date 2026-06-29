@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import OSLog
 
 /// A container that stores mutable navigation state for a ``NaviController``.
 ///
@@ -18,16 +17,16 @@ public struct NaviControllerProperties {
     public var path: NavigationPath
 
     var naviStackOrigins: [NavigationOriginKey: Int]
-    var naviLogger: Logger
+    var logger: any NaviLoggerable
 
     // MARK: - Lifecycle
 
     /// Creates a new set of controller properties with an empty navigation path.
     ///
     /// The initializer also prepares internal origin tracking and logger instances.
-    public init() {
+    public init(logger: any NaviLoggerable) {
         self.path = NavigationPath()
         self.naviStackOrigins = [:]
-        self.naviLogger = Logger(subsystem: "Navi Package", category: "Navi")
+        self.logger = logger
     }
 }
