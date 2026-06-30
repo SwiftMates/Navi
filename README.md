@@ -207,10 +207,10 @@ More examples and guides may be added over time.
 
 | Requirement | Version |
 | ----------- | ------- |
-| iOS | 16.0+ |
-| macOS | 13.0+ |
-| Swift | 6.0+ |
-| XCode | 16.0+ |
+| iOS | (Check) |
+| macOS | (Check) |
+| Swift | (Check) |
+| XCode | (Check) |
 
 ## 🤝 Contributing
 
