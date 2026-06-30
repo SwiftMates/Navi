@@ -9,30 +9,30 @@ import SwiftUI
 import OSLog
 
 @MainActor
-public protocol NaviController: AnyObject {
+public protocol NaviCoordinator: AnyObject {
 
-    var properties: NaviControllerProperties { get set }
+    var properties: NaviCoordinatorProperties { get set }
 
     // MARK: Navigation
 
-    func push(to destination: any DestinationRepresentable)
+    func push(to destination: any Navigable)
     func pop()
+    func pop(to destinationKey: NaviStackOriginKeys)
     func popToRoot()
-    func pop(to destinationKey: NavigationOriginKeys)
 
     // MARK: Deeplinking
 
-    func deepLink(to newPath: [any DestinationRepresentable])
+    func deeplink(to newPath: [any Navigable])
 }
 
 // MARK: - Default implementation
 
 @MainActor
-public extension NaviController {
+public extension NaviCoordinator {
 
     // MARK: - Public methods
 
-    func push(to destination: any DestinationRepresentable) {
+    func push(to destination: any Navigable) {
         properties.path.append(destination)
         if let key = destination.navigationOrigin {
             properties.naviStackOrigins[key] = properties.path.count
@@ -51,7 +51,7 @@ public extension NaviController {
         syncStackOrigins(removeAll: true)
     }
 
-    func pop(to destinationKey: NavigationOriginKeys) {
+    func pop(to destinationKey: NaviStackOriginKeys) {
         guard let originIndex = properties.naviStackOrigins[destinationKey] else {
             properties.naviLogger.fault("Navi origin key was not found ---> \(String(describing: destinationKey))")
             assertionFailure("Navi origin key was not found ---> \(destinationKey)")
@@ -59,21 +59,13 @@ public extension NaviController {
         }
 
         let indexToRemove = properties.path.count - originIndex
-        pop(last: indexToRemove)
-    }
-    
-    private func pop(last indexCount: Int) {
-        guard indexCount <= properties.path.count else {
-            properties.naviLogger.fault("Cannot remove more element from the path than what it has ---> \(indexCount) is bigger than \(self.properties.path.count)")
-            return
-        }
-        properties.path.removeLast(indexCount)
+        properties.path.removeLast(indexToRemove)
         syncStackOrigins()
     }
 
     // MARK: - Deep-link
 
-    func deepLink(to newPath: [any DestinationRepresentable]) {
+    func deeplink(to newPath: [any Navigable]) {
         popToRoot()
         newPath.forEach { push(to: $0) }
     }

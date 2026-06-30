@@ -1,11 +1,11 @@
-// swift-tools-version: 6.3
+// swift-tools-version: 6.2
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
 let package = Package(
     name: "Navi",
-    platforms: [.iOS(.v17), .macOS(.v14)],
+    platforms: [.iOS(.v16), .macOS(.v13)],
     products: [
         .library(
             name: "Navi",
@@ -17,8 +17,9 @@ let package = Package(
             name: "Navi"
         ),
         .testTarget(
-            name: "Navi-Tests",
-            dependencies: ["Navi"]),
+            name: "NaviTests",
+            dependencies: ["Navi"]
+        ),
     ],
     swiftLanguageModes: [.v6]
 )
