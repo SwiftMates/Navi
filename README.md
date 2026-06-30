@@ -1,12 +1,12 @@
 <img width="350" alt="Navi_package_logo_cropped" src="https://github.com/user-attachments/assets/817f6e98-da67-4bf0-94eb-01448a7148a1" />
 
-**A lightweight, Swift 6 native navigation package for SwiftUI's NavigationStack**
+# Navi
 
-`Navi` is a **simple, lightweight Swift package** that makes working with **SwiftUI's `NavigationStack`** easier, cleaner, and more flexible — **without imposing any architecture or heavy abstractions**.
+A lightweight, Swift 6 native navigation package for SwiftUI's `NavigationStack`.
 
-It provides a small set of utilities that help developers handle **more complex navigation flows out of the box**, while staying **pure SwiftUI**, **easy to understand**, and **safe to use in any environment**.
+`Navi` is a simple, lightweight Swift package that makes working with SwiftUI's `NavigationStack` easier, cleaner, and more flexible — without imposing any architecture or heavy abstractions.
 
-Whether you're building a **small pet project** or a **production-grade app**, Navi aims to reduce navigation boilerplate while keeping your code expressive and predictable.
+It provides a small set of utilities that help you handle more complex navigation flows out of the box, while staying pure SwiftUI, easy to understand, and safe to use in any environment.
 
 ---
 
@@ -53,7 +53,17 @@ SwiftUI's `NavigationStack` is powerful, but as your app grows, you may encounte
 
 **Navi** helps when your navigation logic grows beyond a few screens — without forcing you into a specific architecture.
 
-Navi doesn't replace `NavigationStack` — it **enhances** it.
+// TODO: Decide on format
+
+- Boilerplate: Manual `NavigationPath` management
+- Programmatic navigation: Passing bindings through view hierarchies
+- Type safety: Easy to lose type info with `NavigationPath`
+- Deep linking: Manual setup and edge cases
+- Multi-step flows: Complex state management
+- Decoupling views: Views often know about destinations
+- Testing: Navigation logic embedded in views
+
+In short: Navi helps when your navigation logic grows beyond a few screens — without forcing you into a specific architecture. Navi doesn't replace `NavigationStack` — it enhances it.
 
 ---
 
@@ -78,15 +88,110 @@ dependencies: [
 
 ## 🧩 Basic Usage
 
-// TODO
+1. Conform your destinations to DestinationRepresentable
+
+```swift
+enum Destinations: DestinationRepresentable {
+    case settings
+    case profile
+}
+```
+
+2. Create a controller
+
+```swift
+final class DemoCoordinator: NaviController {
+    var properties = NaviControllerProperties(logger: NaviLogger())
+}
+```
+
+4. Wire it up in SwiftUI
+
+```swift
+struct DemoView: View {
+
+    var body: some View {
+        content
+            .navigationDestination(
+                for: Destinations.self,
+                destination: destinationView
+            )
+    }
+
+    @ViewBuilder
+    private func destinationView(for destination: Destinations) -> some View {
+        switch destination {
+        case .settings: SettingsView()
+        case .profile: ProfileView()
+        }
+    }
+}
+```
+
+5. Trigger navigation
+
+```swift
+private let coordinator = DemoCoordinator()
+
+func navigateToSettings() {
+    coordinator.push(to: Destinations.settings)
+}
+
+func navigateBack() {
+    coordinator.pop()
+}
+```
 
 ## 🛠 Advanced Navigation
 
-// TODO
+Pop to a specific screen in the stack
+
+```swift
+extension NavigationOriginKey {
+    static let profile = NavigationOriginKey(debugName: "profile")
+}
+```
+
+```swift
+enum AppDestinations: DestinationRepresentable {
+    case settings
+    case profile
+
+    var navigationOrigin: NavigationOriginKey? {
+        switch self {
+        case .profile: return .profile
+        default: return nil
+        }
+    }
+}
+```
+
+```swift
+func popBackToProfile() {
+    coordinator.pop(to: .profile)
+}
+```
+
+Deep Linking
+
+
+```swift
+func deepLinkToEmailSettings() {
+    coordinator.deepLink(to: [
+        Destinations.settings,
+        Destinations.notifications,
+        Destinations.emailNotifications
+    ])
+}
+```
 
 ## 🧪 Example Use Cases
 
-// TODO
+Check out our examples to see Navi in action — from simple navigation flows to a full Coordinator pattern setup.
+
+Examples
+Simple: Under construction.
+Coordinator: Under construction.
 
 ## 🧠 Design Philosophy
 
