@@ -53,18 +53,6 @@ SwiftUI's `NavigationStack` is powerful, but as your app grows, you may encounte
 
 **Navi** helps when your navigation logic grows beyond a few screens — without forcing you into a specific architecture.
 
-// TODO: Decide on format
-
-- Boilerplate: Manual `NavigationPath` management
-- Programmatic navigation: Passing bindings through view hierarchies
-- Type safety: Easy to lose type info with `NavigationPath`
-- Deep linking: Manual setup and edge cases
-- Multi-step flows: Complex state management
-- Decoupling views: Views often know about destinations
-- Testing: Navigation logic embedded in views
-
-In short: Navi helps when your navigation logic grows beyond a few screens — without forcing you into a specific architecture. Navi doesn't replace `NavigationStack` — it enhances it.
-
 ---
 
 ## 📦 Installation
@@ -86,9 +74,11 @@ dependencies: [
 ]
 ```
 
+---
+
 ## 🧩 Basic Usage
 
-1. Conform your destinations to DestinationRepresentable
+Conform your destinations to DestinationRepresentable
 
 ```swift
 enum Destinations: DestinationRepresentable {
@@ -97,7 +87,7 @@ enum Destinations: DestinationRepresentable {
 }
 ```
 
-2. Create a controller
+Create a controller
 
 ```swift
 final class DemoCoordinator: NaviController {
@@ -105,11 +95,10 @@ final class DemoCoordinator: NaviController {
 }
 ```
 
-4. Wire it up in SwiftUI
+Wire it up in SwiftUI
 
 ```swift
 struct DemoView: View {
-
     var body: some View {
         content
             .navigationDestination(
@@ -128,7 +117,7 @@ struct DemoView: View {
 }
 ```
 
-5. Trigger navigation
+Trigger navigation
 
 ```swift
 private let coordinator = DemoCoordinator()
@@ -144,7 +133,7 @@ func navigateBack() {
 
 ## 🛠 Advanced Navigation
 
-Pop to a specific screen in the stack
+### ⏪ Pop to a specific screen in the stack
 
 ```swift
 extension NavigationOriginKey {
@@ -172,8 +161,7 @@ func popBackToProfile() {
 }
 ```
 
-Deep Linking
-
+### 🔗 Deep Linking
 
 ```swift
 func deepLinkToEmailSettings() {
@@ -185,13 +173,17 @@ func deepLinkToEmailSettings() {
 }
 ```
 
+---
+
 ## 🧪 Example Use Cases
 
-Check out our examples to see Navi in action — from simple navigation flows to a full Coordinator pattern setup.
+> Check out our examples to see Navi in action — from simple navigation flows to a full Coordinator pattern setup.
 
-Examples
-Simple: Under construction.
-Coordinator: Under construction.
+## 📖 Examples
+| Example | Status |
+|:--------|:------:|
+| Simple | 🚧 Under construction |
+| Coordinator | 🚧 Under construction |
 
 ## 🧠 Design Philosophy
 
