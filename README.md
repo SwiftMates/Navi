@@ -68,7 +68,7 @@ Add Navi to your project via Xcode:
 3. Enter the repository URL: https://github.com/SwiftMates/Navi
 4. Select the version you want (recommended: latest)
 
-Or add it directly to your `Package.swift`:
+### Or add it directly to your `Package.swift`:
 
 ```swift
 dependencies: [
