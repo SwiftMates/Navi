@@ -175,11 +175,10 @@ func deepLinkToEmailSettings() {
 
 ---
 
-## 🧪 Example Use Cases
+## 📖 Examples
 
 > Check out our examples to see Navi in action — from simple navigation flows to a full Coordinator pattern setup.
 
-## 📖 Examples
 | Example | Status |
 |:--------|:------:|
 | Simple | 🚧 Under construction |
