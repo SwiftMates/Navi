@@ -8,5 +8,7 @@
 @testable import Navi
 
 final class TestNaviController: NaviController {
-    public var properties = NaviControllerProperties()
+    let logger = TestLogger()
+
+    lazy var properties = NaviControllerProperties(logger: logger)
 }
