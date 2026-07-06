@@ -154,6 +154,107 @@ struct NaviControllerTests {
         #expect(controller.properties.naviStackOrigins[.screenB] == 2)
         #expect(controller.properties.naviStackOrigins[.screenC] == nil)
     }
+
+    @Test
+    func `push should log appended destination when destination has no navigation origin`() {
+        let controller: TestNaviController = TestNaviController()
+
+        controller.push(to: TestDestination.screenA)
+
+        #expect(controller.logger.logInfoReceivedInvocations == [
+            "Path appended with destination: screenA."
+        ])
+        #expect(controller.logger.logInfoCallsCount == 1)
+        #expect(controller.logger.logErrorCalled == false)
+    }
+
+    @Test
+    func `push should log appended destination and origin when destination has navigation origin`() {
+        let controller: TestNaviController = TestNaviController()
+
+        controller.push(to: TestDestination.screenB)
+
+        #expect(controller.logger.logInfoReceivedInvocations == [
+            "Path appended with destination: screenB.",
+            "Navigation origin '\(NavigationOriginKey.screenB)' set to path index: 1 with destination: screenB."
+        ])
+        #expect(controller.logger.logInfoCallsCount == 2)
+        #expect(controller.logger.logErrorCalled == false)
+    }
+
+    @Test
+    func `pop should log last path element removed when stack is not empty`() {
+        let controller: TestNaviController = TestNaviController()
+
+        controller.push(to: TestDestination.screenA)
+        controller.pop()
+
+        #expect(controller.logger.logInfoReceivedInvocations == [
+            "Path appended with destination: screenA.",
+            "Last path element removed."
+        ])
+        #expect(controller.logger.logInfoCallsCount == 2)
+        #expect(controller.logger.logErrorCalled == false)
+    }
+
+    @Test
+    func `pop should log removed origin when popped destination has navigation origin`() {
+        let controller: TestNaviController = TestNaviController()
+
+        controller.push(to: TestDestination.screenB)
+        controller.push(to: TestDestination.screenC)
+        controller.pop()
+
+        #expect(controller.logger.logInfoReceivedInvocations == [
+            "Path appended with destination: screenB.",
+            "Navigation origin '\(NavigationOriginKey.screenB)' set to path index: 1 with destination: screenB.",
+            "Path appended with destination: screenC.",
+            "Navigation origin '\(NavigationOriginKey.screenC)' set to path index: 2 with destination: screenC.",
+            "Last path element removed.",
+            "Navigation origin removed: \(NavigationOriginKey.screenC) from index: 2."
+        ])
+        #expect(controller.logger.logInfoCallsCount == 6)
+        #expect(controller.logger.logErrorCalled == false)
+    }
+
+    @Test
+    func `popToRoot should log origins cleared and path cleared`() {
+        let controller: TestNaviController = TestNaviController()
+
+        controller.push(to: TestDestination.screenB)
+        controller.popToRoot()
+
+        #expect(controller.logger.logInfoReceivedInvocations == [
+            "Path appended with destination: screenB.",
+            "Navigation origin '\(NavigationOriginKey.screenB)' set to path index: 1 with destination: screenB.",
+            "All navigation origins cleared.",
+            "Navigation path cleared."
+        ])
+        #expect(controller.logger.logInfoCallsCount == 4)
+        #expect(controller.logger.logErrorCalled == false)
+    }
+
+    @Test
+    func `deepLink should log root clearing pushed destinations and final path`() {
+        let controller: TestNaviController = TestNaviController()
+        let newPath: [any DestinationRepresentable] = [
+            TestDestination.screenA,
+            TestDestination.screenB
+        ]
+
+        controller.deepLink(to: newPath)
+
+        #expect(controller.logger.logInfoReceivedInvocations == [
+            "All navigation origins cleared.",
+            "Navigation path cleared.",
+            "Path appended with destination: screenA.",
+            "Path appended with destination: screenB.",
+            "Navigation origin '\(NavigationOriginKey.screenB)' set to path index: 2 with destination: screenB.",
+            "Deep-link path set to: \(newPath)."
+        ])
+        #expect(controller.logger.logInfoCallsCount == 6)
+        #expect(controller.logger.logErrorCalled == false)
+    }
 }
 
 // MARK: - Navigation Origin Keys
