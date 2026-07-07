@@ -1,6 +1,6 @@
-<img width="350" alt="Navi_package_logo_cropped" src="https://github.com/user-attachments/assets/817f6e98-da67-4bf0-94eb-01448a7148a1" />
-
-# Navi
+<p align="center">
+    <img width="350" alt="Navi_package_logo_cropped" src="https://github.com/user-attachments/assets/817f6e98-da67-4bf0-94eb-01448a7148a1" />
+</p>
 
 A lightweight, Swift 6 native navigation package for SwiftUI's `NavigationStack`.
 
