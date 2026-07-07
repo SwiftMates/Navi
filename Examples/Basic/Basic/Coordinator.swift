@@ -1,6 +1,6 @@
 //
 //  Coordinator.swift
-//  Navi Plain SwiftUI example
+//  Basic
 //
 //  Created by David Pall on 2026. 07. 07..
 //
