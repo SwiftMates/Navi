@@ -188,7 +188,7 @@ func deepLinkToEmailSettings() {
 
 Navi follows a few simple principles:
 - Minimal API surface — Learn it in minutes
-- No forced architecture — Use with MVVM, Coordinators, TCA, or plain SwiftUI
+- No forced architecture — Use it in any project, regardless of its architecture
 - Composable & flexible — Use only what you need
 - Easy to remove or replace — No lock-in
 - No runtime magic — Predictable behavior
