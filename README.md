@@ -203,15 +203,6 @@ If you understand SwiftUI navigation, you already understand Navi.
 
 More examples and guides may be added over time.
 
-## 🧑‍💻 Requirements
-
-| Requirement | Version |
-| ----------- | ------- |
-| iOS | (Check) |
-| macOS | (Check) |
-| Swift | (Check) |
-| XCode | (Check) |
-
 ## 🤝 Contributing
 
 ### Contributions are welcome!
