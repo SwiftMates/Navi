@@ -10,4 +10,8 @@ import Foundation
 public struct NaviStackOriginKeys: Hashable, Sendable {
     let id = UUID()
     var debugName: String?
+    
+    public init(debugName: String? = nil) {
+        self.debugName = debugName
+    }
 }
