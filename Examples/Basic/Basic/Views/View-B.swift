@@ -10,16 +10,16 @@ import Navi
 
 struct ViewB: View {
     
-    @Environment(Coordinator.self) var coordinator
+    @Environment(BasicExampleController.self) var controller
     
     var body: some View {
         VStack(spacing: 24) {
             Button("Show View - C") {
-                coordinator.push(to: ViewBDestinations.viewC)
+                controller.push(to: ViewBDestinations.viewC)
             }
 
             Button("Pop") {
-                coordinator.pop()
+                controller.pop()
             }
         }
         .navigationTitle("View - B")
@@ -31,6 +31,6 @@ struct ViewB: View {
     }
 }
 
-enum ViewBDestinations: Navigable {
+enum ViewBDestinations: DestinationRepresentable {
     case viewC
 }

@@ -11,18 +11,18 @@ import Navi
 @main
 struct BasicApp: App {
     
-    @State private var coordinator = Coordinator()
+    @State private var controller = BasicExampleController()
     
     var body: some Scene {
         WindowGroup {
             ZStack(alignment: .bottom) {
-                NavigationStack(path: $coordinator.properties.path) {
+                NavigationStack(path: $controller.properties.path) {
                     MainView()
                 }
                 
-                DebugView(viewCount: coordinator.properties.path.count)
+                DebugView(viewCount: controller.properties.path.count)
             }
-            .environment(coordinator)
+            .environment(controller)
         }
     }
 }

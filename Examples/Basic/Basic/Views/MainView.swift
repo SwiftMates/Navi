@@ -10,16 +10,16 @@ import Navi
 
 struct MainView: View {
     
-    @Environment(Coordinator.self) var coordinator
+    @Environment(BasicExampleController.self) var controller
     
     var body: some View {
         VStack(spacing: 24) {
             Button("Show View - A") {
-                coordinator.push(to: MainViewsDestinations.viewA)
+                controller.push(to: MainViewsDestinations.viewA)
             }
 
             Button("Deeplink to View - C") {
-                coordinator.deeplink(to: [
+                controller.deepLink(to: [
                     MainViewsDestinations.viewA,
                     ViewADestinations.viewB,
                     ViewBDestinations.viewC
@@ -35,16 +35,16 @@ struct MainView: View {
     }
 }
 
-enum MainViewsDestinations: Navigable {
+enum MainViewsDestinations: DestinationRepresentable {
     case viewA
     
-    var navigationOrigin: NaviStackOriginKeys? {
+    var navigationOrigin: NavigationOriginKey? {
         switch self {
-        case .viewA: return NaviStackOriginKeys.viewA
+        case .viewA: return NavigationOriginKey.viewA
         }
     }
 }
 
-extension NaviStackOriginKeys {
-    static let viewA = NaviStackOriginKeys(debugName: "View - A Origin")
+extension NavigationOriginKey {
+    static let viewA = NavigationOriginKey(debugName: "View - A Origin")
 }

@@ -10,20 +10,20 @@ import Navi
 
 struct ViewC: View {
     
-    @Environment(Coordinator.self) var coordinator
+    @Environment(BasicExampleController.self) var controller
     
     var body: some View {
         VStack(spacing: 24) {
             Button("Pop") {
-                coordinator.pop()
+                controller.pop()
             }
             
             Button("Pop to View - A") {
-                coordinator.pop(to: .viewA)
+                controller.pop(to: .viewA)
             }
             
             Button("Pop to root") {
-                coordinator.popToRoot()
+                controller.popToRoot()
             }
         }
         .navigationTitle("View - C")
