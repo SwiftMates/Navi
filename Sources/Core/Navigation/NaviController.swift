@@ -25,10 +25,10 @@ public protocol NaviController: AnyObject {
     func push(to destination: any DestinationRepresentable)
 
     /// Removes the top-most destination from the navigation stack, if available.
-    func pop()
+    func pop() throws(NaviError)
     
     /// Removes the specified number of destinations from the top of the navigation stack.
-    func pop(last indexCount: Int)
+    func pop(last indexCount: Int) throws(NaviError)
 
     /// Clears the navigation stack and returns to the root destination.
     func popToRoot()
@@ -36,7 +36,7 @@ public protocol NaviController: AnyObject {
     /// Pops the navigation stack back to the destination marked by the provided origin key.
     ///
     /// - Parameter destinationKey: The key associated with a previously tracked navigation origin.
-    func pop(to destinationKey: NavigationOriginKey)
+    func pop(to destinationKey: NavigationOriginKey) throws(NaviError)
 
     // MARK: Deeplinking
 
@@ -68,11 +68,13 @@ public extension NaviController {
     }
 
     /// Removes the top-most destination from the stack when the path is not empty.
-    func pop() {
+    func pop() throws(NaviError) {
         if properties.path.isEmpty == false {
             properties.path.removeLast()
             properties.logger.logInfo("Last path element removed.")
             syncStackOrigins()
+        } else {
+            throw .pathIsEmpty
         }
     }
     
@@ -82,10 +84,10 @@ public extension NaviController {
     /// destinations in the path.
     ///
     /// - Parameter indexCount: The number of top-most destinations to remove from the path.
-    func pop(last indexCount: Int) {
+    func pop(last indexCount: Int) throws(NaviError) {
         guard indexCount <= properties.path.count else {
             properties.logger.logError("Cannot remove more element from the path than what it has ---> \(indexCount) is bigger than \(self.properties.path.count).")
-            return
+            throw .indexOutOfRange
         }
         properties.path.removeLast(indexCount)
         properties.logger.logInfo("Last \(indexCount) destinations removed from the path.")
@@ -104,15 +106,14 @@ public extension NaviController {
     /// If the key cannot be found, a fault is logged and an assertion is triggered in debug builds.
     ///
     /// - Parameter destinationKey: The origin key used to identify the pop target.
-    func pop(to destinationKey: NavigationOriginKey) {
+    func pop(to destinationKey: NavigationOriginKey) throws(NaviError) {
         guard let originIndex = properties.naviStackOrigins[destinationKey] else {
             properties.logger.logError("Navi origin key was not found ---> \(String(describing: destinationKey)).")
-            assertionFailure("Navi origin key was not found ---> \(destinationKey).")
-            return
+            throw .invalidNavigationOriginKey
         }
 
         let indexToRemove = properties.path.count - originIndex
-        pop(last: indexToRemove)
+        try pop(last: indexToRemove)
     }
 
     // MARK: - Deep-link
