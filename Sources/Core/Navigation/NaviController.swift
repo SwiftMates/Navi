@@ -26,6 +26,9 @@ public protocol NaviController: AnyObject {
 
     /// Removes the top-most destination from the navigation stack, if available.
     func pop()
+    
+    /// Removes the specified number of destinations from the top of the navigation stack.
+    func pop(last indexCount: Int)
 
     /// Clears the navigation stack and returns to the root destination.
     func popToRoot()
@@ -71,6 +74,22 @@ public extension NaviController {
             properties.logger.logInfo("Last path element removed.")
             syncStackOrigins()
         }
+    }
+    
+    /// Removes the specified number of destinations from the top of the navigation stack.
+    ///
+    /// Validates that the requested `indexCount` does not exceed the current number of
+    /// destinations in the path.
+    ///
+    /// - Parameter indexCount: The number of top-most destinations to remove from the path.
+    func pop(last indexCount: Int) {
+        guard indexCount <= properties.path.count else {
+            properties.logger.logError("Cannot remove more element from the path than what it has ---> \(indexCount) is bigger than \(self.properties.path.count).")
+            return
+        }
+        properties.path.removeLast(indexCount)
+        properties.logger.logInfo("Last \(indexCount) destinations removed from the path.")
+        syncStackOrigins()
     }
 
     /// Clears all pushed destinations and resets tracked navigation origins.
@@ -122,13 +141,5 @@ public extension NaviController {
             }
         }
     }
-    
-    private func pop(last indexCount: Int) {
-        guard indexCount <= properties.path.count else {
-            properties.logger.logError("Cannot remove more element from the path than what it has ---> \(indexCount) is bigger than \(self.properties.path.count).")
-            return
-        }
-        properties.path.removeLast(indexCount)
-        syncStackOrigins()
-    }
 }
+
