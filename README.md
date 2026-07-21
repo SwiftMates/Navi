@@ -198,7 +198,7 @@ func deepLinkToEmailSettings() {
 
 | Example | Status |
 |:--------|:------:|
-| Simple | 🚧 Under construction |
+| Simple | ✅ Examples/Basic |
 | Coordinator | 🚧 Under construction |
 
 ## 🧠 Design Philosophy
