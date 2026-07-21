@@ -31,6 +31,7 @@ struct ViewA: View {
     }
 }
 
-enum ViewADestinations: DestinationRepresentable {
+@Destination
+enum ViewADestinations {
     case viewB
 }

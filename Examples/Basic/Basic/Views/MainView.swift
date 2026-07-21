@@ -35,16 +35,7 @@ struct MainView: View {
     }
 }
 
-enum MainViewsDestinations: DestinationRepresentable {
+@Destination
+enum MainViewsDestinations {
     case viewA
-    
-    var navigationOrigin: NavigationOriginKey? {
-        switch self {
-        case .viewA: return NavigationOriginKey.viewA
-        }
-    }
-}
-
-extension NavigationOriginKey {
-    static let viewA = NavigationOriginKey(debugName: "View - A Origin")
 }

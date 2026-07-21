@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F49EB02A300550CB00EF9300 /* Navi in Frameworks */ = {isa = PBXBuildFile; productRef = F49EB029300550CB00EF9300 /* Navi */; };
+		F4849359300FF54A00FFBA4D /* Navi in Frameworks */ = {isa = PBXBuildFile; productRef = F4849358300FF54A00FFBA4D /* Navi */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,7 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F49EB02A300550CB00EF9300 /* Navi in Frameworks */,
+				F4849359300FF54A00FFBA4D /* Navi in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -38,6 +38,7 @@
 			isa = PBXGroup;
 			children = (
 				F46DE5A32FFD9AD600FCAC3E /* Basic */,
+				F4849357300FF54A00FFBA4D /* Frameworks */,
 				F46DE5A22FFD9AD600FCAC3E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -48,6 +49,13 @@
 				F46DE5A12FFD9AD600FCAC3E /* Basic.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		F4849357300FF54A00FFBA4D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -70,7 +78,7 @@
 			);
 			name = Basic;
 			packageProductDependencies = (
-				F49EB029300550CB00EF9300 /* Navi */,
+				F4849358300FF54A00FFBA4D /* Navi */,
 			);
 			productName = Basic;
 			productReference = F46DE5A12FFD9AD600FCAC3E /* Basic.app */;
@@ -101,7 +109,7 @@
 			mainGroup = F46DE5982FFD9AD600FCAC3E;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				F49EB028300550CB00EF9300 /* XCLocalSwiftPackageReference "../../../Navi" */,
+				F4849338300FF1FF00FFBA4D /* XCLocalSwiftPackageReference "../../../Navi" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F46DE5A22FFD9AD600FCAC3E /* Products */;
@@ -343,15 +351,16 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		F49EB028300550CB00EF9300 /* XCLocalSwiftPackageReference "../../../Navi" */ = {
+		F4849338300FF1FF00FFBA4D /* XCLocalSwiftPackageReference "../../../Navi" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../../../Navi;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F49EB029300550CB00EF9300 /* Navi */ = {
+		F4849358300FF54A00FFBA4D /* Navi */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = F4849338300FF1FF00FFBA4D /* XCLocalSwiftPackageReference "../../../Navi" */;
 			productName = Navi;
 		};
 /* End XCSwiftPackageProductDependency section */

@@ -19,7 +19,7 @@ struct ViewC: View {
             }
             
             Button("Pop to View - A") {
-                controller.pop(to: .viewA)
+                controller.pop(to: MainViewsDestinations.viewA)
             }
             
             Button("Pop to root") {
