@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F4849359300FF54A00FFBA4D /* Navi in Frameworks */ = {isa = PBXBuildFile; productRef = F4849358300FF54A00FFBA4D /* Navi */; };
+		F47FE13C3011685B00A7A7AE /* Navi in Frameworks */ = {isa = PBXBuildFile; productRef = F47FE13B3011685B00A7A7AE /* Navi */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,7 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F4849359300FF54A00FFBA4D /* Navi in Frameworks */,
+				F47FE13C3011685B00A7A7AE /* Navi in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,7 +78,7 @@
 			);
 			name = Basic;
 			packageProductDependencies = (
-				F4849358300FF54A00FFBA4D /* Navi */,
+				F47FE13B3011685B00A7A7AE /* Navi */,
 			);
 			productName = Basic;
 			productReference = F46DE5A12FFD9AD600FCAC3E /* Basic.app */;
@@ -109,7 +109,7 @@
 			mainGroup = F46DE5982FFD9AD600FCAC3E;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				F4849338300FF1FF00FFBA4D /* XCLocalSwiftPackageReference "../../../Navi" */,
+				F47FE13A3011685B00A7A7AE /* XCLocalSwiftPackageReference "../../../Navi" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F46DE5A22FFD9AD600FCAC3E /* Products */;
@@ -351,16 +351,15 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		F4849338300FF1FF00FFBA4D /* XCLocalSwiftPackageReference "../../../Navi" */ = {
+		F47FE13A3011685B00A7A7AE /* XCLocalSwiftPackageReference "../../../Navi" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../../../Navi;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F4849358300FF54A00FFBA4D /* Navi */ = {
+		F47FE13B3011685B00A7A7AE /* Navi */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F4849338300FF1FF00FFBA4D /* XCLocalSwiftPackageReference "../../../Navi" */;
 			productName = Navi;
 		};
 /* End XCSwiftPackageProductDependency section */

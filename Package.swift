@@ -18,18 +18,17 @@ let package = Package(
     ],
     targets: [
         .macro(
-            name: "NaviMacrosImpl",
+            name: "NaviMacrosPlugin",
             dependencies: [
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
             ],
-            path: "Sources/NaviMacrosImpl",
-            sources: ["DestinationMacroImpl.swift"]
+            path: "Sources/NaviMacrosPlugin"
         ),
         .target(
             name: "Navi",
-            dependencies: ["NaviMacrosImpl"],
+            dependencies: ["NaviMacrosPlugin"],
             path: "Sources/Core",
             sources: [
                 "Logger",
@@ -38,10 +37,10 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "Navi-Tests",
+            name: "NaviTests",
             dependencies: [
                 "Navi",
-                "NaviMacrosImpl",
+                "NaviMacrosPlugin",
                 .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax")
             ],
             path: "Tests"

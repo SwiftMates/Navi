@@ -7,7 +7,6 @@
 
 import SwiftSyntax
 import SwiftSyntaxMacros
-import SwiftCompilerPlugin
 
 public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
 
@@ -104,10 +103,10 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
 
 // MARK: - Error
 
-enum DestinationRepresentableMacroError: Error, CustomStringConvertible {
+public enum DestinationRepresentableMacroError: Error, CustomStringConvertible {
     case notAnEnum
 
-    var description: String {
+    public var description: String {
         switch self {
         case .notAnEnum:
             return "@Destination can only be applied to an enum"
@@ -135,23 +134,13 @@ public struct OriginKeyMacro: PeerMacro {
     }
 }
 
-enum OriginKeyMacroError: Error, CustomStringConvertible {
+public enum OriginKeyMacroError: Error, CustomStringConvertible {
     case notAnEnumCase
 
-    var description: String {
+    public var description: String {
         switch self {
         case .notAnEnumCase:
             return "@Origin can only be applied to an enum case"
         }
     }
-}
-
-// MARK: - Plugin
-
-@main
-struct NaviPlugin: CompilerPlugin {
-    let providingMacros: [Macro.Type] = [
-        DestinationRepresentableMacro.self,
-        OriginKeyMacro.self
-    ]
 }
