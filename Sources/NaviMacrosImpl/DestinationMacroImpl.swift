@@ -12,7 +12,6 @@ import SwiftCompilerPlugin
 public struct DestinationMacro: MemberMacro, ExtensionMacro {
 
     // MARK: - MemberMacro
-    // Generates the static keys + navigationOrigin property inside the enum
 
     public static func expansion(
         of node: AttributeSyntax,
@@ -30,36 +29,34 @@ public struct DestinationMacro: MemberMacro, ExtensionMacro {
             .compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
             .flatMap { $0.elements }
 
-        // All cases for the switch statement
         let allCaseNames = allCases.map { $0.name.text }
 
         // Only cases marked with @Origin get a static key
-        let originCases = enumDecl.memberBlock.members
+        let originCaseNames = enumDecl.memberBlock.members
             .compactMap { member -> EnumCaseDeclSyntax? in
                 guard let caseDecl = member.decl.as(EnumCaseDeclSyntax.self) else { return nil }
-                let hasOrigin = member.decl.as(EnumCaseDeclSyntax.self)?
-                    .attributes
-                    .contains { attribute in
-                        attribute.as(AttributeSyntax.self)?
-                            .attributeName
-                            .as(IdentifierTypeSyntax.self)?
-                            .name.text == "Origin"
-                    } ?? false
+                let hasOrigin = caseDecl.attributes.contains { attribute in
+                    attribute.as(AttributeSyntax.self)?
+                        .attributeName
+                        .as(IdentifierTypeSyntax.self)?
+                        .name.text == "Origin"
+                } ?? false
                 return hasOrigin ? caseDecl : nil
             }
             .flatMap { $0.elements }
             .map { $0.name.text }
 
-        // Generate static keys only for @Origin marked cases
-        let staticKeys: [DeclSyntax] = originCases.map { caseName in
+        // Generate static NavigationOriginKey only for @Origin marked cases
+        let staticKeys: [DeclSyntax] = originCaseNames.map { caseName in
             """
             static let \(raw: caseName)Origin = NavigationOriginKey(debugName: "\(raw: enumName) - \(raw: caseName) Origin")
             """
         }
 
-        // Generate switch with all cases, only @Origin cases return a key
+        // Generate switch with all cases
+        // @Origin cases return their key, others return nil
         let switchCases = allCaseNames.map { caseName in
-            if originCases.contains(caseName) {
+            if originCaseNames.contains(caseName) {
                 return "        case .\(caseName): return Self.\(caseName)Origin"
             } else {
                 return "        case .\(caseName): return nil"
@@ -76,9 +73,8 @@ public struct DestinationMacro: MemberMacro, ExtensionMacro {
 
         return staticKeys + [navigationOriginProperty]
     }
-    
+
     // MARK: - ExtensionMacro
-    // Only generates the DestinationRepresentable conformance
 
     public static func expansion(
         of node: AttributeSyntax,
@@ -88,14 +84,14 @@ public struct DestinationMacro: MemberMacro, ExtensionMacro {
         in context: some MacroExpansionContext
     ) throws -> [ExtensionDeclSyntax] {
 
-        guard let enumDecl = declaration.as(EnumDeclSyntax.self) else {
+        guard declaration.is(EnumDeclSyntax.self) else {
             throw DestinationMacroError.notAnEnum
         }
 
-        let enumName = enumDecl.name.text
-
+        // Using `type` directly handles nested enums automatically
+        // e.g. HomeFlowCoordinator.Destination instead of just Destination
         let conformanceExtension: DeclSyntax = """
-        extension \(raw: enumName): DestinationRepresentable {}
+        extension \(type): DestinationRepresentable {}
         """
 
         guard let conformanceSyntax = conformanceExtension.as(ExtensionDeclSyntax.self) else {
@@ -133,6 +129,8 @@ public struct OriginMacro: PeerMacro {
             throw OriginMacroError.notAnEnumCase
         }
         
+        // No code generation is needed
+        // It is only a marker for the DestinationMacro
         return []
     }
 }
