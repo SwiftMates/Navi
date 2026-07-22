@@ -35,7 +35,7 @@ struct MainView: View {
     }
 }
 
-@Destination
+@DestinationRepresentable
 enum MainViewsDestinations {
-    @Origin case viewA
+    @OriginKey case viewA
 }

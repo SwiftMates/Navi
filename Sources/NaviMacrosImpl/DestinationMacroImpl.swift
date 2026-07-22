@@ -9,7 +9,7 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftCompilerPlugin
 
-public struct DestinationMacro: MemberMacro, ExtensionMacro {
+public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
 
     // MARK: - MemberMacro
 
@@ -20,7 +20,7 @@ public struct DestinationMacro: MemberMacro, ExtensionMacro {
     ) throws -> [DeclSyntax] {
 
         guard let enumDecl = declaration.as(EnumDeclSyntax.self) else {
-            throw DestinationMacroError.notAnEnum
+            throw DestinationRepresentableMacroError.notAnEnum
         }
 
         let enumName = enumDecl.name.text
@@ -39,8 +39,8 @@ public struct DestinationMacro: MemberMacro, ExtensionMacro {
                     attribute.as(AttributeSyntax.self)?
                         .attributeName
                         .as(IdentifierTypeSyntax.self)?
-                        .name.text == "Origin"
-                } ?? false
+                        .name.text == "OriginKey"
+                }
                 return hasOrigin ? caseDecl : nil
             }
             .flatMap { $0.elements }
@@ -85,7 +85,7 @@ public struct DestinationMacro: MemberMacro, ExtensionMacro {
     ) throws -> [ExtensionDeclSyntax] {
 
         guard declaration.is(EnumDeclSyntax.self) else {
-            throw DestinationMacroError.notAnEnum
+            throw DestinationRepresentableMacroError.notAnEnum
         }
 
         // Using `type` directly handles nested enums automatically
@@ -104,7 +104,7 @@ public struct DestinationMacro: MemberMacro, ExtensionMacro {
 
 // MARK: - Error
 
-enum DestinationMacroError: Error, CustomStringConvertible {
+enum DestinationRepresentableMacroError: Error, CustomStringConvertible {
     case notAnEnum
 
     var description: String {
@@ -117,7 +117,7 @@ enum DestinationMacroError: Error, CustomStringConvertible {
 
 // MARK: - Origin Mark
 
-public struct OriginMacro: PeerMacro {
+public struct OriginKeyMacro: PeerMacro {
     public static func expansion(
         of node: AttributeSyntax,
         providingPeersOf declaration: some DeclSyntaxProtocol,
@@ -126,7 +126,7 @@ public struct OriginMacro: PeerMacro {
 
         // Must be applied to an enum case
         guard declaration.is(EnumCaseDeclSyntax.self) else {
-            throw OriginMacroError.notAnEnumCase
+            throw OriginKeyMacroError.notAnEnumCase
         }
         
         // No code generation is needed
@@ -135,7 +135,7 @@ public struct OriginMacro: PeerMacro {
     }
 }
 
-enum OriginMacroError: Error, CustomStringConvertible {
+enum OriginKeyMacroError: Error, CustomStringConvertible {
     case notAnEnumCase
 
     var description: String {
@@ -151,7 +151,7 @@ enum OriginMacroError: Error, CustomStringConvertible {
 @main
 struct NaviPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
-        DestinationMacro.self,
-        OriginMacro.self
+        DestinationRepresentableMacro.self,
+        OriginKeyMacro.self
     ]
 }
