@@ -11,3 +11,9 @@ public macro Destination() = #externalMacro(
     module: "NaviMacrosImpl",
     type: "DestinationMacro"
 )
+
+@attached(peer)
+public macro Origin() = #externalMacro(
+    module: "NaviMacrosImpl",
+    type: "OriginMacro"
+)

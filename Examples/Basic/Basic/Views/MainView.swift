@@ -37,5 +37,5 @@ struct MainView: View {
 
 @Destination
 enum MainViewsDestinations {
-    case viewA
+    @Origin case viewA
 }

@@ -58,8 +58,10 @@ public extension NaviController {
     func push(to destination: any DestinationRepresentable) {
         properties.path.append(destination)
         properties.logger.logInfo("Path appended with destination: \(destination).")
-        properties.naviStackOrigins[destination.navigationOrigin] = properties.path.count
-        properties.logger.logInfo("Navigation origin '\(destination.navigationOrigin)' set to path index: \(properties.path.count) with destination: \(destination).")
+        if let navigationOrigin = destination.navigationOrigin {
+            properties.naviStackOrigins[navigationOrigin] = properties.path.count
+            properties.logger.logInfo("Navigation origin '\(navigationOrigin)' set to path index: \(properties.path.count) with destination: \(destination).")
+        }
     }
 
     /// Removes the top-most destination from the stack when the path is not empty.
@@ -84,7 +86,12 @@ public extension NaviController {
     ///
     /// - Parameter destinationKey: The origin key used to identify the pop target.
     func pop(to destinationKey: any DestinationRepresentable) {
-        guard let originIndex = properties.naviStackOrigins[destinationKey.navigationOrigin] else {
+        guard let navigationOrigin = destinationKey.navigationOrigin else {
+            properties.logger.logError("Destination is not an Origin ---> \(destinationKey).")
+            assertionFailure("Destination is not an Origin ---> \(destinationKey).")
+            return
+        }
+        guard let originIndex = properties.naviStackOrigins[navigationOrigin] else {
             properties.logger.logError("Navi origin key was not found ---> \(String(describing: destinationKey)).")
             assertionFailure("Navi origin key was not found ---> \(destinationKey).")
             return

@@ -26,25 +26,48 @@ public struct DestinationMacro: MemberMacro, ExtensionMacro {
 
         let enumName = enumDecl.name.text
 
-        let cases = enumDecl.memberBlock.members
+        let allCases = enumDecl.memberBlock.members
             .compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
+            .flatMap { $0.elements }
+
+        // All cases for the switch statement
+        let allCaseNames = allCases.map { $0.name.text }
+
+        // Only cases marked with @Origin get a static key
+        let originCases = enumDecl.memberBlock.members
+            .compactMap { member -> EnumCaseDeclSyntax? in
+                guard let caseDecl = member.decl.as(EnumCaseDeclSyntax.self) else { return nil }
+                let hasOrigin = member.decl.as(EnumCaseDeclSyntax.self)?
+                    .attributes
+                    .contains { attribute in
+                        attribute.as(AttributeSyntax.self)?
+                            .attributeName
+                            .as(IdentifierTypeSyntax.self)?
+                            .name.text == "Origin"
+                    } ?? false
+                return hasOrigin ? caseDecl : nil
+            }
             .flatMap { $0.elements }
             .map { $0.name.text }
 
-        // Static NavigationOriginKey lets inside the enum
-        let staticKeys: [DeclSyntax] = cases.map { caseName in
+        // Generate static keys only for @Origin marked cases
+        let staticKeys: [DeclSyntax] = originCases.map { caseName in
             """
             static let \(raw: caseName)Origin = NavigationOriginKey(debugName: "\(raw: enumName) - \(raw: caseName) Origin")
             """
         }
 
-        // Switch cases for navigationOrigin
-        let switchCases = cases.map { caseName in
-            "        case .\(caseName): return Self.\(caseName)Origin"
+        // Generate switch with all cases, only @Origin cases return a key
+        let switchCases = allCaseNames.map { caseName in
+            if originCases.contains(caseName) {
+                return "        case .\(caseName): return Self.\(caseName)Origin"
+            } else {
+                return "        case .\(caseName): return nil"
+            }
         }.joined(separator: "\n")
 
         let navigationOriginProperty: DeclSyntax = """
-        public var navigationOrigin: NavigationOriginKey {
+        public var navigationOrigin: NavigationOriginKey? {
             switch self {
         \(raw: switchCases)
             }
@@ -53,7 +76,7 @@ public struct DestinationMacro: MemberMacro, ExtensionMacro {
 
         return staticKeys + [navigationOriginProperty]
     }
-
+    
     // MARK: - ExtensionMacro
     // Only generates the DestinationRepresentable conformance
 
@@ -96,11 +119,41 @@ enum DestinationMacroError: Error, CustomStringConvertible {
     }
 }
 
+// MARK: - Origin Mark
+
+public struct OriginMacro: PeerMacro {
+    public static func expansion(
+        of node: AttributeSyntax,
+        providingPeersOf declaration: some DeclSyntaxProtocol,
+        in context: some MacroExpansionContext
+    ) throws -> [DeclSyntax] {
+
+        // Must be applied to an enum case
+        guard declaration.is(EnumCaseDeclSyntax.self) else {
+            throw OriginMacroError.notAnEnumCase
+        }
+        
+        return []
+    }
+}
+
+enum OriginMacroError: Error, CustomStringConvertible {
+    case notAnEnumCase
+
+    var description: String {
+        switch self {
+        case .notAnEnumCase:
+            return "@Origin can only be applied to an enum case"
+        }
+    }
+}
+
 // MARK: - Plugin
 
 @main
 struct NaviPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
-        DestinationMacro.self
+        DestinationMacro.self,
+        OriginMacro.self
     ]
 }
