@@ -78,16 +78,6 @@ dependencies: [
 
 ## 🧩 Basic Usage
 
-Conform your destinations to DestinationRepresentable
-
-```swift
-@DestinationRepresentable
-enum Destinations {
-    case settings
-    case profile
-}
-```
-
 Create a controller
 
 ```swift
@@ -112,6 +102,16 @@ struct BasicApp: App {
             }
         }
     }
+}
+```
+
+Conform your destinations to DestinationRepresentable
+
+```swift
+@DestinationRepresentable
+enum Destinations {
+    case settings
+    case profile
 }
 ```
 
