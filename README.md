@@ -81,7 +81,8 @@ dependencies: [
 Conform your destinations to DestinationRepresentable
 
 ```swift
-enum Destinations: DestinationRepresentable {
+@DestinationRepresentable
+enum Destinations {
     case settings
     case profile
 }
@@ -90,6 +91,7 @@ enum Destinations: DestinationRepresentable {
 Create a controller
 
 ```swift
+@Observable
 final class DemoCoordinator: NaviController {
     var properties = NaviControllerProperties(logger: NaviLogger())
 }
@@ -136,28 +138,16 @@ func navigateBack() {
 ### ⏪ Pop to a specific screen in the stack
 
 ```swift
-extension NavigationOriginKey {
-    static let profile = NavigationOriginKey(debugName: "profile")
-}
-```
-
-```swift
-enum AppDestinations: DestinationRepresentable {
-    case settings
+@DestinationRepresentable
+enum AppDestinations {
+    @OriginKey case settings
     case profile
-
-    var navigationOrigin: NavigationOriginKey? {
-        switch self {
-        case .profile: return .profile
-        default: return nil
-        }
-    }
 }
 ```
 
 ```swift
 func popBackToProfile() {
-    coordinator.pop(to: .profile)
+    coordinator.pop(to: AppDestinations.settings)
 }
 ```
 
