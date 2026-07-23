@@ -153,6 +153,8 @@ func navigateBack() {
 
 ### ⏪ Pop to a specific screen in the stack
 
+Use @OriginKey to mark a destination as a pop-back anchor.
+
 ```swift
 @DestinationRepresentable
 enum AppDestinations {
