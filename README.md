@@ -92,8 +92,26 @@ Create a controller
 
 ```swift
 @Observable
-final class DemoCoordinator: NaviController {
-    var properties = NaviControllerProperties(logger: NaviLogger())
+final class DemoController: NaviController {
+    var properties = NaviControllerProperties(logger: BasicLogger())
+}
+```
+
+Create the NavigationStack
+
+```swift
+@main
+struct BasicApp: App {
+    
+    @State private var controller = DemoController()
+    
+    var body: some Scene {
+        WindowGroup {
+            NavigationStack(path: $controller.properties.path) {
+                DemoView()
+            }
+        }
+    }
 }
 ```
 
@@ -122,14 +140,12 @@ struct DemoView: View {
 Trigger navigation
 
 ```swift
-private let coordinator = DemoCoordinator()
-
 func navigateToSettings() {
-    coordinator.push(to: Destinations.settings)
+    controller.push(to: Destinations.settings)
 }
 
 func navigateBack() {
-    coordinator.pop()
+    controller.pop()
 }
 ```
 
@@ -147,7 +163,7 @@ enum AppDestinations {
 
 ```swift
 func popBackToProfile() {
-    coordinator.pop(to: AppDestinations.settings)
+    controller.pop(to: AppDestinations.settings)
 }
 ```
 
@@ -155,7 +171,7 @@ func popBackToProfile() {
 
 ```swift
 func deepLinkToEmailSettings() {
-    coordinator.deepLink(to: [
+    controller.deepLink(to: [
         Destinations.settings,
         Destinations.notifications,
         Destinations.emailNotifications
@@ -171,7 +187,7 @@ func deepLinkToEmailSettings() {
 
 | Example | Status |
 |:--------|:------:|
-| Simple | 🚧 Under construction |
+| Simple | ✅ Examples/Basic |
 | Coordinator | 🚧 Under construction |
 
 ## 🧠 Design Philosophy
