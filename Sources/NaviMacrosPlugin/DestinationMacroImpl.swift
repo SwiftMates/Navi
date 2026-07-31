@@ -30,7 +30,7 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
 
         let allCaseNames = allCases.map { $0.name.text }
 
-        // Only cases marked with @Origin get a static key
+        // Only cases marked with @OriginKey get a static key
         let originCaseNames = enumDecl.memberBlock.members
             .compactMap { member -> EnumCaseDeclSyntax? in
                 guard let caseDecl = member.decl.as(EnumCaseDeclSyntax.self) else { return nil }
@@ -45,7 +45,7 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
             .flatMap { $0.elements }
             .map { $0.name.text }
 
-        // Generate static NavigationOriginKey only for @Origin marked cases
+        // Generate static NavigationOriginKey only for @OriginKey marked cases
         let staticKeys: [DeclSyntax] = originCaseNames.map { caseName in
             """
             static let \(raw: caseName)Origin = NavigationOriginKey(debugName: "\(raw: enumName) - \(raw: caseName) Origin")
@@ -53,7 +53,7 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         }
 
         // Generate switch with all cases
-        // @Origin cases return their key, others return nil
+        // @OriginKey cases return their key, others return nil
         let switchCases = allCaseNames.map { caseName in
             if originCaseNames.contains(caseName) {
                 return "        case .\(caseName): return Self.\(caseName)Origin"
@@ -109,7 +109,7 @@ public enum DestinationRepresentableMacroError: Error, CustomStringConvertible {
     public var description: String {
         switch self {
         case .notAnEnum:
-            return "@Destination can only be applied to an enum"
+            return "@DestinationRepresentable can only be applied to an enum"
         }
     }
 }
@@ -129,7 +129,7 @@ public struct OriginKeyMacro: PeerMacro {
         }
         
         // No code generation is needed
-        // It is only a marker for the DestinationMacro
+        // It is only a marker for the @DestinationRepresentable macro
         return []
     }
 }
@@ -140,7 +140,7 @@ public enum OriginKeyMacroError: Error, CustomStringConvertible {
     public var description: String {
         switch self {
         case .notAnEnumCase:
-            return "@Origin can only be applied to an enum case"
+            return "@OriginKey can only be applied to an enum case"
         }
     }
 }

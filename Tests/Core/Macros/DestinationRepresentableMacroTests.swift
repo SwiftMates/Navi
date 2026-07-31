@@ -393,7 +393,7 @@ struct DestinationRepresentableMacroTests {
             """,
             diagnostics: [
                 DiagnosticSpec(
-                    message: "@Destination can only be applied to an enum",
+                    message: "@DestinationRepresentable can only be applied to an enum",
                     line: 1,
                     column: 1
                 )
@@ -414,7 +414,7 @@ struct DestinationRepresentableMacroTests {
             """,
             diagnostics: [
                 DiagnosticSpec(
-                    message: "@Destination can only be applied to an enum",
+                    message: "@DestinationRepresentable can only be applied to an enum",
                     line: 1,
                     column: 1
                 )
@@ -435,7 +435,7 @@ struct DestinationRepresentableMacroTests {
             """,
             diagnostics: [
                 DiagnosticSpec(
-                    message: "@Destination can only be applied to an enum",
+                    message: "@DestinationRepresentable can only be applied to an enum",
                     line: 1,
                     column: 1
                 )
@@ -523,7 +523,7 @@ struct OriginKeyMacroTests {
             """,
             diagnostics: [
                 DiagnosticSpec(
-                    message: "@Origin can only be applied to an enum case",
+                    message: "@OriginKey can only be applied to an enum case",
                     line: 1,
                     column: 1
                 )
@@ -544,7 +544,7 @@ struct OriginKeyMacroTests {
             """,
             diagnostics: [
                 DiagnosticSpec(
-                    message: "@Origin can only be applied to an enum case",
+                    message: "@OriginKey can only be applied to an enum case",
                     line: 1,
                     column: 1
                 )
@@ -565,7 +565,7 @@ struct OriginKeyMacroTests {
             """,
             diagnostics: [
                 DiagnosticSpec(
-                    message: "@Origin can only be applied to an enum case",
+                    message: "@OriginKey can only be applied to an enum case",
                     line: 1,
                     column: 1
                 )
