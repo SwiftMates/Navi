@@ -39,8 +39,10 @@ struct DestinationRepresentableMacroTests {
 
                 public var navigationOrigin: NavigationOriginKey? {
                     switch self {
-                    case .home: return nil
-                    case .profile: return nil
+                        case .home:
+                        return nil
+                        case .profile:
+                        return nil
                     }
                 }
             }
