@@ -57,6 +57,72 @@ struct DestinationRepresentableMacroTests {
             macros: macros
         )
     }
+    
+    @Test
+    func `expansion should return nil for all cases when no case is marked with OriginKey and cases are enumerated`() {
+        assertMacroExpansion(
+            """
+            @DestinationRepresentable
+            enum Destination {
+                case home, profile, test
+            }
+            """,
+            expandedSource: """
+            enum Destination {
+                case home, profile, test
+
+                public var navigationOrigin: NavigationOriginKey? {
+                    switch self {
+                    case .home:
+                        return nil
+                    case .profile:
+                        return nil
+                    case .test:
+                        return nil
+                    }
+                }
+            }
+
+            extension Destination: DestinationRepresentable {
+            }
+            """,
+            macros: macros
+        )
+    }
+    
+    @Test
+    func `expansion should return nil for all cases when no case is marked with OriginKey and cases are enumerated and in different order`() {
+        assertMacroExpansion(
+            """
+            @DestinationRepresentable
+            enum Destination {
+                case home, profile
+                case test
+            }
+            """,
+            expandedSource: """
+            enum Destination {
+                case home, profile
+                case test
+
+                public var navigationOrigin: NavigationOriginKey? {
+                    switch self {
+                    case .home:
+                        return nil
+                    case .profile:
+                        return nil
+                    case .test:
+                        return nil
+                    }
+                }
+            }
+
+            extension Destination: DestinationRepresentable {
+            }
+            """,
+            macros: macros
+        )
+    }
 
     // MARK: - Single @OriginKey
 
