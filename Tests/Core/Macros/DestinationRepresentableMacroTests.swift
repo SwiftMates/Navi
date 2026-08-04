@@ -161,45 +161,48 @@ struct DestinationRepresentableMacroTests {
     }
 
 //    // MARK: - Multiple @OriginKey
-//
-//    @Test
-//    func `expansion should generate a static key for every case marked with OriginKey when multiple cases are marked`() {
-//        assertMacroExpansion(
-//            """
-//            @DestinationRepresentable
-//            enum Destination {
-//                @OriginKey
-//                case home
-//                @OriginKey
-//                case settings
-//                case profile
-//            }
-//            """,
-//            expandedSource: """
-//            enum Destination {
-//                case home
-//                case settings
-//                case profile
-//
-//                static let homeOrigin = NavigationOriginKey(debugName: "Destination - home Origin")
-//
-//                static let settingsOrigin = NavigationOriginKey(debugName: "Destination - settings Origin")
-//
-//                public var navigationOrigin: NavigationOriginKey? {
-//                    switch self {
-//                    case .home: return Self.homeOrigin
-//                    case .settings: return Self.settingsOrigin
-//                    case .profile: return nil
-//                    }
-//                }
-//            }
-//
-//            extension Destination: DestinationRepresentable {
-//            }
-//            """,
-//            macros: macros
-//        )
-//    }
+
+    @Test
+    func `expansion should generate a static key for every case marked with OriginKey when multiple cases are marked`() {
+        assertMacroExpansion(
+            """
+            @DestinationRepresentable
+            enum Destination {
+                @OriginKey
+                case home
+                @OriginKey
+                case settings
+                case profile
+            }
+            """,
+            expandedSource: """
+            enum Destination {
+                case home
+                case settings
+                case profile
+
+                public var navigationOrigin: NavigationOriginKey? {
+                    switch self {
+                    case .home:
+                        return Self.homeOrigin
+                    case .settings:
+                        return Self.settingsOrigin
+                    case .profile:
+                        return nil
+                    }
+                }
+            
+                static let homeOrigin = NavigationOriginKey(debugName: "Destination - home Origin")
+
+                static let settingsOrigin = NavigationOriginKey(debugName: "Destination - settings Origin")
+            }
+
+            extension Destination: DestinationRepresentable {
+            }
+            """,
+            macros: macros
+        )
+    }
 //
 //    // MARK: - All cases marked
 //
