@@ -24,53 +24,101 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
 
         let enumName = enumDecl.name.text
 
-        let allCases = enumDecl.memberBlock.members
-            .compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
-            .flatMap { $0.elements }
-
-        let allCaseNames = allCases.map { $0.name.text }
+        let members = enumDecl.memberBlock.members
+        let caseDecls = members.compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
+        let elements = caseDecls.flatMap { $0.elements }
+        let rawElements = elements.map { $0.name.text }
 
         // Only cases marked with @OriginKey get a static key
-        let originCaseNames = enumDecl.memberBlock.members
-            .compactMap { member -> EnumCaseDeclSyntax? in
-                guard let caseDecl = member.decl.as(EnumCaseDeclSyntax.self) else { return nil }
-                let hasOrigin = caseDecl.attributes.contains { attribute in
-                    attribute.as(AttributeSyntax.self)?
-                        .attributeName
-                        .as(IdentifierTypeSyntax.self)?
-                        .name.text == "OriginKey"
-                }
-                return hasOrigin ? caseDecl : nil
+        let casesWithOriginKey = caseDecls.filter { caseDcl in
+            caseDcl.attributes.contains { attribute in
+                attribute.as(AttributeSyntax.self)?
+                    .attributeName
+                    .as(IdentifierTypeSyntax.self)?
+                    .name.text == "OriginKey"
             }
-            .flatMap { $0.elements }
-            .map { $0.name.text }
-
-        // Generate static NavigationOriginKey only for @OriginKey marked cases
-        let staticKeys: [DeclSyntax] = originCaseNames.map { caseName in
-            """
-            static let \(raw: caseName)Origin = NavigationOriginKey(debugName: "\(raw: enumName) - \(raw: caseName) Origin")
-            """
         }
 
-        // Generate switch with all cases
-        // @OriginKey cases return their key, others return nil
-        let switchCases = allCaseNames.map { caseName in
-            if originCaseNames.contains(caseName) {
-                return "        case .\(caseName): return Self.\(caseName)Origin"
+        let originCaseNames = casesWithOriginKey.flatMap { $0.elements }
+        let rawOriginCaseNames = originCaseNames.map { $0.name.text }
+
+        let switchCases = rawElements.map { caseName in
+            if rawOriginCaseNames.contains(caseName) {
+                "case .\(caseName): return Self.\(caseName)Origin"
             } else {
-                return "        case .\(caseName): return nil"
+                "case .\(caseName): return nil"
             }
         }.joined(separator: "\n")
 
-        let navigationOriginProperty: DeclSyntax = """
-        public var navigationOrigin: NavigationOriginKey? {
-            switch self {
-        \(raw: switchCases)
-            }
+        let navigationDestinationKeys =
+        rawOriginCaseNames.map { caseName in
+            DeclSyntax(
+                """
+                static let \(raw: caseName)Origin = NavigationOriginKey(debugName: "\(raw: enumName) - \(raw: caseName) Origin")
+                """
+            )
         }
-        """
 
-        return staticKeys + [navigationOriginProperty]
+
+        let navigationOriginProperty = DeclSyntax(
+            """
+            public var navigationOrigin: NavigationOriginKey? {
+                switch self {
+                \(raw: switchCases)
+                }
+            }
+            """
+        )
+
+        return [navigationOriginProperty] + navigationDestinationKeys
+
+        //        let allCases = enumDecl.memberBlock.members
+        //            .compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
+        //            .flatMap { $0.elements }
+        //
+        //        let allCaseNames = allCases.map { $0.name.text }
+        //
+        //        // Only cases marked with @OriginKey get a static key
+        //        let originCaseNames = enumDecl.memberBlock.members
+        //            .compactMap { member -> EnumCaseDeclSyntax? in
+        //                guard let caseDecl = member.decl.as(EnumCaseDeclSyntax.self) else { return nil }
+        //                let hasOrigin = caseDecl.attributes.contains { attribute in
+        //                    attribute.as(AttributeSyntax.self)?
+        //                        .attributeName
+        //                        .as(IdentifierTypeSyntax.self)?
+        //                        .name.text == "OriginKey"
+        //                }
+        //                return hasOrigin ? caseDecl : nil
+        //            }
+        //            .flatMap { $0.elements }
+        //            .map { $0.name.text }
+        //
+        //        // Generate static NavigationOriginKey only for @OriginKey marked cases
+        //        let staticKeys: [DeclSyntax] = originCaseNames.map { caseName in
+        //            """
+        //            static let \(raw: caseName)Origin = NavigationOriginKey(debugName: "\(raw: enumName) - \(raw: caseName) Origin")
+        //            """
+        //        }
+        //
+        //        // Generate switch with all cases
+        //        // @OriginKey cases return their key, others return nil
+        //        let switchCases = allCaseNames.map { caseName in
+        //            if originCaseNames.contains(caseName) {
+        //                return "        case .\(caseName): return Self.\(caseName)Origin"
+        //            } else {
+        //                return "        case .\(caseName): return nil"
+        //            }
+        //        }.joined(separator: "\n")
+        //
+        //        let navigationOriginProperty: DeclSyntax = """
+        //        public var navigationOrigin: NavigationOriginKey? {
+        //            switch self {
+        //        \(raw: switchCases)
+        //            }
+        //        }
+        //        """
+        //
+        //        return staticKeys + [navigationOriginProperty]
     }
 
     // MARK: - ExtensionMacro
@@ -127,7 +175,7 @@ public struct OriginKeyMacro: PeerMacro {
         guard declaration.is(EnumCaseDeclSyntax.self) else {
             throw OriginKeyMacroError.notAnEnumCase
         }
-        
+
         // No code generation is needed
         // It is only a marker for the @DestinationRepresentable macro
         return []
