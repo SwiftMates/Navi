@@ -7,6 +7,7 @@
 
 import SwiftSyntax
 import SwiftSyntaxMacros
+import SwiftDiagnostics
 
 public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
 
@@ -22,12 +23,11 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
             throw DestinationRepresentableMacroError.notAnEnum
         }
 
-        let enumName = enumDecl.name.text
+        let enumName = enumDecl.name
 
         let members = enumDecl.memberBlock.members
         let caseDecls = members.compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
         let elements = caseDecls.flatMap { $0.elements }
-        let rawElements = elements.map { $0.name.text }
 
         // Only cases marked with @OriginKey get a static key
         let casesWithOriginKey = caseDecls.filter { caseDcl in
@@ -40,37 +40,32 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         }
 
         let originCaseNames = casesWithOriginKey.flatMap { $0.elements }
-        let rawOriginCaseNames = originCaseNames.map { $0.name.text }
 
-        let switchCases = rawElements.map { caseName in
-            if rawOriginCaseNames.contains(caseName) {
-                "case .\(caseName): return Self.\(caseName)Origin"
-            } else {
-                "case .\(caseName): return nil"
+        let navigationOriginProperty = try VariableDeclSyntax("public var navigationOrigin: NavigationOriginKey?") {
+            try SwitchExprSyntax("switch self") {
+                for caseName in elements {
+                    if originCaseNames.contains(caseName) {
+                        SwitchCaseSyntax("case .\(caseName.name): return Self.\(caseName.name)Origin")
+                    } else {
+                        SwitchCaseSyntax("case .\(caseName.name): return nil")
+                    }
+                }
             }
-        }.joined(separator: "\n")
-
-        let navigationDestinationKeys =
-        rawOriginCaseNames.map { caseName in
-            DeclSyntax(
-                """
-                static let \(raw: caseName)Origin = NavigationOriginKey(debugName: "\(raw: enumName) - \(raw: caseName) Origin")
-                """
-            )
         }
 
 
-        let navigationOriginProperty = DeclSyntax(
-            """
-            public var navigationOrigin: NavigationOriginKey? {
-                switch self {
-                \(raw: switchCases)
-                }
-            }
-            """
-        )
+        var navigationDestinationKeys: [DeclSyntax] = []
 
-        return [navigationOriginProperty] + navigationDestinationKeys
+        for caseName in originCaseNames {
+            let keyDeclaration = try VariableDeclSyntax(
+                """
+                    static let \(caseName.name)Origin = NavigationOriginKey(debugName: "\(raw: enumName.text) - \(caseName.name) Origin")
+                """
+            )
+            navigationDestinationKeys.append(DeclSyntax(keyDeclaration))
+        }
+
+        return [DeclSyntax(navigationOriginProperty)] + navigationDestinationKeys
 
         //        let allCases = enumDecl.memberBlock.members
         //            .compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
