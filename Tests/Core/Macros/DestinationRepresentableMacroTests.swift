@@ -367,44 +367,44 @@ struct DestinationRepresentableMacroTests {
 
     // MARK: - Nested enums
 
-//    @Test
-//    func `expansion should generate the correct extension when the enum is nested inside another type`() {
-//        assertMacroExpansion(
-//            """
-//            extension HomeCoordinator {
-//                @DestinationRepresentable
-//                enum Destination {
-//                    @OriginKey
-//                    case home
-//                    case profile
-//                }
-//            }
-//            """,
-//            expandedSource: """
-//            extension HomeCoordinator {
-//                enum Destination {
-//                    case home
-//                    case profile
-//
-//                    public var navigationOrigin: NavigationOriginKey? {
-//                        switch self {
-//                        case .home:
-//                            return Self.homeOrigin
-//                        case .profile:
-//                            return nil
-//                        }
-//                    }
-//            
-//                    static let homeOrigin = NavigationOriginKey(debugName: "Destination - home Origin")
-//                }
-//            }
-//
-//            extension HomeCoordinator.Destination: DestinationRepresentable {
-//            }
-//            """,
-//            macros: macros
-//        )
-//    }
+    @Test
+    func `expansion should generate the correct extension when the enum is nested inside another type`() {
+        assertMacroExpansion(
+            """
+            struct HomeCoordinator {
+                @DestinationRepresentable
+                enum Destination {
+                    @OriginKey
+                    case home
+                    case profile
+                }
+            }
+            """,
+            expandedSource: """
+            struct HomeCoordinator {
+                enum Destination {
+                    case home
+                    case profile
+
+                    public var navigationOrigin: NavigationOriginKey? {
+                        switch self {
+                        case .home:
+                            return Self.homeOrigin
+                        case .profile:
+                            return nil
+                        }
+                    }
+            
+                    static let homeOrigin = NavigationOriginKey(debugName: "Destination - home Origin")
+                }
+            }
+
+            extension HomeCoordinator.Destination: DestinationRepresentable {
+            }
+            """,
+            macros: macros
+        )
+    }
 
     // MARK: - Generic enums
 
