@@ -66,54 +66,6 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         }
 
         return [DeclSyntax(navigationOriginProperty)] + navigationDestinationKeys
-
-        //        let allCases = enumDecl.memberBlock.members
-        //            .compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
-        //            .flatMap { $0.elements }
-        //
-        //        let allCaseNames = allCases.map { $0.name.text }
-        //
-        //        // Only cases marked with @OriginKey get a static key
-        //        let originCaseNames = enumDecl.memberBlock.members
-        //            .compactMap { member -> EnumCaseDeclSyntax? in
-        //                guard let caseDecl = member.decl.as(EnumCaseDeclSyntax.self) else { return nil }
-        //                let hasOrigin = caseDecl.attributes.contains { attribute in
-        //                    attribute.as(AttributeSyntax.self)?
-        //                        .attributeName
-        //                        .as(IdentifierTypeSyntax.self)?
-        //                        .name.text == "OriginKey"
-        //                }
-        //                return hasOrigin ? caseDecl : nil
-        //            }
-        //            .flatMap { $0.elements }
-        //            .map { $0.name.text }
-        //
-        //        // Generate static NavigationOriginKey only for @OriginKey marked cases
-        //        let staticKeys: [DeclSyntax] = originCaseNames.map { caseName in
-        //            """
-        //            static let \(raw: caseName)Origin = NavigationOriginKey(debugName: "\(raw: enumName) - \(raw: caseName) Origin")
-        //            """
-        //        }
-        //
-        //        // Generate switch with all cases
-        //        // @OriginKey cases return their key, others return nil
-        //        let switchCases = allCaseNames.map { caseName in
-        //            if originCaseNames.contains(caseName) {
-        //                return "        case .\(caseName): return Self.\(caseName)Origin"
-        //            } else {
-        //                return "        case .\(caseName): return nil"
-        //            }
-        //        }.joined(separator: "\n")
-        //
-        //        let navigationOriginProperty: DeclSyntax = """
-        //        public var navigationOrigin: NavigationOriginKey? {
-        //            switch self {
-        //        \(raw: switchCases)
-        //            }
-        //        }
-        //        """
-        //
-        //        return staticKeys + [navigationOriginProperty]
     }
 
     // MARK: - ExtensionMacro
