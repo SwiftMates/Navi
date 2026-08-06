@@ -41,7 +41,8 @@ let package = Package(
             dependencies: [
                 "Navi",
                 "NaviMacrosPlugin",
-                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax")
+                .product(name: "SwiftSyntaxMacrosGenericTestSupport", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacroExpansion", package: "swift-syntax")
             ],
             path: "Tests"
         )
