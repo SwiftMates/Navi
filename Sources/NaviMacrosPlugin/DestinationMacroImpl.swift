@@ -64,7 +64,7 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
                 for caseName in elements {
                     // `.text` is the bare token text (no trivia), keeping backticks; using it
                     // for the label avoids the stray space a raw-value assignment
-                    // (`case home = "…"`) would otherwise leak into `case .home :`.
+                    // (`case destination = "…"`) would otherwise leak into `case .destination :`.
                     let name = caseName.name.text
                     if originCaseNameSet.contains(name) {
                         // `canonicalName` drops surrounding backticks so a keyword-named
@@ -144,7 +144,7 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
             }
 
         // `extendedType: type` handles nested enums automatically
-        // e.g. HomeFlowCoordinator.Destination instead of just Destination
+        // e.g. Container.Destination instead of just Destination
         let conformanceExtension = ExtensionDeclSyntax(
             extendedType: type,
             inheritanceClause: InheritanceClauseSyntax {
