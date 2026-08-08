@@ -59,7 +59,7 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         }
         let originCaseNameSet = Set(originCases.map { $0.name.text })
 
-        let navigationOriginProperty = try VariableDeclSyntax("public var navigationOrigin: NavigationOriginKey?") {
+        let navigationOriginProperty = try VariableDeclSyntax("var navigationOrigin: NavigationOriginKey?") {
             try SwitchExprSyntax("switch self") {
                 for caseName in elements {
                     // `.text` is the bare token text (no trivia), keeping backticks; using it
@@ -207,8 +207,8 @@ enum NaviDiagnostic: String, DiagnosticMessage {
 
     var message: String {
         switch self {
-        case .notAnEnum:      "@DestinationRepresentable can only be applied to an enum"
-        case .notAnEnumCase:  "@OriginKey can only be applied to an enum case"
+        case .notAnEnum: "@DestinationRepresentable can only be applied to an enum"
+        case .notAnEnumCase: "@OriginKey can only be applied to an enum case"
         case .originKeyInGenericEnum:
             "@OriginKey is not supported on a case of a generic enum, because its generated origin key would be a static stored property, which Swift does not allow in generic types"
         case .originKeyRawIdentifier:
