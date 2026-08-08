@@ -53,6 +53,21 @@ struct DestinationRepresentableRuntimeTests {
         case list
     }
 
+    // Exercise the access-modifier propagation: the generated `navigationOrigin`
+    // witness and `…Origin` members must be `public` for this conformance to
+    // type-check against the public protocol requirement.
+    @DestinationRepresentable
+    public enum PublicDestination {
+        @OriginKey case first
+        case second
+    }
+
+    @Test
+    func `public enum resolves its generated members via its public conformance`() {
+        #expect(PublicDestination.first.navigationOrigin == PublicDestination.firstOrigin)
+        #expect(PublicDestination.second.navigationOrigin == nil)
+    }
+
     @Test
     func `marked case returns its generated origin key`() {
         #expect(Destination.first.navigationOrigin == Destination.firstOrigin)

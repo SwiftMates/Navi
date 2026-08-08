@@ -44,7 +44,7 @@ struct DestinationRepresentableMacroTests {
                 case second
                 case test
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .first:
                         return nil
@@ -76,7 +76,7 @@ struct DestinationRepresentableMacroTests {
             enum Destination {
                 case first, second, test
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .first:
                         return nil
@@ -110,7 +110,7 @@ struct DestinationRepresentableMacroTests {
                 case first, second
                 case test
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .first:
                         return nil
@@ -146,7 +146,7 @@ struct DestinationRepresentableMacroTests {
                 case first
                 case second
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .first:
                         return Self.firstOrigin
@@ -186,7 +186,7 @@ struct DestinationRepresentableMacroTests {
                 case third
                 case second
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .first:
                         return Self.firstOrigin
@@ -228,7 +228,7 @@ struct DestinationRepresentableMacroTests {
                 case first
                 case second
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .first:
                         return Self.firstOrigin
@@ -267,7 +267,7 @@ struct DestinationRepresentableMacroTests {
                 case first, third, fourth
                 case second
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .first:
                         return Self.firstOrigin
@@ -314,7 +314,7 @@ struct DestinationRepresentableMacroTests {
                 case third(flag: Bool, label: String)
                 case first
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .second:
                         return Self.secondOrigin
@@ -351,7 +351,7 @@ struct DestinationRepresentableMacroTests {
                 case detail(String, Int)
                 case list
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .detail:
                         return Self.detailOrigin
@@ -391,7 +391,7 @@ struct DestinationRepresentableMacroTests {
                     case first
                     case second
 
-                    public var navigationOrigin: NavigationOriginKey? {
+                    var navigationOrigin: NavigationOriginKey? {
                         switch self {
                         case .first:
                             return Self.firstOrigin
@@ -498,7 +498,7 @@ struct DestinationRepresentableMacroTests {
                 case detail(T)
                 case list
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .detail:
                         return nil
@@ -528,7 +528,7 @@ struct DestinationRepresentableMacroTests {
             expandedSource: """
             enum Destination {
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     }
                 }
@@ -642,7 +642,7 @@ struct DestinationRepresentableMacroTests {
             enum Destination {
                 case first
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .first:
                         return nil
@@ -670,7 +670,7 @@ struct DestinationRepresentableMacroTests {
             enum Destination {
                 case first
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .first:
                         return Self.firstOrigin
@@ -704,7 +704,7 @@ struct DestinationRepresentableMacroTests {
                 case first
                 case second
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .first:
                         return nil
@@ -736,7 +736,7 @@ struct DestinationRepresentableMacroTests {
                 case first = "first_value"
                 case second = "second_value"
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .first:
                         return Self.firstOrigin
@@ -770,7 +770,7 @@ struct DestinationRepresentableMacroTests {
                 case first
                 case second
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .first:
                         return nil
@@ -804,7 +804,7 @@ struct DestinationRepresentableMacroTests {
                 case node(Destination)
                 case leaf
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .node:
                         return nil
@@ -836,7 +836,7 @@ struct DestinationRepresentableMacroTests {
                 indirect case node(Destination)
                 case leaf
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .node:
                         return Self.nodeOrigin
@@ -874,7 +874,7 @@ struct DestinationRepresentableMacroTests {
                 case list
                 case search
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .detail:
                         return Self.detailOrigin
@@ -912,7 +912,7 @@ struct DestinationRepresentableMacroTests {
                 case a(Int), b(String)
                 case c
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .a:
                         return Self.aOrigin
@@ -961,7 +961,175 @@ struct DestinationRepresentableMacroTests {
                     }
                 }
 
-                static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
+                public static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
+            }
+
+            extension Destination: DestinationRepresentable {
+            }
+            """,
+            macros: macros
+        )
+    }
+
+    @Test
+    func `expansion should propagate a public access modifier when no case is marked with OriginKey`() {
+        assertMacroExpansion(
+            """
+            @DestinationRepresentable
+            public enum Destination {
+                case first
+                case second
+            }
+            """,
+            expandedSource: """
+            public enum Destination {
+                case first
+                case second
+
+                public var navigationOrigin: NavigationOriginKey? {
+                    switch self {
+                    case .first:
+                        return nil
+                    case .second:
+                        return nil
+                    }
+                }
+            }
+
+            extension Destination: DestinationRepresentable {
+            }
+            """,
+            macros: macros
+        )
+    }
+
+    @Test
+    func `expansion should propagate a package access modifier to the enum members`() {
+        assertMacroExpansion(
+            """
+            @DestinationRepresentable
+            package enum Destination {
+                @OriginKey case first
+                case second
+            }
+            """,
+            expandedSource: """
+            package enum Destination {
+                case first
+                case second
+
+                package var navigationOrigin: NavigationOriginKey? {
+                    switch self {
+                    case .first:
+                        return Self.firstOrigin
+                    case .second:
+                        return nil
+                    }
+                }
+
+                package static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
+            }
+
+            extension Destination: DestinationRepresentable {
+            }
+            """,
+            macros: macros
+        )
+    }
+
+    @Test
+    func `expansion should propagate an explicit internal keyword to the enum members`() {
+        assertMacroExpansion(
+            """
+            @DestinationRepresentable
+            internal enum Destination {
+                @OriginKey case first
+                case second
+            }
+            """,
+            expandedSource: """
+            internal enum Destination {
+                case first
+                case second
+
+                internal var navigationOrigin: NavigationOriginKey? {
+                    switch self {
+                    case .first:
+                        return Self.firstOrigin
+                    case .second:
+                        return nil
+                    }
+                }
+
+                internal static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
+            }
+
+            extension Destination: DestinationRepresentable {
+            }
+            """,
+            macros: macros
+        )
+    }
+
+    @Test
+    func `expansion should propagate a fileprivate access modifier to the enum members`() {
+        assertMacroExpansion(
+            """
+            @DestinationRepresentable
+            fileprivate enum Destination {
+                @OriginKey case first
+                case second
+            }
+            """,
+            expandedSource: """
+            fileprivate enum Destination {
+                case first
+                case second
+
+                fileprivate var navigationOrigin: NavigationOriginKey? {
+                    switch self {
+                    case .first:
+                        return Self.firstOrigin
+                    case .second:
+                        return nil
+                    }
+                }
+
+                fileprivate static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
+            }
+
+            extension Destination: DestinationRepresentable {
+            }
+            """,
+            macros: macros
+        )
+    }
+
+    @Test
+    func `expansion should propagate a private access modifier to the enum members`() {
+        assertMacroExpansion(
+            """
+            @DestinationRepresentable
+            private enum Destination {
+                @OriginKey case content
+                case empty
+            }
+            """,
+            expandedSource: """
+            private enum Destination {
+                case content
+                case empty
+
+                private var navigationOrigin: NavigationOriginKey? {
+                    switch self {
+                    case .content:
+                        return Self.contentOrigin
+                    case .empty:
+                        return nil
+                    }
+                }
+
+                private static let contentOrigin = NavigationOriginKey(debugName: "Destination - content Origin")
             }
 
             extension Destination: DestinationRepresentable {
@@ -991,7 +1159,7 @@ struct DestinationRepresentableMacroTests {
                 case first
                 case second
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .first:
                         return Self.firstOrigin
@@ -1027,7 +1195,7 @@ struct DestinationRepresentableMacroTests {
                 case `default`
                 case second
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .`default`:
                         return Self.defaultOrigin
@@ -1059,7 +1227,7 @@ struct DestinationRepresentableMacroTests {
             enum Destination {
                 case `class`, `import`
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .`class`:
                         return nil
@@ -1091,7 +1259,7 @@ struct DestinationRepresentableMacroTests {
                 case `my case`
                 case second
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .`my case`:
                         return nil
@@ -1141,7 +1309,7 @@ struct DestinationRepresentableMacroTests {
                 case first
                 case second
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .first:
                         return Self.firstOrigin
@@ -1176,7 +1344,7 @@ struct DestinationRepresentableMacroTests {
                 case pair(T, U)
                 case list
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .detail:
                         return nil
@@ -1210,7 +1378,7 @@ struct DestinationRepresentableMacroTests {
                 case detail(T)
                 case list
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .detail:
                         return nil
@@ -1242,7 +1410,7 @@ struct DestinationRepresentableMacroTests {
                 case detail(T)
                 case list
 
-                public var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .detail:
                         return nil
@@ -1279,7 +1447,7 @@ struct DestinationRepresentableMacroTests {
                     case first
                     case second
 
-                    public var navigationOrigin: NavigationOriginKey? {
+                    var navigationOrigin: NavigationOriginKey? {
                         switch self {
                         case .first:
                             return Self.firstOrigin
@@ -1320,7 +1488,7 @@ struct DestinationRepresentableMacroTests {
                         case first
                         case second
 
-                        public var navigationOrigin: NavigationOriginKey? {
+                        var navigationOrigin: NavigationOriginKey? {
                             switch self {
                             case .first:
                                 return Self.firstOrigin
