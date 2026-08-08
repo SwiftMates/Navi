@@ -25,12 +25,12 @@ struct OriginKeyMacroTests {
             """
             enum Destination {
                 @OriginKey
-                case home
+                case first
             }
             """,
             expandedSource: """
             enum Destination {
-                case home
+                case first
             }
             """,
             macros: macros
@@ -43,12 +43,12 @@ struct OriginKeyMacroTests {
             """
             enum Destination {
                 @OriginKey
-                case home, settings, about
+                case first, third, fourth
             }
             """,
             expandedSource: """
             enum Destination {
-                case home, settings, about
+                case first, third, fourth
             }
             """,
             macros: macros
@@ -61,15 +61,15 @@ struct OriginKeyMacroTests {
             """
             enum Destination {
                 @OriginKey
-                case home
+                case first
                 @OriginKey
-                case settings
+                case third
             }
             """,
             expandedSource: """
             enum Destination {
-                case home
-                case settings
+                case first
+                case third
             }
             """,
             macros: macros
@@ -124,12 +124,12 @@ struct OriginKeyMacroTests {
             """
             @OriginKey
             enum Wrong {
-                case home
+                case first
             }
             """,
             expandedSource: """
             enum Wrong {
-                case home
+                case first
             }
             """,
             diagnostics: [

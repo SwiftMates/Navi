@@ -13,15 +13,15 @@ struct DestinationRepresentableRuntimeTests {
 
     @DestinationRepresentable
     enum Destination {
-        @OriginKey case home
-        case profile
+        @OriginKey case first
+        case second
     }
 
     @DestinationRepresentable
     enum MultiDestination {
-        @OriginKey case home
-        @OriginKey case settings
-        @OriginKey case profile(userId: String)
+        @OriginKey case first
+        @OriginKey case third
+        @OriginKey case second(identifier: String)
         case list
     }
 
@@ -30,7 +30,7 @@ struct DestinationRepresentableRuntimeTests {
     @DestinationRepresentable
     enum KeywordDestination {
         @OriginKey case `default`
-        case profile
+        case second
     }
 
     // Pre-declaring the conformance compiles only because the extension role
@@ -38,8 +38,8 @@ struct DestinationRepresentableRuntimeTests {
     // emit a redundant `extension … : DestinationRepresentable`.
     @DestinationRepresentable
     enum PreConformingDestination: DestinationRepresentable {
-        @OriginKey case home
-        case profile
+        @OriginKey case first
+        case second
     }
 
     // NOTE: A generic enum cannot carry @OriginKey cases — the generated
@@ -55,12 +55,12 @@ struct DestinationRepresentableRuntimeTests {
 
     @Test
     func `marked case returns its generated origin key`() {
-        #expect(Destination.home.navigationOrigin == Destination.homeOrigin)
+        #expect(Destination.first.navigationOrigin == Destination.firstOrigin)
     }
 
     @Test
     func `unmarked case has no navigation origin`() {
-        #expect(Destination.profile.navigationOrigin == nil)
+        #expect(Destination.second.navigationOrigin == nil)
     }
 
     @Test
@@ -73,36 +73,36 @@ struct DestinationRepresentableRuntimeTests {
 
     @Test
     func `each marked case returns a distinct, stable origin key`() {
-        #expect(MultiDestination.home.navigationOrigin == MultiDestination.homeOrigin)
-        #expect(MultiDestination.settings.navigationOrigin == MultiDestination.settingsOrigin)
-        #expect(MultiDestination.homeOrigin != MultiDestination.settingsOrigin)
+        #expect(MultiDestination.first.navigationOrigin == MultiDestination.firstOrigin)
+        #expect(MultiDestination.third.navigationOrigin == MultiDestination.thirdOrigin)
+        #expect(MultiDestination.firstOrigin != MultiDestination.thirdOrigin)
         #expect(MultiDestination.list.navigationOrigin == nil)
     }
 
     @Test
     func `origin key is independent of the associated-value payload`() {
-        #expect(MultiDestination.profile(userId: "1").navigationOrigin == MultiDestination.profileOrigin)
+        #expect(MultiDestination.second(identifier: "1").navigationOrigin == MultiDestination.secondOrigin)
         #expect(
-            MultiDestination.profile(userId: "1").navigationOrigin
-            == MultiDestination.profile(userId: "2").navigationOrigin
+            MultiDestination.second(identifier: "1").navigationOrigin
+            == MultiDestination.second(identifier: "2").navigationOrigin
         )
     }
 
     @Test
     func `destination is usable as a Set element via synthesized Hashable`() {
-        let set: Set<MultiDestination> = [.home, .home, .settings]
+        let set: Set<MultiDestination> = [.first, .first, .third]
         #expect(set.count == 2)
     }
 
     @Test
     func `keyword-named marked case resolves its stripped origin key`() {
         #expect(KeywordDestination.`default`.navigationOrigin == KeywordDestination.defaultOrigin)
-        #expect(KeywordDestination.profile.navigationOrigin == nil)
+        #expect(KeywordDestination.second.navigationOrigin == nil)
     }
 
     @Test
     func `enum that pre-declares the conformance still resolves its origin key`() {
-        #expect(PreConformingDestination.home.navigationOrigin == PreConformingDestination.homeOrigin)
-        #expect(PreConformingDestination.profile.navigationOrigin == nil)
+        #expect(PreConformingDestination.first.navigationOrigin == PreConformingDestination.firstOrigin)
+        #expect(PreConformingDestination.second.navigationOrigin == nil)
     }
 }
