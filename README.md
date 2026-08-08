@@ -78,6 +78,33 @@ dependencies: [
 
 ## 🧩 Basic Usage
 
+Create a controller
+
+```swift
+@Observable
+final class DemoController: NaviController {
+    var properties = NaviControllerProperties(logger: BasicLogger())
+}
+```
+
+Create the NavigationStack
+
+```swift
+@main
+struct BasicApp: App {
+    
+    @State private var controller = DemoController()
+    
+    var body: some Scene {
+        WindowGroup {
+            NavigationStack(path: $controller.properties.path) {
+                DemoView()
+            }
+        }
+    }
+}
+```
+
 Conform your destinations to DestinationRepresentable
 
 ```swift
@@ -120,14 +147,13 @@ struct DemoView: View {
 Trigger navigation
 
 ```swift
-private let coordinator = DemoCoordinator()
 
 func navigateToSettings() {
-    coordinator.push(to: Destinations.settings)
+    controller.push(to: Destinations.settings)
 }
 
 func navigateBack() {
-    coordinator.pop()
+    controller.pop()
 }
 ```
 
@@ -142,13 +168,13 @@ extension NavigationOriginKey {
 ```
 
 ```swift
-enum AppDestinations: DestinationRepresentable {
+enum Destinations: DestinationRepresentable {
     case settings
     case profile
 
     var navigationOrigin: NavigationOriginKey? {
         switch self {
-        case .profile: return .profile
+        case .profile: return NavigationOriginKey.profile
         default: return nil
         }
     }
@@ -157,7 +183,7 @@ enum AppDestinations: DestinationRepresentable {
 
 ```swift
 func popBackToProfile() {
-    coordinator.pop(to: .profile)
+    controller.pop(to: .profile)
 }
 ```
 
@@ -165,7 +191,7 @@ func popBackToProfile() {
 
 ```swift
 func deepLinkToEmailSettings() {
-    coordinator.deepLink(to: [
+    controller.deepLink(to: [
         Destinations.settings,
         Destinations.notifications,
         Destinations.emailNotifications
@@ -181,7 +207,7 @@ func deepLinkToEmailSettings() {
 
 | Example | Status |
 |:--------|:------:|
-| Simple | 🚧 Under construction |
+| Simple | ✅ Examples/Basic |
 | Coordinator | 🚧 Under construction |
 
 ## 🧠 Design Philosophy
