@@ -27,10 +27,11 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
 
         let enumName = enumDecl.name
 
-        // Propagate the enum's access level (e.g. `public`) to every generated
-        // member; when the enum declares none, generated members inherit the
-        // default `internal`.
-        let accessPrefix = accessPrefix(for: enumDecl)
+        // Propagate the enum's access level (e.g. `public`) to every generated member; when the
+        // enum declares none, generated members inherit the default `internal`. Reused as a
+        // string prefix for the `navigationOrigin` witness and as a structural modifier for the keys.
+        let accessModifier = enumDecl.modifiers.first { accessLevelKeywords.contains($0.name.text) }
+        let accessPrefix = accessModifier.map { "\($0.name.text) " } ?? ""
 
         let members = enumDecl.memberBlock.members
         let caseDecls = members.compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
@@ -38,8 +39,6 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
 
         // Only cases marked with @OriginKey get a static key
         let casesWithOriginKey = caseDecls.filter { $0.hasAttribute(named: "OriginKey") }
-
-        let originCaseNames = casesWithOriginKey.flatMap { $0.elements }
 
         // A generic enum cannot declare the `static let …Origin` stored properties that
         // @OriginKey requires — Swift disallows static stored properties in generic types.
@@ -54,15 +53,18 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         // @OriginKey needs a case name that stays a valid identifier once suffixed with
         // "Origin". A raw identifier (e.g. `my case`) would not, so diagnose and drop it
         // rather than emit uncompilable code; the remaining cases still expand normally.
-        var originCases: [EnumCaseElementSyntax] = []
-        for element in originCaseNames {
-            guard isValidSwiftIdentifier(element.canonicalName) else {
-                context.diagnose(Diagnostic(node: element, message: NaviDiagnostic.originKeyRawIdentifier))
-                continue
+        var originCases: [(element: EnumCaseElementSyntax, availabilityAttrs: [AttributeSyntax])] = []
+        for caseDecl in casesWithOriginKey {
+            let attrs = caseDecl.attributes.availabilityAttributes
+            for element in caseDecl.elements {
+                guard isValidSwiftIdentifier(element.canonicalName) else {
+                    context.diagnose(Diagnostic(node: element, message: NaviDiagnostic.originKeyRawIdentifier))
+                    continue
+                }
+                originCases.append((element: element, availabilityAttrs: attrs))
             }
-            originCases.append(element)
         }
-        let originCaseNameSet = Set(originCases.map { $0.name.text })
+        let originCaseNameSet = Set(originCases.map { $0.element.name.text })
 
         let navigationOriginProperty = try VariableDeclSyntax("\(raw: accessPrefix)var navigationOrigin: NavigationOriginKey?") {
             try SwitchExprSyntax("switch self") {
@@ -83,15 +85,30 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         }
 
 
-        let navigationDestinationKeys = try originCases.map { element -> DeclSyntax in
-            let base = element.canonicalName
-            return DeclSyntax(
-                try VariableDeclSyntax(
-                    """
-                        \(raw: accessPrefix)static let \(raw: base)Origin = NavigationOriginKey(debugName: "\(raw: enumName.text) - \(raw: base) Origin")
-                    """
+        let navigationDestinationKeys = originCases.map { originCase -> DeclSyntax in
+            let base = originCase.element.canonicalName
+            let modifiers = DeclModifierListSyntax {
+                if let accessModifier {
+                    DeclModifierSyntax(name: accessModifier.name.trimmed)
+                }
+                DeclModifierSyntax(name: .keyword(.static))
+            }
+            // Built structurally so `static` carries clean trivia by construction; BasicFormat
+            // supplies the single spaces between tokens. Empty availability → empty attribute list
+            // → no attribute lines; `eachOnOwnLine` owns the one newline each @available needs.
+            let varDecl = VariableDeclSyntax(
+                attributes: AttributeListSyntax(eachOnOwnLine: originCase.availabilityAttrs),
+                modifiers: modifiers,
+                bindingSpecifier: .keyword(.let)
+            ) {
+                PatternBindingSyntax(
+                    pattern: PatternSyntax(IdentifierPatternSyntax(identifier: .identifier("\(base)Origin"))),
+                    initializer: InitializerClauseSyntax(
+                        value: ExprSyntax("NavigationOriginKey(debugName: \"\(raw: enumName.text) - \(raw: base) Origin\")")
+                    )
                 )
-            )
+            }
+            return DeclSyntax(varDecl)
         }
 
         return [DeclSyntax(navigationOriginProperty)] + navigationDestinationKeys
@@ -103,14 +120,6 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
     private static let accessLevelKeywords: Set<String> = [
         "public", "internal", "fileprivate", "package", "private"
     ]
-
-    /// A "public " style prefix carrying the enum's access level, or `""` when
-    /// the enum declares none (members then default to `internal`).
-    private static func accessPrefix(for enumDecl: EnumDeclSyntax) -> String {
-        enumDecl.modifiers.first { accessLevelKeywords.contains($0.name.text) }
-            .flatMap { "\($0.name.text) " }
-            ?? ""
-    }
 
     /// Whether `text` is a valid Swift identifier — used to reject raw-identifier case
     /// names (e.g. `my case`) whose generated `…Origin` key would not compile.
@@ -171,7 +180,13 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
             genericWhereClause: whereClause
         ) {}
 
-        return [conformanceExtension]
+        // Empty availability → empty list → attributes stay empty, same output as a bare extension.
+        return [
+            conformanceExtension.with(
+                \.attributes,
+                AttributeListSyntax(eachOnOwnLine: enumDecl.attributes.availabilityAttributes)
+            )
+        ]
     }
 }
 
@@ -212,6 +227,31 @@ private extension EnumCaseDeclSyntax {
                 .as(IdentifierTypeSyntax.self)?
                 .name.text == name
         }
+    }
+}
+
+private extension AttributeListSyntax {
+    /// The `@available(…)` attributes in this list, in source order.
+    var availabilityAttributes: [AttributeSyntax] {
+        compactMap { element in
+            guard let attr = element.as(AttributeSyntax.self),
+                  attr.attributeName.as(IdentifierTypeSyntax.self)?.name.text == "available"
+            else { return nil }
+            return attr
+        }
+    }
+
+    /// Builds a list with each attribute detached onto its own line: empty leading trivia and a
+    /// trailing newline. That newline is the minimum swift-syntax needs to break an attribute onto
+    /// its own line — BasicFormat never does it and the framework's own member-attribute macros
+    /// hard-code it. Indentation is supplied afterwards by BasicFormat + the macro-expansion
+    /// indenter, so no explicit spaces are set here.
+    init(eachOnOwnLine attributes: [AttributeSyntax]) {
+        self.init(
+            attributes.map { attr in
+                .attribute(attr.detached.with(\.leadingTrivia, []).with(\.trailingTrivia, .newline))
+            }
+        )
     }
 }
 

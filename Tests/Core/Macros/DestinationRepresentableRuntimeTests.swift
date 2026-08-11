@@ -62,6 +62,25 @@ struct DestinationRepresentableRuntimeTests {
         case second
     }
 
+    // Verifies that enum-level @available propagates to the conformance extension
+    // and that the generated code compiles and works on iOS 16+.
+    @available(iOS 16, *)
+    @DestinationRepresentable
+    enum AvailableDestination {
+        @OriginKey case home
+        case settings
+    }
+
+    // Verifies that case-level @available propagates to `static let homeOrigin`
+    // and that the generated @available member is accessible and correct.
+    @DestinationRepresentable
+    enum PartiallyAvailableDestination {
+        @OriginKey
+        @available(iOS 16, *)
+        case home
+        case settings
+    }
+
     @Test
     func `public enum resolves its generated members via its public conformance`() {
         #expect(PublicDestination.first.navigationOrigin == PublicDestination.firstOrigin)
@@ -119,5 +138,19 @@ struct DestinationRepresentableRuntimeTests {
     func `enum that pre-declares the conformance still resolves its origin key`() {
         #expect(PreConformingDestination.first.navigationOrigin == PreConformingDestination.firstOrigin)
         #expect(PreConformingDestination.second.navigationOrigin == nil)
+    }
+
+    @Test
+    @available(iOS 16, *)
+    func `available enum with marked case resolves its origin key`() {
+        #expect(AvailableDestination.home.navigationOrigin == AvailableDestination.homeOrigin)
+        #expect(AvailableDestination.settings.navigationOrigin == nil)
+    }
+
+    @Test
+    @available(iOS 16, *)
+    func `case with available attribute returns its available origin key`() {
+        #expect(PartiallyAvailableDestination.home.navigationOrigin == PartiallyAvailableDestination.homeOrigin)
+        #expect(PartiallyAvailableDestination.settings.navigationOrigin == nil)
     }
 }
