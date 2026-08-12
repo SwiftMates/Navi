@@ -62,22 +62,15 @@ struct DestinationRepresentableRuntimeTests {
         case second
     }
 
-    // Verifies that enum-level @available propagates to the conformance extension
-    // and that the generated code compiles and works on iOS 16+.
-    @available(iOS 16, *)
+    // The macro deliberately does not propagate @available anywhere: not onto the generated
+    // origin keys, and not onto the conformance extension. The versions here sit ABOVE the
+    // package's iOS 17 / macOS 14 deployment targets, so the annotation is not vacuous and
+    // this fixture fails to compile if that decision turns out to be wrong. Both platforms
+    // are named because `swift test` runs on macOS, where an iOS-only clause proves nothing.
+    @available(iOS 26, macOS 26, *)
     @DestinationRepresentable
-    enum AvailableDestination {
+    enum FutureDestination {
         @OriginKey case home
-        case settings
-    }
-
-    // Verifies that case-level @available propagates to `static let homeOrigin`
-    // and that the generated @available member is accessible and correct.
-    @DestinationRepresentable
-    enum PartiallyAvailableDestination {
-        @OriginKey
-        @available(iOS 16, *)
-        case home
         case settings
     }
 
@@ -156,17 +149,10 @@ struct DestinationRepresentableRuntimeTests {
     }
 
     @Test
-    @available(iOS 16, *)
-    func `available enum with marked case resolves its origin key`() {
-        #expect(AvailableDestination.home.navigationOrigin == AvailableDestination.homeOrigin)
-        #expect(AvailableDestination.settings.navigationOrigin == nil)
-    }
-
-    @Test
-    @available(iOS 16, *)
-    func `case with available attribute returns its available origin key`() {
-        #expect(PartiallyAvailableDestination.home.navigationOrigin == PartiallyAvailableDestination.homeOrigin)
-        #expect(PartiallyAvailableDestination.settings.navigationOrigin == nil)
+    @available(iOS 26, macOS 26, *)
+    func `available enum resolves its origin key without availability propagation`() {
+        #expect(FutureDestination.home.navigationOrigin == FutureDestination.homeOrigin)
+        #expect(FutureDestination.settings.navigationOrigin == nil)
     }
 
     @Test

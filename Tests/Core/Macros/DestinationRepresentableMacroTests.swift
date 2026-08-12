@@ -1142,82 +1142,6 @@ struct DestinationRepresentableMacroTests {
     // MARK: - Attributes on cases
 
     @Test
-    func `expansion should keep an available attribute while consuming OriginKey`() {
-        assertMacroExpansion(
-            """
-            @DestinationRepresentable
-            enum Destination {
-                @OriginKey
-                @available(iOS 16, *)
-                case first
-                case second
-            }
-            """,
-            expandedSource: """
-            enum Destination {
-                @available(iOS 16, *)
-                case first
-                case second
-
-                var navigationOrigin: NavigationOriginKey? {
-                    switch self {
-                    case .first:
-                        return Self.firstOrigin
-                    case .second:
-                        return nil
-                    }
-                }
-
-                @available(iOS 16, *)
-                static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
-            }
-
-            extension Destination: DestinationRepresentable {
-            }
-            """,
-            macros: macros
-        )
-    }
-
-    @Test
-    func `expansion should propagate available to the static key when available comes before OriginKey`() {
-        assertMacroExpansion(
-            """
-            @DestinationRepresentable
-            enum Destination {
-                @available(iOS 16, *)
-                @OriginKey
-                case first
-                case second
-            }
-            """,
-            expandedSource: """
-            enum Destination {
-                @available(iOS 16, *)
-                case first
-                case second
-
-                var navigationOrigin: NavigationOriginKey? {
-                    switch self {
-                    case .first:
-                        return Self.firstOrigin
-                    case .second:
-                        return nil
-                    }
-                }
-
-                @available(iOS 16, *)
-                static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
-            }
-
-            extension Destination: DestinationRepresentable {
-            }
-            """,
-            macros: macros
-        )
-    }
-
-    @Test
     func `expansion should not generate a static key and preserve available on an unmarked case`() {
         assertMacroExpansion(
             """
@@ -1251,124 +1175,12 @@ struct DestinationRepresentableMacroTests {
         )
     }
 
-    @Test
-    func `expansion should propagate multiple stacked available attributes to the static key`() {
-        assertMacroExpansion(
-            """
-            @DestinationRepresentable
-            enum Destination {
-                @OriginKey
-                @available(iOS 16, *)
-                @available(macOS 13, *)
-                case first
-                case second
-            }
-            """,
-            expandedSource: """
-            enum Destination {
-                @available(iOS 16, *)
-                @available(macOS 13, *)
-                case first
-                case second
-
-                var navigationOrigin: NavigationOriginKey? {
-                    switch self {
-                    case .first:
-                        return Self.firstOrigin
-                    case .second:
-                        return nil
-                    }
-                }
-
-                @available(iOS 16, *)
-                @available(macOS 13, *)
-                static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
-            }
-
-            extension Destination: DestinationRepresentable {
-            }
-            """,
-            macros: macros
-        )
-    }
-
-    @Test
-    func `expansion should propagate available deprecated to the static key`() {
-        assertMacroExpansion(
-            """
-            @DestinationRepresentable
-            enum Destination {
-                @OriginKey
-                @available(*, deprecated)
-                case first
-                case second
-            }
-            """,
-            expandedSource: """
-            enum Destination {
-                @available(*, deprecated)
-                case first
-                case second
-
-                var navigationOrigin: NavigationOriginKey? {
-                    switch self {
-                    case .first:
-                        return Self.firstOrigin
-                    case .second:
-                        return nil
-                    }
-                }
-
-                @available(*, deprecated)
-                static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
-            }
-
-            extension Destination: DestinationRepresentable {
-            }
-            """,
-            macros: macros
-        )
-    }
-
     // MARK: - Available on enum
 
+    // The macro deliberately does not copy the enum's @available onto the generated
+    // conformance extension. This pins that decision so it is not reflexively re-added.
     @Test
-    func `expansion should propagate available on the enum to the conformance extension`() {
-        assertMacroExpansion(
-            """
-            @DestinationRepresentable
-            @available(iOS 16, *)
-            enum Destination {
-                case first
-                case second
-            }
-            """,
-            expandedSource: """
-            @available(iOS 16, *)
-            enum Destination {
-                case first
-                case second
-
-                var navigationOrigin: NavigationOriginKey? {
-                    switch self {
-                    case .first:
-                        return nil
-                    case .second:
-                        return nil
-                    }
-                }
-            }
-
-            @available(iOS 16, *)
-            extension Destination: DestinationRepresentable {
-            }
-            """,
-            macros: macros
-        )
-    }
-
-    @Test
-    func `expansion should propagate available on enum to extension but not to members without case level available`() {
+    func `expansion should not propagate available on the enum to the conformance extension`() {
         assertMacroExpansion(
             """
             @DestinationRepresentable
@@ -1396,38 +1208,6 @@ struct DestinationRepresentableMacroTests {
                 static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
             }
 
-            @available(iOS 16, *)
-            extension Destination: DestinationRepresentable {
-            }
-            """,
-            macros: macros
-        )
-    }
-
-    @Test
-    func `expansion should propagate available deprecated on enum to the conformance extension`() {
-        assertMacroExpansion(
-            """
-            @DestinationRepresentable
-            @available(*, deprecated)
-            enum Destination {
-                case first
-            }
-            """,
-            expandedSource: """
-            @available(*, deprecated)
-            enum Destination {
-                case first
-
-                var navigationOrigin: NavigationOriginKey? {
-                    switch self {
-                    case .first:
-                        return nil
-                    }
-                }
-            }
-
-            @available(*, deprecated)
             extension Destination: DestinationRepresentable {
             }
             """,

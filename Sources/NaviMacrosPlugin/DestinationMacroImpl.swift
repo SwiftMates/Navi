@@ -59,9 +59,8 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         // @OriginKey needs a case name that stays a valid identifier once suffixed with
         // "Origin". A raw identifier (e.g. `my case`) would not, so diagnose and drop it
         // rather than emit uncompilable code; the remaining cases still expand normally.
-        var originCases: [(element: EnumCaseElementSyntax, availabilityAttrs: [AttributeSyntax])] = []
+        var originCases: [EnumCaseElementSyntax] = []
         for caseDecl in casesWithOriginKey {
-            let attrs = caseDecl.attributes.availabilityAttributes
             for element in caseDecl.elements {
                 guard isValidSwiftIdentifier(element.canonicalName) else {
                     context.diagnose(Diagnostic(node: element, message: NaviDiagnostic.originKeyRawIdentifier))
@@ -74,10 +73,10 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
                     context.diagnose(Diagnostic(node: element, message: NaviDiagnostic.originKeyNameCollision))
                     continue
                 }
-                originCases.append((element: element, availabilityAttrs: attrs))
+                originCases.append(element)
             }
         }
-        let originCaseNameSet = Set(originCases.map { $0.element.name.text })
+        let originCaseNameSet = Set(originCases.map { $0.name.text })
 
         let navigationOriginProperty = try VariableDeclSyntax("\(raw: accessPrefix)var navigationOrigin: NavigationOriginKey?") {
             try SwitchExprSyntax("switch self") {
@@ -98,8 +97,8 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         }
 
 
-        let navigationDestinationKeys = originCases.map { originCase -> DeclSyntax in
-            let base = originCase.element.canonicalName
+        let navigationDestinationKeys = originCases.map { element -> DeclSyntax in
+            let base = element.canonicalName
             let modifiers = DeclModifierListSyntax {
                 if let accessModifier {
                     DeclModifierSyntax(name: accessModifier.name.trimmed)
@@ -107,10 +106,8 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
                 DeclModifierSyntax(name: .keyword(.static))
             }
             // Built structurally so `static` carries clean trivia by construction; BasicFormat
-            // supplies the single spaces between tokens. Empty availability → empty attribute list
-            // → no attribute lines; `eachOnOwnLine` owns the one newline each @available needs.
+            // supplies the single spaces between tokens.
             let varDecl = VariableDeclSyntax(
-                attributes: AttributeListSyntax(eachOnOwnLine: originCase.availabilityAttrs),
                 modifiers: modifiers,
                 bindingSpecifier: .keyword(.let)
             ) {
@@ -200,13 +197,7 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
             genericWhereClause: whereClause
         ) {}
 
-        // Empty availability → empty list → attributes stay empty, same output as a bare extension.
-        return [
-            conformanceExtension.with(
-                \.attributes,
-                AttributeListSyntax(eachOnOwnLine: enumDecl.attributes.availabilityAttributes)
-            )
-        ]
+        return [conformanceExtension]
     }
 }
 
@@ -265,31 +256,6 @@ private extension EnumCaseDeclSyntax {
                 .as(IdentifierTypeSyntax.self)?
                 .name.text == name
         }
-    }
-}
-
-private extension AttributeListSyntax {
-    /// The `@available(…)` attributes in this list, in source order.
-    var availabilityAttributes: [AttributeSyntax] {
-        compactMap { element in
-            guard let attr = element.as(AttributeSyntax.self),
-                  attr.attributeName.as(IdentifierTypeSyntax.self)?.name.text == "available"
-            else { return nil }
-            return attr
-        }
-    }
-
-    /// Builds a list with each attribute detached onto its own line: empty leading trivia and a
-    /// trailing newline. That newline is the minimum swift-syntax needs to break an attribute onto
-    /// its own line — BasicFormat never does it and the framework's own member-attribute macros
-    /// hard-code it. Indentation is supplied afterwards by BasicFormat + the macro-expansion
-    /// indenter, so no explicit spaces are set here.
-    init(eachOnOwnLine attributes: [AttributeSyntax]) {
-        self.init(
-            attributes.map { attr in
-                .attribute(attr.detached.with(\.leadingTrivia, []).with(\.trailingTrivia, .newline))
-            }
-        )
     }
 }
 
