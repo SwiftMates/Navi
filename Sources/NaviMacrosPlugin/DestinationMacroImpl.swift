@@ -37,6 +37,19 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         let caseDecls = members.compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
         let elements = caseDecls.flatMap { $0.elements }
 
+        // Every generated symbol is derived from a case name, so a raw identifier (e.g. `my case`)
+        // is rejected outright — escaped keywords like `default` still canonicalize to a valid
+        // identifier and are unaffected. Diagnose one error per offending case and generate nothing;
+        // the conformance extension plus the protocol's default `navigationOrigin` keep the type
+        // compiling, so the user sees exactly this error and no cascade.
+        let rawIdentifierCases = elements.filter { isValidSwiftIdentifier($0.canonicalName) == false }
+        guard rawIdentifierCases.isEmpty else {
+            for element in rawIdentifierCases {
+                context.diagnose(Diagnostic(node: element, message: NaviDiagnostic.rawIdentifierCase))
+            }
+            return []
+        }
+
         // Only cases marked with @OriginKey get a static key
         let casesWithOriginKey = caseDecls.filter { $0.hasAttribute(named: "OriginKey") }
 
@@ -56,16 +69,9 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         // collisions instead of emitting uncompilable code.
         let userDeclaredNames = Set(members.flatMap(\.declaredNames))
 
-        // @OriginKey needs a case name that stays a valid identifier once suffixed with
-        // "Origin". A raw identifier (e.g. `my case`) would not, so diagnose and drop it
-        // rather than emit uncompilable code; the remaining cases still expand normally.
         var originCases: [EnumCaseElementSyntax] = []
         for caseDecl in casesWithOriginKey {
             for element in caseDecl.elements {
-                guard isValidSwiftIdentifier(element.canonicalName) else {
-                    context.diagnose(Diagnostic(node: element, message: NaviDiagnostic.originKeyRawIdentifier))
-                    continue
-                }
                 // The generated `<case>Origin` key shares the enum's namespace; if the user already
                 // declares that name (a member or a sibling case), diagnose and drop rather than
                 // emit a duplicate `static let` (an invalid redeclaration with no macro diagnostic).
@@ -139,7 +145,8 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
     ]
 
     /// Whether `text` is a valid Swift identifier — used to reject raw-identifier case
-    /// names (e.g. `my case`) whose generated `…Origin` key would not compile.
+    /// names (e.g. `my case`); escaped keywords such as `default` canonicalize to a valid
+    /// identifier and pass.
     private static func isValidSwiftIdentifier(_ text: String) -> Bool {
         guard let first = text.first, first == "_" || first.isLetter else { return false }
         return text.dropFirst().allSatisfy { $0 == "_" || $0.isLetter || $0.isNumber }
@@ -265,7 +272,7 @@ enum NaviDiagnostic: String, DiagnosticMessage {
     case notAnEnum
     case notAnEnumCase
     case originKeyInGenericEnum
-    case originKeyRawIdentifier
+    case rawIdentifierCase
     case originKeyNameCollision
 
     var message: String {
@@ -274,8 +281,8 @@ enum NaviDiagnostic: String, DiagnosticMessage {
         case .notAnEnumCase: "@OriginKey can only be applied to an enum case"
         case .originKeyInGenericEnum:
             "@OriginKey is not supported on a case of a generic enum, because its generated origin key would be a static stored property, which Swift does not allow in generic types"
-        case .originKeyRawIdentifier:
-            "@OriginKey is not supported on a case whose name is a raw identifier, because the generated origin key would not be a valid Swift identifier"
+        case .rawIdentifierCase:
+            "@DestinationRepresentable does not support a case whose name is a raw identifier, because generated members are derived from case names and would not be valid Swift identifiers; rename the case"
         case .originKeyNameCollision:
             "@OriginKey cannot generate its origin key because the enum already declares a member with the generated key's name; rename the case or the conflicting declaration"
         }

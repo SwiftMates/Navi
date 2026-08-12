@@ -1282,7 +1282,7 @@ struct DestinationRepresentableMacroTests {
     }
 
     @Test
-    func `expansion should diagnose OriginKey on a raw-identifier case and skip its key`() {
+    func `expansion should diagnose a marked raw-identifier case and generate nothing`() {
         assertMacroExpansion(
             """
             @DestinationRepresentable
@@ -1295,15 +1295,6 @@ struct DestinationRepresentableMacroTests {
             enum Destination {
                 case `my case`
                 case second
-
-                var navigationOrigin: NavigationOriginKey? {
-                    switch self {
-                    case .`my case`:
-                        return nil
-                    case .second:
-                        return nil
-                    }
-                }
             }
 
             extension Destination: DestinationRepresentable {
@@ -1311,9 +1302,76 @@ struct DestinationRepresentableMacroTests {
             """,
             diagnostics: [
                 DiagnosticSpec(
-                    message: "@OriginKey is not supported on a case whose name is a raw identifier, because the generated origin key would not be a valid Swift identifier",
+                    message: "@DestinationRepresentable does not support a case whose name is a raw identifier, because generated members are derived from case names and would not be valid Swift identifiers; rename the case",
                     line: 3,
                     column: 21
+                )
+            ],
+            macros: macros
+        )
+    }
+
+    @Test
+    func `expansion should diagnose an unmarked raw-identifier case and generate nothing`() {
+        assertMacroExpansion(
+            """
+            @DestinationRepresentable
+            enum Destination {
+                case `my case`
+                case second
+            }
+            """,
+            expandedSource: """
+            enum Destination {
+                case `my case`
+                case second
+            }
+
+            extension Destination: DestinationRepresentable {
+            }
+            """,
+            diagnostics: [
+                DiagnosticSpec(
+                    message: "@DestinationRepresentable does not support a case whose name is a raw identifier, because generated members are derived from case names and would not be valid Swift identifiers; rename the case",
+                    line: 3,
+                    column: 10
+                )
+            ],
+            macros: macros
+        )
+    }
+
+    @Test
+    func `expansion should diagnose every raw-identifier case in the enum`() {
+        assertMacroExpansion(
+            """
+            @DestinationRepresentable
+            enum Destination {
+                case `my case`
+                case `another case`
+                @OriginKey case valid
+            }
+            """,
+            expandedSource: """
+            enum Destination {
+                case `my case`
+                case `another case`
+                case valid
+            }
+
+            extension Destination: DestinationRepresentable {
+            }
+            """,
+            diagnostics: [
+                DiagnosticSpec(
+                    message: "@DestinationRepresentable does not support a case whose name is a raw identifier, because generated members are derived from case names and would not be valid Swift identifiers; rename the case",
+                    line: 3,
+                    column: 10
+                ),
+                DiagnosticSpec(
+                    message: "@DestinationRepresentable does not support a case whose name is a raw identifier, because generated members are derived from case names and would not be valid Swift identifiers; rename the case",
+                    line: 4,
+                    column: 10
                 )
             ],
             macros: macros
