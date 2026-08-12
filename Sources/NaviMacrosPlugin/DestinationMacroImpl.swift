@@ -50,6 +50,12 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
             return []
         }
 
+        // Identifier names the user already declares (property bindings + case elements). A
+        // generated member reusing one of these would be a plain `invalid redeclaration` with no
+        // macro diagnostic, so we consult this set to skip `navigationOrigin` and to diagnose key
+        // collisions instead of emitting uncompilable code.
+        let userDeclaredNames = Set(members.flatMap(\.declaredNames))
+
         // @OriginKey needs a case name that stays a valid identifier once suffixed with
         // "Origin". A raw identifier (e.g. `my case`) would not, so diagnose and drop it
         // rather than emit uncompilable code; the remaining cases still expand normally.
@@ -59,6 +65,13 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
             for element in caseDecl.elements {
                 guard isValidSwiftIdentifier(element.canonicalName) else {
                     context.diagnose(Diagnostic(node: element, message: NaviDiagnostic.originKeyRawIdentifier))
+                    continue
+                }
+                // The generated `<case>Origin` key shares the enum's namespace; if the user already
+                // declares that name (a member or a sibling case), diagnose and drop rather than
+                // emit a duplicate `static let` (an invalid redeclaration with no macro diagnostic).
+                guard userDeclaredNames.contains("\(element.canonicalName)Origin") == false else {
+                    context.diagnose(Diagnostic(node: element, message: NaviDiagnostic.originKeyNameCollision))
                     continue
                 }
                 originCases.append((element: element, availabilityAttrs: attrs))
@@ -111,7 +124,14 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
             return DeclSyntax(varDecl)
         }
 
-        return [DeclSyntax(navigationOriginProperty)] + navigationDestinationKeys
+        // Skip the generated witness when the user writes their own `navigationOrigin`; their
+        // declaration plus the protocol's default `{ nil }` satisfy the conformance, and emitting a
+        // second one would be an invalid redeclaration with no macro diagnostic.
+        let navigationOriginMembers: [DeclSyntax] = userDeclaredNames.contains("navigationOrigin")
+            ? []
+            : [DeclSyntax(navigationOriginProperty)]
+
+        return navigationOriginMembers + navigationDestinationKeys
     }
 
     // MARK: - Helpers
@@ -218,6 +238,24 @@ private extension EnumCaseElementSyntax {
     var canonicalName: String { name.identifier?.name ?? name.text }
 }
 
+private extension MemberBlockItemSyntax {
+    /// The identifier names this member declares — property/binding names and case-element names,
+    /// backtick-stripped — for detecting collisions with macro-generated members.
+    var declaredNames: [String] {
+        if let varDecl = decl.as(VariableDeclSyntax.self) {
+            return varDecl.bindings.compactMap { binding in
+                binding.pattern.as(IdentifierPatternSyntax.self).map {
+                    $0.identifier.identifier?.name ?? $0.identifier.text
+                }
+            }
+        }
+        if let caseDecl = decl.as(EnumCaseDeclSyntax.self) {
+            return caseDecl.elements.map(\.canonicalName)
+        }
+        return []
+    }
+}
+
 private extension EnumCaseDeclSyntax {
     /// Whether this case declaration carries the attribute written as `@<name>`.
     func hasAttribute(named name: String) -> Bool {
@@ -262,6 +300,7 @@ enum NaviDiagnostic: String, DiagnosticMessage {
     case notAnEnumCase
     case originKeyInGenericEnum
     case originKeyRawIdentifier
+    case originKeyNameCollision
 
     var message: String {
         switch self {
@@ -271,6 +310,8 @@ enum NaviDiagnostic: String, DiagnosticMessage {
             "@OriginKey is not supported on a case of a generic enum, because its generated origin key would be a static stored property, which Swift does not allow in generic types"
         case .originKeyRawIdentifier:
             "@OriginKey is not supported on a case whose name is a raw identifier, because the generated origin key would not be a valid Swift identifier"
+        case .originKeyNameCollision:
+            "@OriginKey cannot generate its origin key because the enum already declares a member with the generated key's name; rename the case or the conflicting declaration"
         }
     }
 

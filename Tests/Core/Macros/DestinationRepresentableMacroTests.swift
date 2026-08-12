@@ -1540,6 +1540,119 @@ struct DestinationRepresentableMacroTests {
         )
     }
 
+    // MARK: - Collisions with user declarations
+
+    @Test
+    func `expansion should not generate navigationOrigin when the enum already declares one`() {
+        assertMacroExpansion(
+            """
+            @DestinationRepresentable
+            enum Destination {
+                @OriginKey case first
+                case second
+                var navigationOrigin: NavigationOriginKey? {
+                    nil
+                }
+            }
+            """,
+            expandedSource: """
+            enum Destination {
+                case first
+                case second
+                var navigationOrigin: NavigationOriginKey? {
+                    nil
+                }
+
+                static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
+            }
+
+            extension Destination: DestinationRepresentable {
+            }
+            """,
+            macros: macros
+        )
+    }
+
+    @Test
+    func `expansion should diagnose when a generated key collides with a user member and skip it`() {
+        assertMacroExpansion(
+            """
+            @DestinationRepresentable
+            enum Destination {
+                @OriginKey case first
+                case second
+                static let firstOrigin = NavigationOriginKey(debugName: "mine")
+            }
+            """,
+            expandedSource: """
+            enum Destination {
+                case first
+                case second
+                static let firstOrigin = NavigationOriginKey(debugName: "mine")
+
+                var navigationOrigin: NavigationOriginKey? {
+                    switch self {
+                    case .first:
+                        return nil
+                    case .second:
+                        return nil
+                    }
+                }
+            }
+
+            extension Destination: DestinationRepresentable {
+            }
+            """,
+            diagnostics: [
+                DiagnosticSpec(
+                    message: "@OriginKey cannot generate its origin key because the enum already declares a member with the generated key's name; rename the case or the conflicting declaration",
+                    line: 3,
+                    column: 21
+                )
+            ],
+            macros: macros
+        )
+    }
+
+    @Test
+    func `expansion should diagnose when a generated key collides with a sibling case and skip it`() {
+        assertMacroExpansion(
+            """
+            @DestinationRepresentable
+            enum Destination {
+                @OriginKey case first
+                case firstOrigin
+            }
+            """,
+            expandedSource: """
+            enum Destination {
+                case first
+                case firstOrigin
+
+                var navigationOrigin: NavigationOriginKey? {
+                    switch self {
+                    case .first:
+                        return nil
+                    case .firstOrigin:
+                        return nil
+                    }
+                }
+            }
+
+            extension Destination: DestinationRepresentable {
+            }
+            """,
+            diagnostics: [
+                DiagnosticSpec(
+                    message: "@OriginKey cannot generate its origin key because the enum already declares a member with the generated key's name; rename the case or the conflicting declaration",
+                    line: 3,
+                    column: 21
+                )
+            ],
+            macros: macros
+        )
+    }
+
     // MARK: - Already conforming
 
     @Test
