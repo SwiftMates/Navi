@@ -27,12 +27,6 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
 
         let enumName = enumDecl.name
 
-        // Propagate the enum's access level (e.g. `public`) to every generated member; when the
-        // enum declares none, generated members inherit the default `internal`. Reused as a
-        // string prefix for the `navigationOrigin` witness and as a structural modifier for the keys.
-        let accessModifier = enumDecl.modifiers.first { accessLevelKeywords.contains($0.name.text) }
-        let accessPrefix = accessModifier.map { "\($0.name.text) " } ?? ""
-
         let members = enumDecl.memberBlock.members
         let caseDecls = members.compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
         let elements = caseDecls.flatMap { $0.elements }
@@ -84,7 +78,7 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         }
         let originCaseNameSet = Set(originCases.map { $0.name.text })
 
-        let navigationOriginProperty = try VariableDeclSyntax("\(raw: accessPrefix)var navigationOrigin: NavigationOriginKey?") {
+        let navigationOriginProperty = try VariableDeclSyntax("var navigationOrigin: NavigationOriginKey?") {
             try SwitchExprSyntax("switch self") {
                 for caseName in elements {
                     // `.text` is the bare token text (no trivia), keeping backticks; using it
@@ -106,9 +100,6 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         let navigationDestinationKeys = originCases.map { element -> DeclSyntax in
             let base = element.canonicalName
             let modifiers = DeclModifierListSyntax {
-                if let accessModifier {
-                    DeclModifierSyntax(name: accessModifier.name.trimmed)
-                }
                 DeclModifierSyntax(name: .keyword(.static))
             }
             // Built structurally so `static` carries clean trivia by construction; BasicFormat
@@ -138,11 +129,6 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
     }
 
     // MARK: - Helpers
-
-    /// The access-level modifier keywords a generated member may share with its enum.
-    private static let accessLevelKeywords: Set<String> = [
-        "public", "internal", "fileprivate", "package", "private"
-    ]
 
     /// Whether `text` is a valid Swift identifier — used to reject raw-identifier case
     /// names (e.g. `my case`); escaped keywords such as `default` canonicalize to a valid

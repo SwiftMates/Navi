@@ -53,15 +53,6 @@ struct DestinationRepresentableRuntimeTests {
         case list
     }
 
-    // Exercise the access-modifier propagation: the generated `navigationOrigin`
-    // witness and `…Origin` members must be `public` for this conformance to
-    // type-check against the public protocol requirement.
-    @DestinationRepresentable
-    public enum PublicDestination {
-        @OriginKey case first
-        case second
-    }
-
     // The macro deliberately does not propagate @available anywhere: not onto the generated
     // origin keys, and not onto the conformance extension. The versions here sit ABOVE the
     // package's iOS 17 / macOS 14 deployment targets, so the annotation is not vacuous and
@@ -87,12 +78,6 @@ struct DestinationRepresentableRuntimeTests {
         var navigationOrigin: NavigationOriginKey? {
             Self.firstOrigin
         }
-    }
-
-    @Test
-    func `public enum resolves its generated members via its public conformance`() {
-        #expect(PublicDestination.first.navigationOrigin == PublicDestination.firstOrigin)
-        #expect(PublicDestination.second.navigationOrigin == nil)
     }
 
     @Test
