@@ -140,7 +140,6 @@ struct DemoView: View {
 Trigger navigation
 
 ```swift
-
 func navigateToSettings() {
     controller.push(to: Destinations.settings)
 }

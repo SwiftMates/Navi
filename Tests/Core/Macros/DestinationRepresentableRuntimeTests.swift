@@ -53,33 +53,6 @@ struct DestinationRepresentableRuntimeTests {
         case list
     }
 
-    // The macro deliberately does not propagate @available anywhere: not onto the generated
-    // origin keys, and not onto the conformance extension. The versions here sit ABOVE the
-    // package's iOS 17 / macOS 14 deployment targets, so the annotation is not vacuous and
-    // this fixture fails to compile if that decision turns out to be wrong. Both platforms
-    // are named because `swift test` runs on macOS, where an iOS-only clause proves nothing.
-    @available(iOS 26, macOS 26, *)
-    @DestinationRepresentable
-    enum FutureDestination {
-        @OriginKey case home
-        case settings
-    }
-
-    // Verifies the macro yields to a user-declared `navigationOrigin` (skips generating its own,
-    // so this compiles without an invalid redeclaration) while still generating the origin keys
-    // and the conformance. The witness deliberately returns `firstOrigin` for every case so the
-    // runtime check proves the user's version wins over the generated switch (which would nil out
-    // `.second`).
-    @DestinationRepresentable
-    enum CustomOriginDestination {
-        @OriginKey case first
-        case second
-
-        var navigationOrigin: NavigationOriginKey? {
-            Self.firstOrigin
-        }
-    }
-
     @Test
     func `marked case returns its generated origin key`() {
         #expect(Destination.first.navigationOrigin == Destination.firstOrigin)
@@ -131,21 +104,5 @@ struct DestinationRepresentableRuntimeTests {
     func `enum that pre-declares the conformance still resolves its origin key`() {
         #expect(PreConformingDestination.first.navigationOrigin == PreConformingDestination.firstOrigin)
         #expect(PreConformingDestination.second.navigationOrigin == nil)
-    }
-
-    @Test
-    @available(iOS 26, macOS 26, *)
-    func `available enum resolves its origin key without availability propagation`() {
-        #expect(FutureDestination.home.navigationOrigin == FutureDestination.homeOrigin)
-        #expect(FutureDestination.settings.navigationOrigin == nil)
-    }
-
-    @Test
-    func `user-declared navigationOrigin wins over the generated one`() {
-        // The user's witness returns firstOrigin for every case; the generated switch would have
-        // returned nil for .second. Both compiling and this expectation prove no generated
-        // navigationOrigin was emitted alongside it.
-        #expect(CustomOriginDestination.first.navigationOrigin == CustomOriginDestination.firstOrigin)
-        #expect(CustomOriginDestination.second.navigationOrigin == CustomOriginDestination.firstOrigin)
     }
 }

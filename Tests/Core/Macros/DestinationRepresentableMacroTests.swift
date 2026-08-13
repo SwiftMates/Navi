@@ -935,33 +935,33 @@ struct DestinationRepresentableMacroTests {
         )
     }
 
-    // MARK: - Attributes on cases
+    // MARK: - Access modifiers
 
     @Test
-    func `expansion should not generate a static key and preserve available on an unmarked case`() {
+    func `expansion should preserve a public access modifier on the enum`() {
         assertMacroExpansion(
             """
             @DestinationRepresentable
-            enum Destination {
-                @available(iOS 16, *)
-                case first
+            public enum Destination {
+                @OriginKey case first
                 case second
             }
             """,
             expandedSource: """
-            enum Destination {
-                @available(iOS 16, *)
+            public enum Destination {
                 case first
                 case second
 
                 var navigationOrigin: NavigationOriginKey? {
                     switch self {
                     case .first:
-                        return nil
+                        return Self.firstOrigin
                     case .second:
                         return nil
                     }
                 }
+
+                static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
             }
 
             extension Destination: DestinationRepresentable {
@@ -971,24 +971,23 @@ struct DestinationRepresentableMacroTests {
         )
     }
 
-    // MARK: - Available on enum
+    // MARK: - Attributes on cases
 
-    // The macro deliberately does not copy the enum's @available onto the generated
-    // conformance extension. This pins that decision so it is not reflexively re-added.
     @Test
-    func `expansion should not propagate available on the enum to the conformance extension`() {
+    func `expansion should keep an available attribute while consuming OriginKey`() {
         assertMacroExpansion(
             """
             @DestinationRepresentable
-            @available(iOS 16, *)
             enum Destination {
-                @OriginKey case first
+                @OriginKey
+                @available(iOS 16, *)
+                case first
                 case second
             }
             """,
             expandedSource: """
-            @available(iOS 16, *)
             enum Destination {
+                @available(iOS 16, *)
                 case first
                 case second
 
@@ -1078,7 +1077,7 @@ struct DestinationRepresentableMacroTests {
     }
 
     @Test
-    func `expansion should diagnose a marked raw-identifier case and generate nothing`() {
+    func `expansion should diagnose OriginKey on a raw-identifier case and skip its key`() {
         assertMacroExpansion(
             """
             @DestinationRepresentable
@@ -1091,142 +1090,10 @@ struct DestinationRepresentableMacroTests {
             enum Destination {
                 case `my case`
                 case second
-            }
-
-            extension Destination: DestinationRepresentable {
-            }
-            """,
-            diagnostics: [
-                DiagnosticSpec(
-                    message: "@DestinationRepresentable does not support a case whose name is a raw identifier, because generated members are derived from case names and would not be valid Swift identifiers; rename the case",
-                    line: 3,
-                    column: 21
-                )
-            ],
-            macros: macros
-        )
-    }
-
-    @Test
-    func `expansion should diagnose an unmarked raw-identifier case and generate nothing`() {
-        assertMacroExpansion(
-            """
-            @DestinationRepresentable
-            enum Destination {
-                case `my case`
-                case second
-            }
-            """,
-            expandedSource: """
-            enum Destination {
-                case `my case`
-                case second
-            }
-
-            extension Destination: DestinationRepresentable {
-            }
-            """,
-            diagnostics: [
-                DiagnosticSpec(
-                    message: "@DestinationRepresentable does not support a case whose name is a raw identifier, because generated members are derived from case names and would not be valid Swift identifiers; rename the case",
-                    line: 3,
-                    column: 10
-                )
-            ],
-            macros: macros
-        )
-    }
-
-    @Test
-    func `expansion should diagnose every raw-identifier case in the enum`() {
-        assertMacroExpansion(
-            """
-            @DestinationRepresentable
-            enum Destination {
-                case `my case`
-                case `another case`
-                @OriginKey case valid
-            }
-            """,
-            expandedSource: """
-            enum Destination {
-                case `my case`
-                case `another case`
-                case valid
-            }
-
-            extension Destination: DestinationRepresentable {
-            }
-            """,
-            diagnostics: [
-                DiagnosticSpec(
-                    message: "@DestinationRepresentable does not support a case whose name is a raw identifier, because generated members are derived from case names and would not be valid Swift identifiers; rename the case",
-                    line: 3,
-                    column: 10
-                ),
-                DiagnosticSpec(
-                    message: "@DestinationRepresentable does not support a case whose name is a raw identifier, because generated members are derived from case names and would not be valid Swift identifiers; rename the case",
-                    line: 4,
-                    column: 10
-                )
-            ],
-            macros: macros
-        )
-    }
-
-    // MARK: - Collisions with user declarations
-
-    @Test
-    func `expansion should not generate navigationOrigin when the enum already declares one`() {
-        assertMacroExpansion(
-            """
-            @DestinationRepresentable
-            enum Destination {
-                @OriginKey case first
-                case second
-                var navigationOrigin: NavigationOriginKey? {
-                    nil
-                }
-            }
-            """,
-            expandedSource: """
-            enum Destination {
-                case first
-                case second
-                var navigationOrigin: NavigationOriginKey? {
-                    nil
-                }
-
-                static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
-            }
-
-            extension Destination: DestinationRepresentable {
-            }
-            """,
-            macros: macros
-        )
-    }
-
-    @Test
-    func `expansion should diagnose when a generated key collides with a user member and skip it`() {
-        assertMacroExpansion(
-            """
-            @DestinationRepresentable
-            enum Destination {
-                @OriginKey case first
-                case second
-                static let firstOrigin = NavigationOriginKey(debugName: "mine")
-            }
-            """,
-            expandedSource: """
-            enum Destination {
-                case first
-                case second
-                static let firstOrigin = NavigationOriginKey(debugName: "mine")
 
                 var navigationOrigin: NavigationOriginKey? {
                     switch self {
-                    case .first:
+                    case .`my case`:
                         return nil
                     case .second:
                         return nil
@@ -1239,46 +1106,7 @@ struct DestinationRepresentableMacroTests {
             """,
             diagnostics: [
                 DiagnosticSpec(
-                    message: "@OriginKey cannot generate its origin key because the enum already declares a member with the generated key's name; rename the case or the conflicting declaration",
-                    line: 3,
-                    column: 21
-                )
-            ],
-            macros: macros
-        )
-    }
-
-    @Test
-    func `expansion should diagnose when a generated key collides with a sibling case and skip it`() {
-        assertMacroExpansion(
-            """
-            @DestinationRepresentable
-            enum Destination {
-                @OriginKey case first
-                case firstOrigin
-            }
-            """,
-            expandedSource: """
-            enum Destination {
-                case first
-                case firstOrigin
-
-                var navigationOrigin: NavigationOriginKey? {
-                    switch self {
-                    case .first:
-                        return nil
-                    case .firstOrigin:
-                        return nil
-                    }
-                }
-            }
-
-            extension Destination: DestinationRepresentable {
-            }
-            """,
-            diagnostics: [
-                DiagnosticSpec(
-                    message: "@OriginKey cannot generate its origin key because the enum already declares a member with the generated key's name; rename the case or the conflicting declaration",
+                    message: "@OriginKey is not supported on a case whose name is a raw identifier, because the generated origin key would not be a valid Swift identifier",
                     line: 3,
                     column: 21
                 )
