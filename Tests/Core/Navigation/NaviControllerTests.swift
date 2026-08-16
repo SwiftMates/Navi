@@ -19,8 +19,8 @@ struct NaviControllerTests {
     enum TestDestination: DestinationRepresentable {
         case screenA
         case screenB
-        case screenC
-        case screenD
+        case screenC(randomData: String)
+        case screenD(randomData: String)
 
         var navigationOrigin: (any OriginRepresentable)? {
             switch self {
@@ -70,6 +70,7 @@ struct NaviControllerTests {
         let controller: TestNaviController = TestNaviController()
         controller.push(to: TestDestination.screenB)
         controller.push(to: TestDestination.screenA)
+        controller.push(to: TestDestination.screenC(randomData: "testData"))
         controller.popToRoot()
         #expect(controller.properties.path.count == 0)
         #expect(controller.properties.naviStackOrigins.isEmpty)
@@ -80,7 +81,7 @@ struct NaviControllerTests {
         let controller: TestNaviController = TestNaviController()
         controller.push(to: TestDestination.screenA)
         controller.push(to: TestDestination.screenB)
-        controller.push(to: TestDestination.screenC)
+        controller.push(to: TestDestination.screenC(randomData: "testData"))
         controller.pop(to: TestDestination.Origins.screenB)
         #expect(controller.properties.path.count == 2)
         #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 2)
@@ -92,7 +93,7 @@ struct NaviControllerTests {
         let controller: TestNaviController = TestNaviController()
 
         controller.push(to: TestDestination.screenB)
-        controller.push(to: TestDestination.screenD)
+        controller.push(to: TestDestination.screenD(randomData: "testData"))
 
         #expect(controller.properties.path.count == 2)
         #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1)
@@ -107,9 +108,10 @@ struct NaviControllerTests {
             TestDestination.screenB,
             TestDestination.screenB
         ]
-        controller.push(to: TestDestination.screenC)
+        controller.push(to: TestDestination.screenC(randomData: "testData"))
         controller.deepLink(to: newPath)
         #expect(controller.properties.path.count == 3)
+        // TODO: - Check screenC is not in origin keys
         #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 3)
     }
 
@@ -125,7 +127,7 @@ struct NaviControllerTests {
     func `pop should prune removed origin metadata when popping destination with origin`() {
         let controller: TestNaviController = TestNaviController()
         controller.push(to: TestDestination.screenB)
-        controller.push(to: TestDestination.screenC)
+        controller.push(to: TestDestination.screenC(randomData: "testData"))
         controller.pop()
         #expect(controller.properties.path.count == 1)
         #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1)
@@ -137,7 +139,7 @@ struct NaviControllerTests {
         let controller: TestNaviController = TestNaviController()
         controller.push(to: TestDestination.screenA)
         controller.push(to: TestDestination.screenB)
-        controller.push(to: TestDestination.screenC)
+        controller.push(to: TestDestination.screenC(randomData: "testData"))
         controller.pop(to: TestDestination.Origins.screenC)
         #expect(controller.properties.path.count == 3)
         #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 2)
@@ -158,7 +160,7 @@ struct NaviControllerTests {
     func `deepLink should clear path and origins when new path is empty`() {
         let controller: TestNaviController = TestNaviController()
         controller.push(to: TestDestination.screenB)
-        controller.push(to: TestDestination.screenC)
+        controller.push(to: TestDestination.screenC(randomData: "testData"))
         controller.deepLink(to: [])
         #expect(controller.properties.path.count == 0)
         #expect(controller.properties.naviStackOrigins.isEmpty)
@@ -167,7 +169,7 @@ struct NaviControllerTests {
     @Test
     func `deepLink should replace existing state and keep only new path origins when new path is provided`() {
         let controller: TestNaviController = TestNaviController()
-        controller.push(to: TestDestination.screenC)
+        controller.push(to: TestDestination.screenC(randomData: "testData"))
         controller.push(to: TestDestination.screenA)
 
         let newPath: [any DestinationRepresentable] = [
@@ -229,14 +231,14 @@ struct NaviControllerTests {
         let controller: TestNaviController = TestNaviController()
 
         controller.push(to: TestDestination.screenB)
-        controller.push(to: TestDestination.screenC)
+        controller.push(to: TestDestination.screenC(randomData: "testData"))
         controller.pop()
 
         #expect(controller.logger.logInfoReceivedInvocations == [
             "Path appended with destination: screenB.",
             "Navigation origin '\(TestDestination.Origins.screenBOriginKey)' set to path index: 1 with destination: screenB.",
-            "Path appended with destination: screenC.",
-            "Navigation origin '\(TestDestination.Origins.screenCOriginKey)' set to path index: 2 with destination: screenC.",
+            "Path appended with destination: screenC(randomData: \"testData\").",
+            "Navigation origin '\(TestDestination.Origins.screenCOriginKey)' set to path index: 2 with destination: screenC(randomData: \"testData\").",
             "Last path element removed.",
             "Navigation origin removed: \(TestDestination.Origins.screenCOriginKey) from index: 2."
         ])
