@@ -55,5 +55,4 @@ enum MainViewsDestinations: DestinationRepresentable {
     
         static private let viewAOriginKey = NavigationOriginKey(debugName: "View - A Origin")
     }
-    
 }
