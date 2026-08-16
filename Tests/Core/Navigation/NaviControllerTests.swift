@@ -22,13 +22,35 @@ struct NaviControllerTests {
         case screenC
         case screenD
 
-        var navigationOrigin: NavigationOriginKey? {
+        var navigationOrigin: (any OriginRepresentable)? {
             switch self {
-            case .screenB: return NavigationOriginKey.screenB
-            case .screenC: return NavigationOriginKey.screenC
+            case .screenB: return TestOrigin.screenB
+            case .screenC: return TestOrigin.screenC
             default: return nil
             }
         }
+    }
+
+    struct TestDestinationWithOrigin: DestinationRepresentable {
+        let id: String
+        let navigationOrigin: (any OriginRepresentable)?
+
+        static func == (lhs: TestDestinationWithOrigin, rhs: TestDestinationWithOrigin) -> Bool {
+            lhs.id == rhs.id
+        }
+
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
+        }
+    }
+
+    struct TestOrigin: OriginRepresentable {
+        let key: NavigationOriginKey
+        let debugName: String
+
+        static let screenB = TestOrigin(key: .screenB, debugName: "screenB")
+        static let screenC = TestOrigin(key: .screenC, debugName: "screenC")
+        static let alternateScreenB = TestOrigin(key: .screenB, debugName: "alternateScreenB")
     }
 
     @Test
@@ -66,7 +88,40 @@ struct NaviControllerTests {
         controller.push(to: TestDestination.screenA)
         controller.push(to: TestDestination.screenB)
         controller.push(to: TestDestination.screenC)
-        controller.pop(to: .screenB)
+        controller.pop(to: TestOrigin.screenB)
+        #expect(controller.properties.path.count == 2)
+        #expect(controller.properties.naviStackOrigins[.screenB] == 2)
+        #expect(controller.properties.naviStackOrigins[.screenC] == nil)
+    }
+
+    @Test
+    func `push should track navigation origin by origin key`() {
+        let controller: TestNaviController = TestNaviController()
+        let destination = TestDestinationWithOrigin(
+            id: "custom-screen",
+            navigationOrigin: TestOrigin.alternateScreenB
+        )
+
+        controller.push(to: destination)
+
+        #expect(controller.properties.path.count == 1)
+        #expect(controller.properties.naviStackOrigins[.screenB] == 1)
+        #expect(controller.properties.naviStackOrigins[.screenC] == nil)
+    }
+
+    @Test
+    func `pop should accept different origin value with same key as stored origin`() {
+        let controller: TestNaviController = TestNaviController()
+        let destination = TestDestinationWithOrigin(
+            id: "custom-screen",
+            navigationOrigin: TestOrigin.screenB
+        )
+
+        controller.push(to: TestDestination.screenA)
+        controller.push(to: destination)
+        controller.push(to: TestDestination.screenC)
+        controller.pop(to: TestOrigin.alternateScreenB)
+
         #expect(controller.properties.path.count == 2)
         #expect(controller.properties.naviStackOrigins[.screenB] == 2)
         #expect(controller.properties.naviStackOrigins[.screenC] == nil)
@@ -111,7 +166,7 @@ struct NaviControllerTests {
         controller.push(to: TestDestination.screenA)
         controller.push(to: TestDestination.screenB)
         controller.push(to: TestDestination.screenC)
-        controller.pop(to: .screenC)
+        controller.pop(to: TestOrigin.screenC)
         #expect(controller.properties.path.count == 3)
         #expect(controller.properties.naviStackOrigins[.screenB] == 2)
         #expect(controller.properties.naviStackOrigins[.screenC] == 3)

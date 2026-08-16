@@ -33,7 +33,7 @@ public protocol NaviController: AnyObject {
     /// Pops the navigation stack back to the destination marked by the provided origin key.
     ///
     /// - Parameter destinationKey: The key associated with a previously tracked navigation origin.
-    func pop(to destinationKey: NavigationOriginKey)
+    func pop(to origin: any OriginRepresentable)
 
     // MARK: Deeplinking
 
@@ -58,9 +58,9 @@ public extension NaviController {
     func push(to destination: any DestinationRepresentable) {
         properties.path.append(destination)
         properties.logger.logInfo("Path appended with destination: \(destination).")
-        if let key = destination.navigationOrigin {
-            properties.naviStackOrigins[key] = properties.path.count
-            properties.logger.logInfo("Navigation origin '\(key)' set to path index: \(properties.path.count) with destination: \(destination).")
+        if let origin = destination.navigationOrigin {
+            properties.naviStackOrigins[origin.key] = properties.path.count
+            properties.logger.logInfo("Navigation origin '\(origin.key)' set to path index: \(properties.path.count) with destination: \(destination).")
         }
     }
 
@@ -85,10 +85,10 @@ public extension NaviController {
     /// If the key cannot be found, a fault is logged and an assertion is triggered in debug builds.
     ///
     /// - Parameter destinationKey: The origin key used to identify the pop target.
-    func pop(to destinationKey: NavigationOriginKey) {
-        guard let originIndex = properties.naviStackOrigins[destinationKey] else {
-            properties.logger.logError("Navi origin key was not found ---> \(String(describing: destinationKey)).")
-            assertionFailure("Navi origin key was not found ---> \(destinationKey).")
+    func pop(to origin: any OriginRepresentable) {
+        guard let originIndex = properties.naviStackOrigins[origin.key] else {
+            properties.logger.logError("Navi origin key was not found ---> \(String(describing: origin.key)).")
+            assertionFailure("Navi origin key was not found ---> \(origin.key).")
             return
         }
 
