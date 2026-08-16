@@ -8,7 +8,7 @@
 /// A type that can be represented as a destination in the navigation stack.
 ///
 /// Conforming types are hashable so they can be stored in SwiftUI navigation paths,
-/// and may optionally expose an origin key for keyed pop operations.
+/// and may optionally expose an origin representable for keyed pop operations.
 public protocol DestinationRepresentable: Hashable {
     /// An optional origin marker used by the controller to track stack positions.
     var navigationOrigin: (any OriginRepresentable)? { get }
