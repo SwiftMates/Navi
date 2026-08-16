@@ -49,10 +49,11 @@ enum MainViewsDestinations: DestinationRepresentable {
         
         var key: NavigationOriginKey {
             switch self {
-            case .viewA: MainViewsDestinations.viewAOriginKey
+            case .viewA: Self.viewAOriginKey
             }
         }
+    
+        static private let viewAOriginKey = NavigationOriginKey(debugName: "View - A Origin")
     }
     
-    static private let viewAOriginKey = NavigationOriginKey(debugName: "View - A Origin")
 }

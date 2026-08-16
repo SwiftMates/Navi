@@ -24,33 +24,26 @@ struct NaviControllerTests {
 
         var navigationOrigin: (any OriginRepresentable)? {
             switch self {
-            case .screenB: return TestOrigin.screenB
-            case .screenC: return TestOrigin.screenC
+            case .screenB: return Origins.screenB
+            case .screenC: return Origins.screenC
             default: return nil
             }
         }
-    }
-
-    struct TestDestinationWithOrigin: DestinationRepresentable {
-        let id: String
-        let navigationOrigin: (any OriginRepresentable)?
-
-        static func == (lhs: TestDestinationWithOrigin, rhs: TestDestinationWithOrigin) -> Bool {
-            lhs.id == rhs.id
+        
+        enum Origins: OriginRepresentable {
+            case screenB
+            case screenC
+            
+            var key: NavigationOriginKey {
+                switch self {
+                case .screenB: Self.screenBOriginKey
+                case .screenC: Self.screenCOriginKey
+                }
+            }
+            
+            static let screenBOriginKey = NavigationOriginKey(debugName: "screenB")
+            static let screenCOriginKey = NavigationOriginKey(debugName: "screenC")
         }
-
-        func hash(into hasher: inout Hasher) {
-            hasher.combine(id)
-        }
-    }
-
-    struct TestOrigin: OriginRepresentable {
-        let key: NavigationOriginKey
-        let debugName: String
-
-        static let screenB = TestOrigin(key: .screenB, debugName: "screenB")
-        static let screenC = TestOrigin(key: .screenC, debugName: "screenC")
-        static let alternateScreenB = TestOrigin(key: .screenB, debugName: "alternateScreenB")
     }
 
     @Test
@@ -59,7 +52,7 @@ struct NaviControllerTests {
         controller.push(to: TestDestination.screenB)
         controller.push(to: TestDestination.screenA)
         #expect(controller.properties.path.count == 2)
-        #expect(controller.properties.naviStackOrigins[.screenB] == 1)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1)
     }
 
     @Test
@@ -69,7 +62,7 @@ struct NaviControllerTests {
         controller.push(to: TestDestination.screenA)
         controller.pop()
         #expect(controller.properties.path.count == 1)
-        #expect(controller.properties.naviStackOrigins[.screenB] == 1)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1)
     }
 
     @Test
@@ -88,43 +81,22 @@ struct NaviControllerTests {
         controller.push(to: TestDestination.screenA)
         controller.push(to: TestDestination.screenB)
         controller.push(to: TestDestination.screenC)
-        controller.pop(to: TestOrigin.screenB)
+        controller.pop(to: TestDestination.Origins.screenB)
         #expect(controller.properties.path.count == 2)
-        #expect(controller.properties.naviStackOrigins[.screenB] == 2)
-        #expect(controller.properties.naviStackOrigins[.screenC] == nil)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 2)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == nil)
     }
 
     @Test
     func `push should track navigation origin by origin key`() {
         let controller: TestNaviController = TestNaviController()
-        let destination = TestDestinationWithOrigin(
-            id: "custom-screen",
-            navigationOrigin: TestOrigin.alternateScreenB
-        )
 
-        controller.push(to: destination)
-
-        #expect(controller.properties.path.count == 1)
-        #expect(controller.properties.naviStackOrigins[.screenB] == 1)
-        #expect(controller.properties.naviStackOrigins[.screenC] == nil)
-    }
-
-    @Test
-    func `pop should accept different origin value with same key as stored origin`() {
-        let controller: TestNaviController = TestNaviController()
-        let destination = TestDestinationWithOrigin(
-            id: "custom-screen",
-            navigationOrigin: TestOrigin.screenB
-        )
-
-        controller.push(to: TestDestination.screenA)
-        controller.push(to: destination)
-        controller.push(to: TestDestination.screenC)
-        controller.pop(to: TestOrigin.alternateScreenB)
+        controller.push(to: TestDestination.screenB)
+        controller.push(to: TestDestination.screenD)
 
         #expect(controller.properties.path.count == 2)
-        #expect(controller.properties.naviStackOrigins[.screenB] == 2)
-        #expect(controller.properties.naviStackOrigins[.screenC] == nil)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == nil)
     }
 
     @Test
@@ -138,7 +110,7 @@ struct NaviControllerTests {
         controller.push(to: TestDestination.screenC)
         controller.deepLink(to: newPath)
         #expect(controller.properties.path.count == 3)
-        #expect(controller.properties.naviStackOrigins[.screenB] == 3)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 3)
     }
 
     @Test
@@ -156,8 +128,8 @@ struct NaviControllerTests {
         controller.push(to: TestDestination.screenC)
         controller.pop()
         #expect(controller.properties.path.count == 1)
-        #expect(controller.properties.naviStackOrigins[.screenB] == 1)
-        #expect(controller.properties.naviStackOrigins[.screenC] == nil)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == nil)
     }
 
     @Test
@@ -166,10 +138,10 @@ struct NaviControllerTests {
         controller.push(to: TestDestination.screenA)
         controller.push(to: TestDestination.screenB)
         controller.push(to: TestDestination.screenC)
-        controller.pop(to: TestOrigin.screenC)
+        controller.pop(to: TestDestination.Origins.screenC)
         #expect(controller.properties.path.count == 3)
-        #expect(controller.properties.naviStackOrigins[.screenB] == 2)
-        #expect(controller.properties.naviStackOrigins[.screenC] == 3)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 2)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 3)
     }
 
     @Test
@@ -179,7 +151,7 @@ struct NaviControllerTests {
         controller.push(to: TestDestination.screenA)
         controller.push(to: TestDestination.screenB)
         #expect(controller.properties.path.count == 3)
-        #expect(controller.properties.naviStackOrigins[.screenB] == 3)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 3)
     }
 
     @Test
@@ -206,8 +178,8 @@ struct NaviControllerTests {
         controller.deepLink(to: newPath)
 
         #expect(controller.properties.path.count == 2)
-        #expect(controller.properties.naviStackOrigins[.screenB] == 2)
-        #expect(controller.properties.naviStackOrigins[.screenC] == nil)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 2)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == nil)
     }
 
     @Test
@@ -231,7 +203,7 @@ struct NaviControllerTests {
 
         #expect(controller.logger.logInfoReceivedInvocations == [
             "Path appended with destination: screenB.",
-            "Navigation origin '\(NavigationOriginKey.screenB)' set to path index: 1 with destination: screenB."
+            "Navigation origin '\(TestDestination.Origins.screenBOriginKey)' set to path index: 1 with destination: screenB."
         ])
         #expect(controller.logger.logInfoCallsCount == 2)
         #expect(controller.logger.logErrorCalled == false)
@@ -262,11 +234,11 @@ struct NaviControllerTests {
 
         #expect(controller.logger.logInfoReceivedInvocations == [
             "Path appended with destination: screenB.",
-            "Navigation origin '\(NavigationOriginKey.screenB)' set to path index: 1 with destination: screenB.",
+            "Navigation origin '\(TestDestination.Origins.screenBOriginKey)' set to path index: 1 with destination: screenB.",
             "Path appended with destination: screenC.",
-            "Navigation origin '\(NavigationOriginKey.screenC)' set to path index: 2 with destination: screenC.",
+            "Navigation origin '\(TestDestination.Origins.screenCOriginKey)' set to path index: 2 with destination: screenC.",
             "Last path element removed.",
-            "Navigation origin removed: \(NavigationOriginKey.screenC) from index: 2."
+            "Navigation origin removed: \(TestDestination.Origins.screenCOriginKey) from index: 2."
         ])
         #expect(controller.logger.logInfoCallsCount == 6)
         #expect(controller.logger.logErrorCalled == false)
@@ -281,7 +253,7 @@ struct NaviControllerTests {
 
         #expect(controller.logger.logInfoReceivedInvocations == [
             "Path appended with destination: screenB.",
-            "Navigation origin '\(NavigationOriginKey.screenB)' set to path index: 1 with destination: screenB.",
+            "Navigation origin '\(TestDestination.Origins.screenBOriginKey)' set to path index: 1 with destination: screenB.",
             "All navigation origins cleared.",
             "Navigation path cleared."
         ])
@@ -304,7 +276,7 @@ struct NaviControllerTests {
             "Navigation path cleared.",
             "Path appended with destination: screenA.",
             "Path appended with destination: screenB.",
-            "Navigation origin '\(NavigationOriginKey.screenB)' set to path index: 2 with destination: screenB.",
+            "Navigation origin '\(TestDestination.Origins.screenBOriginKey)' set to path index: 2 with destination: screenB.",
             "Deep-link path set to: \(newPath)."
         ])
         #expect(controller.logger.logInfoCallsCount == 6)

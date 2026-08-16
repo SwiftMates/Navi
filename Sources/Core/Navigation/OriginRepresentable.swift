@@ -5,6 +5,7 @@
 //  Created by Lazar-Kiss Mark on 16/08/2026.
 //
 
-public protocol OriginRepresentable{
+// TODO: - Add documentation
+public protocol OriginRepresentable {
     var key: NavigationOriginKey { get }
 }

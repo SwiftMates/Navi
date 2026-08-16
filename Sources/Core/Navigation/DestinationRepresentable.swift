@@ -5,6 +5,7 @@
 //  Created by David Pall on 2026. 01. 15..
 //
 
+// TODO: - Check documentation
 /// A type that can be represented as a destination in the navigation stack.
 ///
 /// Conforming types are hashable so they can be stored in SwiftUI navigation paths,
@@ -16,6 +17,7 @@ public protocol DestinationRepresentable: Hashable {
 
 // MARK: - Default Implementation
 
+// TODO: - Check documentation
 public extension DestinationRepresentable {
     /// The default origin marker for a destination.
     ///
