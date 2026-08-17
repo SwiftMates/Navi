@@ -44,7 +44,7 @@ struct DestinationRepresentableMacroTests {
                 case second
                 case test
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .first:
                         return nil
@@ -76,7 +76,7 @@ struct DestinationRepresentableMacroTests {
             enum Destination {
                 case first, second, test
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .first:
                         return nil
@@ -110,7 +110,7 @@ struct DestinationRepresentableMacroTests {
                 case first, second
                 case test
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .first:
                         return nil
@@ -146,16 +146,25 @@ struct DestinationRepresentableMacroTests {
                 case first
                 case second
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .first:
-                        return Self.firstOrigin
+                        return Origins.first
                     case .second:
                         return nil
                     }
                 }
-            
-                static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
+
+                enum Origins: OriginRepresentable {
+                    case first
+                    var key: NavigationOriginKey {
+                        switch self {
+                        case .first:
+                            Self.firstOriginKey
+                        }
+                    }
+                    static private let firstOriginKey = NavigationOriginKey(debugName: "Destination - first Origin")
+                }
             }
 
             extension Destination: DestinationRepresentable {
@@ -186,20 +195,31 @@ struct DestinationRepresentableMacroTests {
                 case third
                 case second
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .first:
-                        return Self.firstOrigin
+                        return Origins.first
                     case .third:
-                        return Self.thirdOrigin
+                        return Origins.third
                     case .second:
                         return nil
                     }
                 }
-            
-                static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
 
-                static let thirdOrigin = NavigationOriginKey(debugName: "Destination - third Origin")
+                enum Origins: OriginRepresentable {
+                    case first
+                    case third
+                    var key: NavigationOriginKey {
+                        switch self {
+                        case .first:
+                            Self.firstOriginKey
+                        case .third:
+                            Self.thirdOriginKey
+                        }
+                    }
+                    static private let firstOriginKey = NavigationOriginKey(debugName: "Destination - first Origin")
+                    static private let thirdOriginKey = NavigationOriginKey(debugName: "Destination - third Origin")
+                }
             }
 
             extension Destination: DestinationRepresentable {
@@ -228,18 +248,29 @@ struct DestinationRepresentableMacroTests {
                 case first
                 case second
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .first:
-                        return Self.firstOrigin
+                        return Origins.first
                     case .second:
-                        return Self.secondOrigin
+                        return Origins.second
                     }
                 }
-            
-                static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
-            
-                static let secondOrigin = NavigationOriginKey(debugName: "Destination - second Origin")
+
+                enum Origins: OriginRepresentable {
+                    case first
+                    case second
+                    var key: NavigationOriginKey {
+                        switch self {
+                        case .first:
+                            Self.firstOriginKey
+                        case .second:
+                            Self.secondOriginKey
+                        }
+                    }
+                    static private let firstOriginKey = NavigationOriginKey(debugName: "Destination - first Origin")
+                    static private let secondOriginKey = NavigationOriginKey(debugName: "Destination - second Origin")
+                }
             }
 
             extension Destination: DestinationRepresentable {
@@ -267,24 +298,37 @@ struct DestinationRepresentableMacroTests {
                 case first, third, fourth
                 case second
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .first:
-                        return Self.firstOrigin
+                        return Origins.first
                     case .third:
-                        return Self.thirdOrigin
+                        return Origins.third
                     case .fourth:
-                        return Self.fourthOrigin
+                        return Origins.fourth
                     case .second:
                         return nil
                     }
                 }
-            
-                static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
-            
-                static let thirdOrigin = NavigationOriginKey(debugName: "Destination - third Origin")
-            
-                static let fourthOrigin = NavigationOriginKey(debugName: "Destination - fourth Origin")
+
+                enum Origins: OriginRepresentable {
+                    case first
+                    case third
+                    case fourth
+                    var key: NavigationOriginKey {
+                        switch self {
+                        case .first:
+                            Self.firstOriginKey
+                        case .third:
+                            Self.thirdOriginKey
+                        case .fourth:
+                            Self.fourthOriginKey
+                        }
+                    }
+                    static private let firstOriginKey = NavigationOriginKey(debugName: "Destination - first Origin")
+                    static private let thirdOriginKey = NavigationOriginKey(debugName: "Destination - third Origin")
+                    static private let fourthOriginKey = NavigationOriginKey(debugName: "Destination - fourth Origin")
+                }
             }
 
             extension Destination: DestinationRepresentable {
@@ -314,18 +358,27 @@ struct DestinationRepresentableMacroTests {
                 case third(flag: Bool, label: String)
                 case first
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .second:
-                        return Self.secondOrigin
+                        return Origins.second
                     case .third:
                         return nil
                     case .first:
                         return nil
                     }
                 }
-            
-                static let secondOrigin = NavigationOriginKey(debugName: "Destination - second Origin")
+
+                enum Origins: OriginRepresentable {
+                    case second
+                    var key: NavigationOriginKey {
+                        switch self {
+                        case .second:
+                            Self.secondOriginKey
+                        }
+                    }
+                    static private let secondOriginKey = NavigationOriginKey(debugName: "Destination - second Origin")
+                }
             }
 
             extension Destination: DestinationRepresentable {
@@ -351,16 +404,25 @@ struct DestinationRepresentableMacroTests {
                 case detail(String, Int)
                 case list
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .detail:
-                        return Self.detailOrigin
+                        return Origins.detail
                     case .list:
                         return nil
                     }
                 }
-            
-                static let detailOrigin = NavigationOriginKey(debugName: "Destination - detail Origin")
+
+                enum Origins: OriginRepresentable {
+                    case detail
+                    var key: NavigationOriginKey {
+                        switch self {
+                        case .detail:
+                            Self.detailOriginKey
+                        }
+                    }
+                    static private let detailOriginKey = NavigationOriginKey(debugName: "Destination - detail Origin")
+                }
             }
 
             extension Destination: DestinationRepresentable {
@@ -391,16 +453,25 @@ struct DestinationRepresentableMacroTests {
                     case first
                     case second
 
-                    var navigationOrigin: NavigationOriginKey? {
+                    var navigationOrigin: (any OriginRepresentable)? {
                         switch self {
                         case .first:
-                            return Self.firstOrigin
+                            return Origins.first
                         case .second:
                             return nil
                         }
                     }
-            
-                    static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
+
+                    enum Origins: OriginRepresentable {
+                        case first
+                        var key: NavigationOriginKey {
+                            switch self {
+                            case .first:
+                                Self.firstOriginKey
+                            }
+                        }
+                        static private let firstOriginKey = NavigationOriginKey(debugName: "Destination - first Origin")
+                    }
                 }
             }
 
@@ -498,7 +569,7 @@ struct DestinationRepresentableMacroTests {
                 case detail(T)
                 case list
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .detail:
                         return nil
@@ -528,7 +599,7 @@ struct DestinationRepresentableMacroTests {
             expandedSource: """
             enum Destination {
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     }
                 }
@@ -642,7 +713,7 @@ struct DestinationRepresentableMacroTests {
             enum Destination {
                 case first
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .first:
                         return nil
@@ -670,14 +741,23 @@ struct DestinationRepresentableMacroTests {
             enum Destination {
                 case first
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .first:
-                        return Self.firstOrigin
+                        return Origins.first
                     }
                 }
 
-                static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
+                enum Origins: OriginRepresentable {
+                    case first
+                    var key: NavigationOriginKey {
+                        switch self {
+                        case .first:
+                            Self.firstOriginKey
+                        }
+                    }
+                    static private let firstOriginKey = NavigationOriginKey(debugName: "Destination - first Origin")
+                }
             }
 
             extension Destination: DestinationRepresentable {
@@ -704,7 +784,7 @@ struct DestinationRepresentableMacroTests {
                 case first
                 case second
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .first:
                         return nil
@@ -736,16 +816,25 @@ struct DestinationRepresentableMacroTests {
                 case first = "first_value"
                 case second = "second_value"
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .first:
-                        return Self.firstOrigin
+                        return Origins.first
                     case .second:
                         return nil
                     }
                 }
 
-                static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
+                enum Origins: OriginRepresentable {
+                    case first
+                    var key: NavigationOriginKey {
+                        switch self {
+                        case .first:
+                            Self.firstOriginKey
+                        }
+                    }
+                    static private let firstOriginKey = NavigationOriginKey(debugName: "Destination - first Origin")
+                }
             }
 
             extension Destination: DestinationRepresentable {
@@ -770,7 +859,7 @@ struct DestinationRepresentableMacroTests {
                 case first
                 case second
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .first:
                         return nil
@@ -804,7 +893,7 @@ struct DestinationRepresentableMacroTests {
                 case node(Destination)
                 case leaf
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .node:
                         return nil
@@ -836,16 +925,25 @@ struct DestinationRepresentableMacroTests {
                 indirect case node(Destination)
                 case leaf
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .node:
-                        return Self.nodeOrigin
+                        return Origins.node
                     case .leaf:
                         return nil
                     }
                 }
 
-                static let nodeOrigin = NavigationOriginKey(debugName: "Destination - node Origin")
+                enum Origins: OriginRepresentable {
+                    case node
+                    var key: NavigationOriginKey {
+                        switch self {
+                        case .node:
+                            Self.nodeOriginKey
+                        }
+                    }
+                    static private let nodeOriginKey = NavigationOriginKey(debugName: "Destination - node Origin")
+                }
             }
 
             extension Destination: DestinationRepresentable {
@@ -874,20 +972,31 @@ struct DestinationRepresentableMacroTests {
                 case list
                 case search
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .detail:
-                        return Self.detailOrigin
+                        return Origins.detail
                     case .list:
                         return nil
                     case .search:
-                        return Self.searchOrigin
+                        return Origins.search
                     }
                 }
 
-                static let detailOrigin = NavigationOriginKey(debugName: "Destination - detail Origin")
-
-                static let searchOrigin = NavigationOriginKey(debugName: "Destination - search Origin")
+                enum Origins: OriginRepresentable {
+                    case detail
+                    case search
+                    var key: NavigationOriginKey {
+                        switch self {
+                        case .detail:
+                            Self.detailOriginKey
+                        case .search:
+                            Self.searchOriginKey
+                        }
+                    }
+                    static private let detailOriginKey = NavigationOriginKey(debugName: "Destination - detail Origin")
+                    static private let searchOriginKey = NavigationOriginKey(debugName: "Destination - search Origin")
+                }
             }
 
             extension Destination: DestinationRepresentable {
@@ -912,20 +1021,31 @@ struct DestinationRepresentableMacroTests {
                 case a(Int), b(String)
                 case c
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .a:
-                        return Self.aOrigin
+                        return Origins.a
                     case .b:
-                        return Self.bOrigin
+                        return Origins.b
                     case .c:
                         return nil
                     }
                 }
 
-                static let aOrigin = NavigationOriginKey(debugName: "Destination - a Origin")
-
-                static let bOrigin = NavigationOriginKey(debugName: "Destination - b Origin")
+                enum Origins: OriginRepresentable {
+                    case a
+                    case b
+                    var key: NavigationOriginKey {
+                        switch self {
+                        case .a:
+                            Self.aOriginKey
+                        case .b:
+                            Self.bOriginKey
+                        }
+                    }
+                    static private let aOriginKey = NavigationOriginKey(debugName: "Destination - a Origin")
+                    static private let bOriginKey = NavigationOriginKey(debugName: "Destination - b Origin")
+                }
             }
 
             extension Destination: DestinationRepresentable {
@@ -952,16 +1072,25 @@ struct DestinationRepresentableMacroTests {
                 case first
                 case second
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .first:
-                        return Self.firstOrigin
+                        return Origins.first
                     case .second:
                         return nil
                     }
                 }
 
-                static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
+                enum Origins: OriginRepresentable {
+                    case first
+                    var key: NavigationOriginKey {
+                        switch self {
+                        case .first:
+                            Self.firstOriginKey
+                        }
+                    }
+                    static private let firstOriginKey = NavigationOriginKey(debugName: "Destination - first Origin")
+                }
             }
 
             extension Destination: DestinationRepresentable {
@@ -991,16 +1120,25 @@ struct DestinationRepresentableMacroTests {
                 case first
                 case second
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .first:
-                        return Self.firstOrigin
+                        return Origins.first
                     case .second:
                         return nil
                     }
                 }
 
-                static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
+                enum Origins: OriginRepresentable {
+                    case first
+                    var key: NavigationOriginKey {
+                        switch self {
+                        case .first:
+                            Self.firstOriginKey
+                        }
+                    }
+                    static private let firstOriginKey = NavigationOriginKey(debugName: "Destination - first Origin")
+                }
             }
 
             extension Destination: DestinationRepresentable {
@@ -1027,16 +1165,25 @@ struct DestinationRepresentableMacroTests {
                 case `default`
                 case second
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .`default`:
-                        return Self.defaultOrigin
+                        return Origins.default
                     case .second:
                         return nil
                     }
                 }
 
-                static let defaultOrigin = NavigationOriginKey(debugName: "Destination - default Origin")
+                enum Origins: OriginRepresentable {
+                    case `default`
+                    var key: NavigationOriginKey {
+                        switch self {
+                        case .`default`:
+                            Self.defaultOriginKey
+                        }
+                    }
+                    static private let defaultOriginKey = NavigationOriginKey(debugName: "Destination - default Origin")
+                }
             }
 
             extension Destination: DestinationRepresentable {
@@ -1059,7 +1206,7 @@ struct DestinationRepresentableMacroTests {
             enum Destination {
                 case `class`, `import`
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .`class`:
                         return nil
@@ -1091,7 +1238,7 @@ struct DestinationRepresentableMacroTests {
                 case `my case`
                 case second
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .`my case`:
                         return nil
@@ -1141,16 +1288,25 @@ struct DestinationRepresentableMacroTests {
                 case first
                 case second
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .first:
-                        return Self.firstOrigin
+                        return Origins.first
                     case .second:
                         return nil
                     }
                 }
 
-                static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
+                enum Origins: OriginRepresentable {
+                    case first
+                    var key: NavigationOriginKey {
+                        switch self {
+                        case .first:
+                            Self.firstOriginKey
+                        }
+                    }
+                    static private let firstOriginKey = NavigationOriginKey(debugName: "Destination - first Origin")
+                }
             }
             """,
             macros: macros
@@ -1176,7 +1332,7 @@ struct DestinationRepresentableMacroTests {
                 case pair(T, U)
                 case list
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .detail:
                         return nil
@@ -1210,7 +1366,7 @@ struct DestinationRepresentableMacroTests {
                 case detail(T)
                 case list
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .detail:
                         return nil
@@ -1242,7 +1398,7 @@ struct DestinationRepresentableMacroTests {
                 case detail(T)
                 case list
 
-                var navigationOrigin: NavigationOriginKey? {
+                var navigationOrigin: (any OriginRepresentable)? {
                     switch self {
                     case .detail:
                         return nil
@@ -1279,16 +1435,25 @@ struct DestinationRepresentableMacroTests {
                     case first
                     case second
 
-                    var navigationOrigin: NavigationOriginKey? {
+                    var navigationOrigin: (any OriginRepresentable)? {
                         switch self {
                         case .first:
-                            return Self.firstOrigin
+                            return Origins.first
                         case .second:
                             return nil
                         }
                     }
 
-                    static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
+                    enum Origins: OriginRepresentable {
+                        case first
+                        var key: NavigationOriginKey {
+                            switch self {
+                            case .first:
+                                Self.firstOriginKey
+                            }
+                        }
+                        static private let firstOriginKey = NavigationOriginKey(debugName: "Destination - first Origin")
+                    }
                 }
             }
 
@@ -1320,16 +1485,25 @@ struct DestinationRepresentableMacroTests {
                         case first
                         case second
 
-                        var navigationOrigin: NavigationOriginKey? {
+                        var navigationOrigin: (any OriginRepresentable)? {
                             switch self {
                             case .first:
-                                return Self.firstOrigin
+                                return Origins.first
                             case .second:
                                 return nil
                             }
                         }
 
-                        static let firstOrigin = NavigationOriginKey(debugName: "Destination - first Origin")
+                        enum Origins: OriginRepresentable {
+                            case first
+                            var key: NavigationOriginKey {
+                                switch self {
+                                case .first:
+                                    Self.firstOriginKey
+                                }
+                            }
+                            static private let firstOriginKey = NavigationOriginKey(debugName: "Destination - first Origin")
+                        }
                     }
                 }
             }
