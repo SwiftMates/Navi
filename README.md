@@ -165,7 +165,7 @@ enum AppDestinations {
 
 ```swift
 func popBackToProfile() {
-    controller.pop(to: AppDestinations.settings)
+    controller.pop(to: AppDestinations.Origins.settings)
 }
 ```
 
