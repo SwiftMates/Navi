@@ -31,14 +31,11 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         let caseDecls = members.compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
         let elements = caseDecls.flatMap { $0.elements }
 
-        // Only cases marked with @OriginKey get a static key
         let casesWithOriginKey = caseDecls.filter { $0.hasAttribute(named: "OriginKey") }
+        let originCaseElements = casesWithOriginKey.flatMap { $0.elements }
 
-        let originCaseNames = casesWithOriginKey.flatMap { $0.elements }
-
-        // A generic enum cannot declare the `static let …Origin` stored properties that
-        // @OriginKey requires — Swift disallows static stored properties in generic types.
-        // Diagnose (one error per offending case) instead of emitting code that can't compile.
+        // Static stored properties are disallowed in generic types (and in types nested
+        // inside them), so a generic enum can't host the `Origins` enum's origin keys.
         if enumDecl.genericParameterClause != nil, casesWithOriginKey.isEmpty == false {
             for caseDecl in casesWithOriginKey {
                 context.diagnose(Diagnostic(node: caseDecl, message: NaviDiagnostic.originKeyInGenericEnum))
@@ -46,11 +43,9 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
             return []
         }
 
-        // @OriginKey needs a case name that stays a valid identifier once suffixed with
-        // "Origin". A raw identifier (e.g. `my case`) would not, so diagnose and drop it
-        // rather than emit uncompilable code; the remaining cases still expand normally.
+        // Drop cases whose names aren't valid identifiers after suffixing.
         var originCases: [EnumCaseElementSyntax] = []
-        for element in originCaseNames {
+        for element in originCaseElements {
             guard isValidSwiftIdentifier(element.canonicalName) else {
                 context.diagnose(Diagnostic(node: element, message: NaviDiagnostic.originKeyRawIdentifier))
                 continue
@@ -59,17 +54,14 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         }
         let originCaseNameSet = Set(originCases.map { $0.name.text })
 
-        let navigationOriginProperty = try VariableDeclSyntax("var navigationOrigin: NavigationOriginKey?") {
+        // MARK: navigationOrigin on the parent enum
+
+        let navigationOriginProperty = try VariableDeclSyntax("var navigationOrigin: (any OriginRepresentable)?") {
             try SwitchExprSyntax("switch self") {
                 for caseName in elements {
-                    // `.text` is the bare token text (no trivia), keeping backticks; using it
-                    // for the label avoids the stray space a raw-value assignment
-                    // (`case destination = "…"`) would otherwise leak into `case .destination :`.
                     let name = caseName.name.text
                     if originCaseNameSet.contains(name) {
-                        // `canonicalName` drops surrounding backticks so a keyword-named
-                        // case (e.g. `default`) yields a valid identifier like `defaultOrigin`.
-                        SwitchCaseSyntax("case .\(raw: name): return Self.\(raw: caseName.canonicalName)Origin")
+                        SwitchCaseSyntax("case .\(raw: name): return Origins.\(raw: caseName.canonicalName)")
                     } else {
                         SwitchCaseSyntax("case .\(raw: name): return nil")
                     }
@@ -77,19 +69,43 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
             }
         }
 
-
-        let navigationDestinationKeys = try originCases.map { element -> DeclSyntax in
-            let base = element.canonicalName
-            return DeclSyntax(
-                try VariableDeclSyntax(
-                    """
-                        static let \(raw: base)Origin = NavigationOriginKey(debugName: "\(raw: enumName.text) - \(raw: base) Origin")
-                    """
-                )
-            )
+        // If nothing is marked, we're done — no nested Origins enum needed.
+        guard originCases.isEmpty == false else {
+            return [DeclSyntax(navigationOriginProperty)]
         }
 
-        return [DeclSyntax(navigationOriginProperty)] + navigationDestinationKeys
+        // MARK: nested Origins enum
+
+        let originsEnumCases = try MemberBlockItemListSyntax {
+            // case viewA
+            // case viewB
+            for element in originCases {
+                try EnumCaseDeclSyntax("case \(raw: element.name.text)")
+            }
+
+            // var key: NavigationOriginKey { switch self { … } }
+            try VariableDeclSyntax("var key: NavigationOriginKey") {
+                try SwitchExprSyntax("switch self") {
+                    for element in originCases {
+                        SwitchCaseSyntax("case .\(raw: element.name.text): Self.\(raw: element.canonicalName)OriginKey")
+                    }
+                }
+            }
+
+            // static private let <case>OriginKey = NavigationOriginKey(debugName: "<Enum> - <case> Origin")
+            for element in originCases {
+                let base = element.canonicalName
+                try VariableDeclSyntax(
+                    #"static private let \#(raw: base)OriginKey = NavigationOriginKey(debugName: "\#(raw: enumName.text) - \#(raw: base) Origin")"#
+                )
+            }
+        }
+
+        let originsEnum = try EnumDeclSyntax("enum Origins: OriginRepresentable") {
+            originsEnumCases
+        }
+
+        return [DeclSyntax(navigationOriginProperty), DeclSyntax(originsEnum)]
     }
 
     // MARK: - Helpers
