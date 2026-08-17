@@ -98,7 +98,7 @@ struct BasicApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack(path: $controller.properties.path) {
-                DemoView()
+                HomeView()
             }
         }
     }
@@ -109,7 +109,7 @@ Conform your destinations to DestinationRepresentable
 
 ```swift
 @DestinationRepresentable
-enum Destinations {
+enum HomeDestinations {
     case settings
     case profile
 }
@@ -118,17 +118,17 @@ enum Destinations {
 Wire it up in SwiftUI
 
 ```swift
-struct DemoView: View {
+struct HomeView: View {
     var body: some View {
         content
             .navigationDestination(
-                for: Destinations.self,
+                for: HomeDestinations.self,
                 destination: destinationView
             )
     }
 
     @ViewBuilder
-    private func destinationView(for destination: Destinations) -> some View {
+    private func destinationView(for destination: HomeDestinations) -> some View {
         switch destination {
         case .settings: SettingsView()
         case .profile: ProfileView()
@@ -141,7 +141,7 @@ Trigger navigation
 
 ```swift
 func navigateToSettings() {
-    controller.push(to: Destinations.settings)
+    controller.push(to: HomeDestinations.settings)
 }
 
 func navigateBack() {
@@ -157,15 +157,15 @@ Use @OriginKey to mark a destination as a pop-back anchor.
 
 ```swift
 @DestinationRepresentable
-enum AppDestinations {
+enum HomeDestinations {
     @OriginKey case settings
     case profile
 }
 ```
 
 ```swift
-func popBackToProfile() {
-    controller.pop(to: AppDestinations.Origins.settings)
+func popBackToSettings() {
+    controller.pop(to: HomeDestinations.Origins.settings)
 }
 ```
 
@@ -174,9 +174,9 @@ func popBackToProfile() {
 ```swift
 func deepLinkToEmailSettings() {
     controller.deepLink(to: [
-        Destinations.settings,
-        Destinations.notifications,
-        Destinations.emailNotifications
+        HomeDestinations.settings,
+        SettingsDestinations.notifications,
+        NotificationsDestinations.emailNotifications
     ])
 }
 ```
