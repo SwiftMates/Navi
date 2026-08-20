@@ -205,7 +205,7 @@ struct NaviControllerTests {
 
         #expect(controller.logger.logInfoReceivedInvocations == [
             "Path appended with destination: screenB.",
-            "Navigation origin '\(TestDestination.Origins.screenBOriginKey)' set to path index: 1 with destination: screenB."
+            "Navigation origin \(TestDestination.Origins.screenB) registered as pop target at path index 1."
         ])
         #expect(controller.logger.logInfoCallsCount == 2)
         #expect(controller.logger.logErrorCalled == false)
@@ -236,11 +236,11 @@ struct NaviControllerTests {
 
         #expect(controller.logger.logInfoReceivedInvocations == [
             "Path appended with destination: screenB.",
-            "Navigation origin '\(TestDestination.Origins.screenBOriginKey)' set to path index: 1 with destination: screenB.",
+            "Navigation origin \(TestDestination.Origins.screenB) registered as pop target at path index 1.",
             "Path appended with destination: screenC(randomData: \"testData\").",
-            "Navigation origin '\(TestDestination.Origins.screenCOriginKey)' set to path index: 2 with destination: screenC(randomData: \"testData\").",
+            "Navigation origin \(TestDestination.Origins.screenC) registered as pop target at path index 2.",
             "Last path element removed.",
-            "Navigation origin removed: \(TestDestination.Origins.screenCOriginKey) from index: 2."
+            "Navigation origin removed: Optional(\"\(TestDestination.Origins.screenC)\") from index: 2."
         ])
         #expect(controller.logger.logInfoCallsCount == 6)
         #expect(controller.logger.logErrorCalled == false)
@@ -255,7 +255,7 @@ struct NaviControllerTests {
 
         #expect(controller.logger.logInfoReceivedInvocations == [
             "Path appended with destination: screenB.",
-            "Navigation origin '\(TestDestination.Origins.screenBOriginKey)' set to path index: 1 with destination: screenB.",
+            "Navigation origin \(TestDestination.Origins.screenB) registered as pop target at path index 1.",
             "All navigation origins cleared.",
             "Navigation path cleared."
         ])
@@ -278,7 +278,7 @@ struct NaviControllerTests {
             "Navigation path cleared.",
             "Path appended with destination: screenA.",
             "Path appended with destination: screenB.",
-            "Navigation origin '\(TestDestination.Origins.screenBOriginKey)' set to path index: 2 with destination: screenB.",
+            "Navigation origin \(TestDestination.Origins.screenB) registered as pop target at path index 2.",
             "Deep-link path set to: \(newPath)."
         ])
         #expect(controller.logger.logInfoCallsCount == 6)
