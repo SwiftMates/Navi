@@ -78,12 +78,32 @@ dependencies: [
 
 ## 🧩 Basic Usage
 
+Provide a logger
+
+Navi routes its navigation events through `NaviLogging`. There's no default, so conform a type of your own and pass it in.
+
+```swift
+import OSLog
+
+final class AppLogger: NaviLogging {
+    private let logger = Logger(subsystem: "com.yourapp", category: "Navi")
+
+    func logInfo(_ message: String) {
+        logger.info("\(message, privacy: .public)")
+    }
+
+    func logError(_ message: String) {
+        logger.error("\(message, privacy: .public)")
+    }
+}
+```
+
 Create a controller
 
 ```swift
 @Observable
 final class DemoController: NaviController {
-    var properties = NaviControllerProperties(logger: BasicLogger())
+    var properties = NaviControllerProperties(logger: AppLogger())
 }
 ```
 

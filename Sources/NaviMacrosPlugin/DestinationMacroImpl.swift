@@ -77,8 +77,7 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         // MARK: nested Origins enum
 
         let originsEnumCases = try MemberBlockItemListSyntax {
-            // case viewA
-            // case viewB
+            // case <case>
             for element in originCases {
                 try EnumCaseDeclSyntax("case \(raw: element.name.text)")
             }
@@ -160,7 +159,7 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
             }
 
         // `extendedType: type` handles nested enums automatically
-        // e.g. Container.Destination instead of just Destination
+        // e.g. <Outer>.<Enum> instead of just <Enum>
         let conformanceExtension = ExtensionDeclSyntax(
             extendedType: type,
             inheritanceClause: InheritanceClauseSyntax {

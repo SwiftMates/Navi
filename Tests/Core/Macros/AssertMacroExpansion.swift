@@ -17,7 +17,6 @@ func assertMacroExpansion(
     expandedSource expectedExpandedSource: String,
     diagnostics: [DiagnosticSpec] = [],
     macros: [String: MacroSpec],
-    indentationWidth: Trivia = .spaces(4),
     fileID: StaticString = #fileID,
     filePath: StaticString = #filePath,
     line: UInt = #line,
@@ -28,7 +27,7 @@ func assertMacroExpansion(
         expandedSource: expectedExpandedSource,
         diagnostics: diagnostics,
         macroSpecs: macros,
-        indentationWidth: indentationWidth,
+        indentationWidth: .spaces(4),
         failureHandler: { spec in
             Issue.record(
                 "\(spec.message)",
