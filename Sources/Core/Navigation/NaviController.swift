@@ -131,7 +131,7 @@ public extension NaviController {
         } else {
             for (key, index) in properties.naviStackOrigins where index > properties.path.count {
                 properties.naviStackOrigins.removeValue(forKey: key)
-                properties.logger?.logInfo("Navigation origin removed: \(key.debugName) from index: \(index).")
+                properties.logger?.logInfo("Navigation origin removed: \(String(describing: key.debugName)) from index: \(index).")
             }
         }
     }
