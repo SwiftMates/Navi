@@ -8,7 +8,7 @@
 import Navi
 import OSLog
 
-final class BasicLogger: NaviLoggerable {
+final class BasicLogger: NaviLogging {
     let logger = Logger(subsystem: "com.navi.example.basic", category: "Navi")
     
     func logInfo(_ message: String) {

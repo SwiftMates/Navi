@@ -1,5 +1,5 @@
 //
-//  NaviCoordinatorProperties.swift
+//  NaviControllerProperties.swift
 //  Navi
 //
 //  Created by David Pall on 2026. 01. 15..
@@ -17,14 +17,14 @@ public struct NaviControllerProperties {
     public var path: NavigationPath
 
     var naviStackOrigins: [NavigationOriginKey: Int]
-    let logger: any NaviLoggerable
+    let logger: any NaviLogging
 
     // MARK: - Lifecycle
 
     /// Creates a new set of controller properties with an empty navigation path.
     ///
     /// The initializer also prepares internal origin tracking and logger instances.
-    public init(logger: any NaviLoggerable) {
+    public init(logger: any NaviLogging) {
         self.path = NavigationPath()
         self.naviStackOrigins = [:]
         self.logger = logger

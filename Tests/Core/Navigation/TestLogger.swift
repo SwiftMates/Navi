@@ -7,7 +7,7 @@
 
 @testable import Navi
 
-final class TestLogger: NaviLoggerable {
+final class TestLogger: NaviLogging {
 
     // MARK: - logInfo
 
