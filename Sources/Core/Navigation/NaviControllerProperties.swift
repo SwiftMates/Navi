@@ -17,7 +17,7 @@ public struct NaviControllerProperties {
     public var path: NavigationPath
 
     var naviStackOrigins: [NavigationOriginKey: Int]
-    var logger: any NaviLoggerable
+    let logger: any NaviLoggerable
 
     // MARK: - Lifecycle
 

@@ -285,10 +285,3 @@ struct NaviControllerTests {
         #expect(controller.logger.logErrorCalled == false)
     }
 }
-
-// MARK: - Navigation Origin Keys
-
-extension NavigationOriginKey {
-    static let screenB = NavigationOriginKey(debugName: "screenB")
-    static let screenC = NavigationOriginKey(debugName: "screenC")
-}
