@@ -14,12 +14,12 @@ struct ViewC: View {
     
     var body: some View {
         VStack(spacing: 24) {
-            Button("Pop") {
-                controller.pop()
+            Button("Pop to View - A") {
+                controller.pop(to: MainViewsDestinations.Origins.viewA)
             }
             
-            Button("Pop to View - A") {
-                controller.pop(to: .viewA)
+            Button("Pop") {
+                controller.pop()
             }
             
             Button("Pop to root") {

@@ -12,7 +12,7 @@ import Foundation
 /// Use this type to tag destinations so the controller can later pop back to a known point.
 public struct NavigationOriginKey: Hashable, Sendable {
     let id = UUID()
-    var debugName: String?
+    let debugName: String?
     
     // MARK: - Lifecycle
     

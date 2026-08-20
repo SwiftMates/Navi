@@ -78,12 +78,32 @@ dependencies: [
 
 ## 🧩 Basic Usage
 
+Provide a logger
+
+Navi routes its navigation events through `NaviLogging`. There's no default, so conform a type of your own and pass it in.
+
+```swift
+import OSLog
+
+final class AppLogger: NaviLogging {
+    private let logger = Logger(subsystem: "com.yourapp", category: "Navi")
+
+    func logInfo(_ message: String) {
+        logger.info("\(message, privacy: .public)")
+    }
+
+    func logError(_ message: String) {
+        logger.error("\(message, privacy: .public)")
+    }
+}
+```
+
 Create a controller
 
 ```swift
 @Observable
 final class DemoController: NaviController {
-    var properties = NaviControllerProperties(logger: BasicLogger())
+    var properties = NaviControllerProperties(logger: AppLogger())
 }
 ```
 
@@ -98,7 +118,7 @@ struct BasicApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack(path: $controller.properties.path) {
-                DemoView()
+                HomeView()
             }
         }
     }
@@ -108,7 +128,8 @@ struct BasicApp: App {
 Conform your destinations to DestinationRepresentable
 
 ```swift
-enum Destinations: DestinationRepresentable {
+@DestinationRepresentable
+enum HomeDestinations {
     case settings
     case profile
 }
@@ -125,17 +146,17 @@ final class DemoCoordinator: NaviController {
 Wire it up in SwiftUI
 
 ```swift
-struct DemoView: View {
+struct HomeView: View {
     var body: some View {
         content
             .navigationDestination(
-                for: Destinations.self,
+                for: HomeDestinations.self,
                 destination: destinationView
             )
     }
 
     @ViewBuilder
-    private func destinationView(for destination: Destinations) -> some View {
+    private func destinationView(for destination: HomeDestinations) -> some View {
         switch destination {
         case .settings: SettingsView()
         case .profile: ProfileView()
@@ -147,9 +168,8 @@ struct DemoView: View {
 Trigger navigation
 
 ```swift
-
 func navigateToSettings() {
-    controller.push(to: Destinations.settings)
+    controller.push(to: HomeDestinations.settings)
 }
 
 func navigateBack() {
@@ -161,29 +181,19 @@ func navigateBack() {
 
 ### ⏪ Pop to a specific screen in the stack
 
-```swift
-extension NavigationOriginKey {
-    static let profile = NavigationOriginKey(debugName: "profile")
-}
-```
+Use @OriginKey to mark a destination as a pop-back anchor.
 
 ```swift
-enum Destinations: DestinationRepresentable {
-    case settings
+@DestinationRepresentable
+enum HomeDestinations {
+    @OriginKey case settings
     case profile
-
-    var navigationOrigin: NavigationOriginKey? {
-        switch self {
-        case .profile: return NavigationOriginKey.profile
-        default: return nil
-        }
-    }
 }
 ```
 
 ```swift
-func popBackToProfile() {
-    controller.pop(to: .profile)
+func popBackToSettings() {
+    controller.pop(to: HomeDestinations.Origins.settings)
 }
 ```
 
@@ -192,9 +202,9 @@ func popBackToProfile() {
 ```swift
 func deepLinkToEmailSettings() {
     controller.deepLink(to: [
-        Destinations.settings,
-        Destinations.notifications,
-        Destinations.emailNotifications
+        HomeDestinations.settings,
+        SettingsDestinations.notifications,
+        NotificationsDestinations.emailNotifications
     ])
 }
 ```
