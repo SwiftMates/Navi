@@ -615,7 +615,7 @@ struct DestinationRepresentableMacroTests {
     // MARK: - Error cases
 
     @Test
-    func `expansion should produce an error when DestinationRepresentable is applied to a struct`() throws {
+    func `expansion should produce an error when DestinationRepresentable is applied to a struct`() {
         assertMacroExpansion(
             """
             @DestinationRepresentable
