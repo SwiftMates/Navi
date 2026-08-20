@@ -17,14 +17,14 @@ public struct NaviControllerProperties {
     public var path: NavigationPath
 
     var naviStackOrigins: [NavigationOriginKey: Int]
-    let logger: any NaviLogging
+    let logger: (any NaviLogging)?
 
     // MARK: - Lifecycle
 
     /// Creates a new set of controller properties with an empty navigation path.
     ///
     /// The initializer also prepares internal origin tracking and logger instances.
-    public init(logger: any NaviLogging) {
+    public init(logger: (any NaviLogging)? = nil) {
         self.path = NavigationPath()
         self.naviStackOrigins = [:]
         self.logger = logger

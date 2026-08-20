@@ -58,10 +58,10 @@ public extension NaviController {
     /// - Parameter destination: The destination to append to the navigation path.
     func push(to destination: any DestinationRepresentable) {
         properties.path.append(destination)
-        properties.logger.logInfo("Path appended with destination: \(destination).")
+        properties.logger?.logInfo("Path appended with destination: \(destination).")
         if let origin = destination.navigationOrigin {
             properties.naviStackOrigins[origin.key] = properties.path.count
-            properties.logger.logInfo("Navigation origin '\(origin.key)' set to path index: \(properties.path.count) with destination: \(destination).")
+            properties.logger?.logInfo("Navigation origin \(origin) registered as pop target at path index \(properties.path.count).")
         }
     }
 
@@ -69,8 +69,10 @@ public extension NaviController {
     func pop() {
         if properties.path.isEmpty == false {
             properties.path.removeLast()
-            properties.logger.logInfo("Last path element removed.")
+            properties.logger?.logInfo("Last path element removed.")
             syncStackOrigins()
+        } else {
+            properties.logger?.logError("Attempted to pop but navigation path is already empty.")
         }
     }
 
@@ -78,7 +80,7 @@ public extension NaviController {
     func popToRoot() {
         properties.path = NavigationPath()
         syncStackOrigins(removeAll: true)
-        properties.logger.logInfo("Navigation path cleared.")
+        properties.logger?.logInfo("Navigation path cleared.")
     }
 
     /// Pops the stack back to the destination associated with the given origin.
@@ -90,12 +92,12 @@ public extension NaviController {
     /// - Parameter origin: The origin whose ``OriginRepresentable/key`` identifies the pop target.
     func pop(to origin: any OriginRepresentable) {
         guard let originIndex = properties.naviStackOrigins[origin.key] else {
-            properties.logger.logError("Navi origin key was not found ---> \(String(describing: origin.key)).")
-            assertionFailure("Navi origin key was not found ---> \(origin.key).")
+            properties.logger?.logError("Navigation origin was not found ---> \(String(describing: origin)).")
+            assertionFailure("Navigation origin was not found ---> \(origin).")
             return
         }
-
         let indexToRemove = properties.path.count - originIndex
+        properties.logger?.logInfo("Popping \(indexToRemove) destination(s) back to origin: \(origin).")
         pop(last: indexToRemove)
     }
 
@@ -109,7 +111,7 @@ public extension NaviController {
     func deepLink(to newPath: [any DestinationRepresentable]) {
         popToRoot()
         newPath.forEach { push(to: $0) }
-        properties.logger.logInfo("Deep-link path set to: \(newPath).")
+        properties.logger?.logInfo("Deep-link path set to: \(newPath).")
     }
 
     // MARK: - Private methods
@@ -125,11 +127,11 @@ public extension NaviController {
     private func syncStackOrigins(removeAll: Bool = false) {
         if removeAll {
             properties.naviStackOrigins.removeAll()
-            properties.logger.logInfo("All navigation origins cleared.")
+            properties.logger?.logInfo("All navigation origins cleared.")
         } else {
             for (key, index) in properties.naviStackOrigins where index > properties.path.count {
                 properties.naviStackOrigins.removeValue(forKey: key)
-                properties.logger.logInfo("Navigation origin removed: \(key) from index: \(index).")
+                properties.logger?.logInfo("Navigation origin removed: \(String(describing: key.debugName)) from index: \(index).")
             }
         }
     }
@@ -143,7 +145,8 @@ public extension NaviController {
     /// - Parameter indexCount: The number of trailing destinations to remove from the path.
     private func pop(last indexCount: Int) {
         guard indexCount <= properties.path.count else {
-            properties.logger.logError("Cannot remove more element from the path than what it has ---> \(indexCount) is bigger than \(self.properties.path.count).")
+            properties.logger?.logError("Cannot remove more element from the path than what it has ---> \(indexCount) is bigger than \(self.properties.path.count).")
+            assertionFailure("Cannot remove more elements than the path contains.")
             return
         }
         properties.path.removeLast(indexCount)
