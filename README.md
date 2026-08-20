@@ -78,37 +78,77 @@ dependencies: [
 
 ## 🧩 Basic Usage
 
-Conform your destinations to DestinationRepresentable
+Provide a logger
+
+Navi routes its navigation events through `NaviLogging`. There's no default, so conform a type of your own and pass it in.
 
 ```swift
-enum Destinations: DestinationRepresentable {
-    case settings
-    case profile
+import OSLog
+
+final class AppLogger: NaviLogging {
+    private let logger = Logger(subsystem: "com.yourapp", category: "Navi")
+
+    func logInfo(_ message: String) {
+        logger.info("\(message, privacy: .public)")
+    }
+
+    func logError(_ message: String) {
+        logger.error("\(message, privacy: .public)")
+    }
 }
 ```
 
 Create a controller
 
 ```swift
-final class DemoCoordinator: NaviController {
-    var properties = NaviControllerProperties(logger: NaviLogger())
+@Observable
+final class DemoController: NaviController {
+    var properties = NaviControllerProperties(logger: AppLogger())
+}
+```
+
+Create the NavigationStack
+
+```swift
+@main
+struct BasicApp: App {
+    
+    @State private var controller = DemoController()
+    
+    var body: some Scene {
+        WindowGroup {
+            NavigationStack(path: $controller.properties.path) {
+                HomeView()
+            }
+        }
+    }
+}
+```
+
+Conform your destinations to DestinationRepresentable
+
+```swift
+@DestinationRepresentable
+enum HomeDestinations {
+    case settings
+    case profile
 }
 ```
 
 Wire it up in SwiftUI
 
 ```swift
-struct DemoView: View {
+struct HomeView: View {
     var body: some View {
         content
             .navigationDestination(
-                for: Destinations.self,
+                for: HomeDestinations.self,
                 destination: destinationView
             )
     }
 
     @ViewBuilder
-    private func destinationView(for destination: Destinations) -> some View {
+    private func destinationView(for destination: HomeDestinations) -> some View {
         switch destination {
         case .settings: SettingsView()
         case .profile: ProfileView()
@@ -120,14 +160,12 @@ struct DemoView: View {
 Trigger navigation
 
 ```swift
-private let coordinator = DemoCoordinator()
-
 func navigateToSettings() {
-    coordinator.push(to: Destinations.settings)
+    controller.push(to: HomeDestinations.settings)
 }
 
 func navigateBack() {
-    coordinator.pop()
+    controller.pop()
 }
 ```
 
@@ -135,29 +173,19 @@ func navigateBack() {
 
 ### ⏪ Pop to a specific screen in the stack
 
-```swift
-extension NavigationOriginKey {
-    static let profile = NavigationOriginKey(debugName: "profile")
-}
-```
+Use @OriginKey to mark a destination as a pop-back anchor.
 
 ```swift
-enum AppDestinations: DestinationRepresentable {
-    case settings
+@DestinationRepresentable
+enum HomeDestinations {
+    @OriginKey case settings
     case profile
-
-    var navigationOrigin: NavigationOriginKey? {
-        switch self {
-        case .profile: return .profile
-        default: return nil
-        }
-    }
 }
 ```
 
 ```swift
-func popBackToProfile() {
-    coordinator.pop(to: .profile)
+func popBackToSettings() {
+    controller.pop(to: HomeDestinations.Origins.settings)
 }
 ```
 
@@ -165,10 +193,10 @@ func popBackToProfile() {
 
 ```swift
 func deepLinkToEmailSettings() {
-    coordinator.deepLink(to: [
-        Destinations.settings,
-        Destinations.notifications,
-        Destinations.emailNotifications
+    controller.deepLink(to: [
+        HomeDestinations.settings,
+        SettingsDestinations.notifications,
+        NotificationsDestinations.emailNotifications
     ])
 }
 ```
@@ -181,7 +209,7 @@ func deepLinkToEmailSettings() {
 
 | Example | Status |
 |:--------|:------:|
-| Simple | 🚧 Under construction |
+| Simple | ✅ Examples/Basic |
 | Coordinator | 🚧 Under construction |
 
 ## 🧠 Design Philosophy

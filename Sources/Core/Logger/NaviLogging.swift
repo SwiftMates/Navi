@@ -1,12 +1,12 @@
 //
-//  NaviLogger.swift
+//  NaviLogging.swift
 //  Navi
 //
 //  Created by Lazar-Kiss Mark on 29/06/2026.
 //
 
 /// A logging interface used by Navi to report navigation events and failures.
-public protocol NaviLoggerable {
+public protocol NaviLogging {
     /// Logs an informational message.
     ///
     /// - Parameter message: The message to record.
