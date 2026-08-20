@@ -8,7 +8,7 @@
 import Navi
 import OSLog
 
-final class NavigationLogger: NaviLoggerable {
+final class NavigationLogger: NaviLogging {
     
     // MARK: - Private functions
     

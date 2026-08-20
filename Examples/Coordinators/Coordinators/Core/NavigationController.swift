@@ -23,11 +23,11 @@ final class NavigationController: NaviController {
     
     // MARK: - Public functions
     
-    func push(_ screen: any ScreenRepresentable) {
-        push(to: screen)
-    }
-    
-    func start(_ coordinator: any CoordinatorRepresentable) {
-        push(to: coordinator)
-    }
+//    func push(_ screen: any ScreenRepresentable) {
+//        push(to: screen)
+//    }
+//    
+//    func start(_ coordinator: any CoordinatorRepresentable) {
+//        push(to: coordinator)
+//    }
 }
