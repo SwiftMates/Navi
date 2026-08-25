@@ -589,7 +589,7 @@ struct DestinationRepresentableMacroTests {
     // MARK: - Empty enum
 
     @Test
-    func `expansion should generate an empty switch when the enum has no cases`() {
+    func `expansion should produce an error when the enum has no cases`() {
         assertMacroExpansion(
             """
             @DestinationRepresentable
@@ -598,16 +598,18 @@ struct DestinationRepresentableMacroTests {
             """,
             expandedSource: """
             enum Destination {
-
-                var navigationOrigin: (any OriginRepresentable)? {
-                    switch self {
-                    }
-                }
             }
 
             extension Destination: DestinationRepresentable {
             }
             """,
+            diagnostics: [
+                DiagnosticSpec(
+                    message: "@DestinationRepresentable can only be applied to an enum with at least one case",
+                    line: 2,
+                    column: 6
+                )
+            ],
             macros: macros
         )
     }
