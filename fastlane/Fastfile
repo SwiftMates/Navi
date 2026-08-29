@@ -1,8 +1,14 @@
 default_platform(:ios)
 
 platform :ios do
+  def disable_swift_syntax_prebuilts!
+    sh("mkdir -p ~/.swiftpm/cache/prebuilts && touch ~/.swiftpm/cache/prebuilts/noprebuilts")
+  end
+
   desc "Build the Basic example app for PR validation"
   lane :build_basic do
+    disable_swift_syntax_prebuilts!
+
     build_app(
       project: "Examples/Basic/Basic.xcodeproj",
       scheme: "Basic",
@@ -12,12 +18,7 @@ platform :ios do
       clean: true,
       skip_archive: true,
       skip_package_ipa: true,
-      skip_codesigning: true,
-      xcargs: [
-        "SWIFT_ENABLE_EXPERIMENTAL_PREBUILT=NO"
-        ]
+      skip_codesigning: true
     )
   end
 end
-
-
