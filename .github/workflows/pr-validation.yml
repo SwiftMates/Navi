@@ -20,3 +20,19 @@ jobs:
 
       - name: Run unit tests
         run: swift test
+
+  build-basic-example:
+    name: Build Basic Example
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Build Basic example
+        run: bundle exec fastlane build_basic
