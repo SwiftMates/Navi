@@ -12,7 +12,12 @@ platform :ios do
       clean: true,
       skip_archive: true,
       skip_package_ipa: true,
-      skip_codesigning: true
+      skip_codesigning: true,
+      xcargs: [
+        "SWIFT_ENABLE_EXPERIMENTAL_PREBUILT=NO"
+        ]
     )
   end
 end
+
+
