@@ -13,7 +13,6 @@ platform :ios do
       project: "Examples/Basic/Basic.xcodeproj",
       scheme: "Basic",
       configuration: "Debug",
-      sdk: "iphonesimulator",
       destination: "generic/platform=iOS Simulator",
       clean: true,
       skip_archive: true,
