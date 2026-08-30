@@ -10,6 +10,19 @@ on:
       - develop
 
 jobs:
+  format:
+    name: SwiftFormat Lint
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Install swift-format
+        run: brew install swift-format
+
+      - name: Lint
+        run: swift-format lint --recursive --configuration .swift-format Sources Tests Examples
+
   test:
     name: Swift Package Tests
     runs-on: macos-latest

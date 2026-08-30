@@ -13,9 +13,9 @@ import Foundation
 public struct NavigationOriginKey: Hashable, Sendable {
     let id = UUID()
     let debugName: String?
-    
+
     // MARK: - Lifecycle
-    
+
     /// Creates a new unique navigation origin key.
     ///
     /// - Parameter debugName: An optional developer-facing label to aid debugging.

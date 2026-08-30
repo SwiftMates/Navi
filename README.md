@@ -245,6 +245,26 @@ More examples and guides may be added over time.
 
 Bug reports, feature suggestions, and improvements are all appreciated.
 
+### Code Formatting
+
+This project uses [swift-format](https://github.com/swiftlang/swift-format) (matching `swift-syntax` 603) with configuration in `.swift-format` at the repository root.
+
+```bash
+# Install (once)
+brew install swift-format
+# or: swiftly install swift-format
+
+# Format all files
+make format
+# or: swift-format format -i --recursive --configuration .swift-format Sources Tests Examples
+
+# Check formatting (CI runs this)
+make lint
+# or: swift-format lint --recursive --configuration .swift-format Sources Tests Examples
+```
+
+CI will fail if files are not formatted. Please run `make format` before committing.
+
 ## 📄 License
 
 Navi is available under the MIT License.

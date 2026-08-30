@@ -68,6 +68,7 @@
 				F46DE59D2FFD9AD600FCAC3E /* Sources */,
 				F46DE59E2FFD9AD600FCAC3E /* Frameworks */,
 				F46DE59F2FFD9AD600FCAC3E /* Resources */,
+				F46DE5C02FFD9AD800FCAC3E /* Lint with swift-format */,
 			);
 			buildRules = (
 			);
@@ -140,6 +141,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F46DE5C02FFD9AD800FCAC3E /* Lint with swift-format */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Lint with swift-format — warns in Xcode, no-op if missing\nif ! command -v swift-format >/dev/null 2>&1; then\n  echo \"warning: swift-format not found — skipping lint (brew install swift-format)\"\n  exit 0\nfi\nREPO_ROOT=\"$(cd \"${SRCROOT}/../../..\" 2>/dev/null && pwd)\"\nif [ -z \"$REPO_ROOT\" ]; then\n  REPO_ROOT=\"${SRCROOT}\"\nfi\nCONFIG=\"${REPO_ROOT}/.swift-format\"\nif [ ! -f \"$CONFIG\" ]; then\n  echo \"warning: .swift-format not found at ${CONFIG}\"\n  exit 0\nfi\nEXTRA=\"\"\nif [ \"${LINT_STRICT}\" = \"1\" ] || [ \"${CI}\" = \"true\" ]; then\n  EXTRA=\"--strict\"\nfi\ncd \"${REPO_ROOT}\"\nswift-format lint --recursive --configuration \"${CONFIG}\" ${EXTRA} \"Examples/Basic\" 2>&1 | sed -E 's/^(.*:[0-9]+:[0-9]+: (warning|error):.*)/\\1/' || true\nexit 0\n";
+			showEnvVarsInLog = 0;
+			alwaysOutOfDate = 1;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
 		F46DE5AA2FFD9AD700FCAC3E /* Debug */ = {

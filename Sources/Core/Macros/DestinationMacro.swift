@@ -7,13 +7,15 @@
 
 @attached(member, names: named(navigationOrigin), named(Origins))
 @attached(extension, conformances: DestinationRepresentable)
-public macro DestinationRepresentable() = #externalMacro(
-    module: "NaviMacrosPlugin",
-    type: "DestinationRepresentableMacro"
-)
+public macro DestinationRepresentable() =
+    #externalMacro(
+        module: "NaviMacrosPlugin",
+        type: "DestinationRepresentableMacro"
+    )
 
 @attached(peer)
-public macro OriginKey() = #externalMacro(
-    module: "NaviMacrosPlugin",
-    type: "OriginKeyMacro"
-)
+public macro OriginKey() =
+    #externalMacro(
+        module: "NaviMacrosPlugin",
+        type: "OriginKeyMacro"
+    )

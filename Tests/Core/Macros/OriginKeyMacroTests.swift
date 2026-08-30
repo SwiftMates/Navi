@@ -5,11 +5,12 @@
 //  Created by Mark Lazar Kiss on 06/08/2026.
 //
 
-import Testing
 import SwiftSyntax
-import SwiftSyntaxMacros
 import SwiftSyntaxMacroExpansion
+import SwiftSyntaxMacros
 import SwiftSyntaxMacrosGenericTestSupport
+import Testing
+
 @testable import NaviMacrosPlugin
 
 @Suite("OriginKey Macro")
@@ -20,7 +21,9 @@ struct OriginKeyMacroTests {
     ]
 
     @Test
-    func `expansion should produce no additional code when OriginKey is applied to a single enum case`() {
+    func
+        `expansion should produce no additional code when OriginKey is applied to a single enum case`()
+    {
         assertMacroExpansion(
             """
             enum Destination {
@@ -29,16 +32,18 @@ struct OriginKeyMacroTests {
             }
             """,
             expandedSource: """
-            enum Destination {
-                case first
-            }
-            """,
+                enum Destination {
+                    case first
+                }
+                """,
             macros: macros
         )
     }
 
     @Test
-    func `expansion should produce no additional code when OriginKey is applied to a case with multiple elements`() {
+    func
+        `expansion should produce no additional code when OriginKey is applied to a case with multiple elements`()
+    {
         assertMacroExpansion(
             """
             enum Destination {
@@ -47,16 +52,18 @@ struct OriginKeyMacroTests {
             }
             """,
             expandedSource: """
-            enum Destination {
-                case first, third, fourth
-            }
-            """,
+                enum Destination {
+                    case first, third, fourth
+                }
+                """,
             macros: macros
         )
     }
 
     @Test
-    func `expansion should produce no additional code when OriginKey is applied to multiple separate cases`() {
+    func
+        `expansion should produce no additional code when OriginKey is applied to multiple separate cases`()
+    {
         assertMacroExpansion(
             """
             enum Destination {
@@ -67,11 +74,11 @@ struct OriginKeyMacroTests {
             }
             """,
             expandedSource: """
-            enum Destination {
-                case first
-                case third
-            }
-            """,
+                enum Destination {
+                    case first
+                    case third
+                }
+                """,
             macros: macros
         )
     }
@@ -84,8 +91,8 @@ struct OriginKeyMacroTests {
             struct Wrong {}
             """,
             expandedSource: """
-            struct Wrong {}
-            """,
+                struct Wrong {}
+                """,
             diagnostics: [
                 DiagnosticSpec(
                     message: "@OriginKey can only be applied to an enum case",
@@ -105,8 +112,8 @@ struct OriginKeyMacroTests {
             func wrong() {}
             """,
             expandedSource: """
-            func wrong() {}
-            """,
+                func wrong() {}
+                """,
             diagnostics: [
                 DiagnosticSpec(
                     message: "@OriginKey can only be applied to an enum case",
@@ -128,10 +135,10 @@ struct OriginKeyMacroTests {
             }
             """,
             expandedSource: """
-            enum Wrong {
-                case first
-            }
-            """,
+                enum Wrong {
+                    case first
+                }
+                """,
             diagnostics: [
                 DiagnosticSpec(
                     message: "@OriginKey can only be applied to an enum case",
@@ -151,8 +158,8 @@ struct OriginKeyMacroTests {
             var wrong: Int = 0
             """,
             expandedSource: """
-            var wrong: Int = 0
-            """,
+                var wrong: Int = 0
+                """,
             diagnostics: [
                 DiagnosticSpec(
                     message: "@OriginKey can only be applied to an enum case",
