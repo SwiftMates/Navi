@@ -254,16 +254,20 @@ This project uses [swift-format](https://github.com/swiftlang/swift-format) (mat
 brew install swift-format
 # or: swiftly install swift-format
 
-# Format all files
+# Format all files (package + examples)
 make format
 # or: swift-format format -i --recursive --configuration .swift-format Sources Tests Examples
 
 # Check formatting (CI runs this)
 make lint
 # or: swift-format lint --recursive --configuration .swift-format Sources Tests Examples
+
+# Or use the SwiftPM plugin (no separate install, uses Package.swift dependency)
+swift package plugin --allow-writing-to-package-directory format-source-code
+swift package plugin --allow-writing-to-package-directory lint-source-code
 ```
 
-CI will fail if files are not formatted. Please run `make format` before committing.
+CI will fail if files are not formatted. Please run `make format` before committing. The `Examples/Basic` Xcode project also lints on build (warnings in Issue Navigator) when `swift-format` is installed.
 
 ## 📄 License
 

@@ -14,7 +14,8 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-syntax", .upToNextMajor(from: "603.0.0"))
+        .package(url: "https://github.com/swiftlang/swift-syntax", .upToNextMajor(from: "603.0.0")),
+        .package(url: "https://github.com/swiftlang/swift-format", from: "603.0.0"),
     ],
     targets: [
         .macro(
