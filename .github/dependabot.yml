@@ -19,3 +19,21 @@ updates:
           - "*"
         update-types:
           - "minor"
+  - package-ecosystem: "bundler"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "23:00"
+      timezone: "UTC"
+    groups:
+      bundler-major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+      bundler-minor:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
