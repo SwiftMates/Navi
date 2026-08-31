@@ -37,3 +37,22 @@ updates:
           - "*"
         update-types:
           - "minor"
+  - package-ecosystem: "swift"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "23:00"
+      timezone: "UTC"
+    groups:
+      swift-major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+      swift-minor:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
