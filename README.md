@@ -3,7 +3,6 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/SwiftMates/Navi/actions/workflows/pr-validation.yml"><img src="https://github.com/SwiftMates/Navi/actions/workflows/pr-validation.yml/badge.svg" alt="PR Validation" /></a>
     <a href="https://github.com/SwiftMates/Navi/actions/workflows/main.yml"><img src="https://github.com/SwiftMates/Navi/actions/workflows/main.yml/badge.svg?branch=main" alt="Main" /></a>
     <a href="https://swift.org"><img src="https://img.shields.io/badge/Swift-6.0+-F05138?logo=swift" alt="Swift 6.0+" /></a>
     <a href="Package.swift"><img src="https://img.shields.io/badge/Platforms-iOS%2016%2B%20%7C%20macOS%2013%2B-lightgrey" alt="Platforms" /></a>
