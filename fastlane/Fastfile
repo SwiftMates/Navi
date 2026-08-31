@@ -22,4 +22,20 @@ platform :ios do
       skip_codesigning: true
     )
   end
+
+  desc "Build the iOS 16 Basic example app for PR validation"
+  lane :build_basic_ios16 do
+    disable_swift_syntax_prebuilts!
+
+    build_app(
+      project: "Examples/Basic-iOS16/Basic-iOS16.xcodeproj",
+      scheme: "Basic-iOS16",
+      configuration: "Debug",
+      destination: "generic/platform=iOS Simulator",
+      clean: true,
+      skip_archive: true,
+      skip_package_ipa: true,
+      skip_codesigning: true
+    )
+  end
 end
