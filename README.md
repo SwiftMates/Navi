@@ -55,6 +55,19 @@ SwiftUI's `NavigationStack` is powerful, but as your app grows, you may encounte
 
 ---
 
+## ✅ Requirements
+
+| Platform | Minimum |
+|:---------|:--------|
+| iOS      | 16.0+   |
+| macOS    | 13.0+   |
+
+Navi is a pure Swift 6 package. On iOS 17+ / macOS 14+ you can use the `@Observable`
+controller pattern (see `Examples/Basic`); on iOS 16 / macOS 13 use the `ObservableObject`
+pattern instead (see `Examples/Basic-iOS16`).
+
+---
+
 ## 📦 Installation
 
 ### Swift Package Manager (SPM)
@@ -210,6 +223,7 @@ func deepLinkToEmailSettings() {
 | Example | Status |
 |:--------|:------:|
 | Simple | ✅ Examples/Basic |
+| Simple (iOS 16 / macOS 13) | ✅ Examples/Basic-iOS16 |
 | Coordinator | 🚧 Under construction |
 
 ## 🧠 Design Philosophy
