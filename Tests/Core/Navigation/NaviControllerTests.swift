@@ -157,6 +157,40 @@ struct NaviControllerTests {
     }
 
     @Test
+    func `manually removing last path element does not sync origins`() {
+        let controller: TestNaviController = TestNaviController()
+        controller.push(to: TestDestination.screenB)
+        controller.push(to: TestDestination.screenC(randomData: "testData"))
+
+        // Simulate a swipe-back / system back button: SwiftUI mutates the bound
+        // NavigationPath directly, bypassing pop() and syncStackOrigins().
+        controller.properties.path.removeLast()
+
+        #expect(controller.properties.path.count == 1)
+        // origins are NOT reconciled — syncStackOrigins() only runs inside pop().
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 2)
+    }
+
+    @Test
+    func `push after simulated back navigation updates origin to the latest count`() {
+        let controller: TestNaviController = TestNaviController()
+        controller.push(to: TestDestination.screenB)
+        controller.push(to: TestDestination.screenA)
+        controller.push(to: TestDestination.screenC(randomData: "testData"))
+
+        // Simulate two swipe-backs: direct NavigationPath mutation, bypassing pop().
+        controller.properties.path.removeLast(2)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 3)
+
+        // Navigate back to the same screen; it now sits at a shallower depth.
+        controller.push(to: TestDestination.screenC(randomData: "moreData"))
+
+        #expect(controller.properties.path.count == 2)
+        // Origin updated to the latest count (2), not the stale 3.
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 2)
+    }
+
+    @Test
     func `deepLink should clear path and origins when new path is empty`() {
         let controller: TestNaviController = TestNaviController()
         controller.push(to: TestDestination.screenB)
