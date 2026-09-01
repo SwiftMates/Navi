@@ -6,7 +6,7 @@ import CompilerPluginSupport
 
 let package = Package(
     name: "Navi",
-    platforms: [.iOS(.v17), .macOS(.v14)],
+    platforms: [.iOS(.v16), .macOS(.v13)],
     products: [
         .library(
             name: "Navi",
