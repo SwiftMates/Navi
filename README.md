@@ -4,8 +4,8 @@
 
 <p align="center">
     <a href="https://github.com/SwiftMates/Navi/actions/workflows/main.yml"><img src="https://github.com/SwiftMates/Navi/actions/workflows/main.yml/badge.svg?branch=main" alt="Main" /></a>
-    <a href="https://swift.org"><img src="https://img.shields.io/badge/Swift-6.0+-F05138?logo=swift" alt="Swift 6.0+" /></a>
-    <a href="Package.swift"><img src="https://img.shields.io/badge/Platforms-iOS%2016%2B%20%7C%20macOS%2013%2B-lightgrey" alt="Platforms" /></a>
+    <a href="https://swiftpackageindex.com/SwiftMates/Navi"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FSwiftMates%2FNavi%2Fbadge%3Ftype%3Dswift-versions" alt="Swift Version Compatibility" /></a>
+    <a href="https://swiftpackageindex.com/SwiftMates/Navi"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FSwiftMates%2FNavi%2Fbadge%3Ftype%3Dplatforms" alt="Platform Compatibility" /></a>
     <a href="https://swiftpackageindex.com/SwiftMates/Navi"><img src="https://img.shields.io/badge/SPM-compatible-brightgreen" alt="SPM" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue" alt="MIT" /></a>
 </p>
