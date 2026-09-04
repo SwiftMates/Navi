@@ -640,8 +640,7 @@ struct DestinationRepresentableMacroTests {
     // MARK: - Error cases
 
     @Test
-    func `expansion should produce an error when DestinationRepresentable is applied to a struct`()
-    {
+    func `expansion should produce an error when DestinationRepresentable is applied to a struct`() {
         assertMacroExpansion(
             """
             @DestinationRepresentable
@@ -683,8 +682,7 @@ struct DestinationRepresentableMacroTests {
     }
 
     @Test
-    func `expansion should produce an error when DestinationRepresentable is applied to an actor`()
-    {
+    func `expansion should produce an error when DestinationRepresentable is applied to an actor`() {
         assertMacroExpansion(
             """
             @DestinationRepresentable
@@ -1382,8 +1380,7 @@ struct DestinationRepresentableMacroTests {
     }
 
     @Test
-    func `expansion should still emit the Hashable clause when a parameter is already constrained`()
-    {
+    func `expansion should still emit the Hashable clause when a parameter is already constrained`() {
         assertMacroExpansion(
             """
             @DestinationRepresentable
