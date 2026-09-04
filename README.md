@@ -2,6 +2,14 @@
     <img width="350" alt="Navi_package_logo_cropped" src="https://github.com/user-attachments/assets/817f6e98-da67-4bf0-94eb-01448a7148a1" />
 </p>
 
+<p align="center">
+    <a href="https://github.com/SwiftMates/Navi/actions/workflows/main.yml"><img src="https://github.com/SwiftMates/Navi/actions/workflows/main.yml/badge.svg?branch=main" alt="Main" /></a>
+    <a href="https://swift.org"><img src="https://img.shields.io/badge/Swift-6.0+-F05138?logo=swift" alt="Swift 6.0+" /></a>
+    <a href="Package.swift"><img src="https://img.shields.io/badge/Platforms-iOS%2016%2B%20%7C%20macOS%2013%2B-lightgrey" alt="Platforms" /></a>
+    <a href="https://swiftpackageindex.com/SwiftMates/Navi"><img src="https://img.shields.io/badge/SPM-compatible-brightgreen" alt="SPM" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue" alt="MIT" /></a>
+</p>
+
 A lightweight, Swift 6 native navigation package for SwiftUI's `NavigationStack`.
 
 `Navi` is a simple, lightweight Swift package that makes working with SwiftUI's `NavigationStack` easier, cleaner, and more flexible — without imposing any architecture or heavy abstractions.
@@ -55,6 +63,21 @@ SwiftUI's `NavigationStack` is powerful, but as your app grows, you may encounte
 
 ---
 
+## ✅ Requirements
+
+| Platform | Minimum |
+|:---------|:--------|
+| iOS      | 16.0+   |
+| macOS    | 13.0+   |
+| Swift    | 6.0+ (tools 6.3) |
+| Xcode    | 16.0+ |
+
+Navi is a pure Swift 6 package. On iOS 17+ / macOS 14+ you can use the `@Observable`
+controller pattern (see `Examples/Basic`); on iOS 16 / macOS 13 use the `ObservableObject`
+pattern instead (see `Examples/Basic-iOS16`).
+
+---
+
 ## 📦 Installation
 
 ### Swift Package Manager (SPM)
@@ -78,9 +101,9 @@ dependencies: [
 
 ## 🧩 Basic Usage
 
-Provide a logger
+### 1. (Optional) Provide a logger
 
-Navi routes its navigation events through `NaviLogging`. There's no default, so conform a type of your own and pass it in.
+`NaviControllerProperties` works with or without a logger (`Sources/Core/Navigation/NaviControllerProperties.swift:27`). If you want navigation events, conform to `NaviLogging` (`Sources/Core/Logger/NaviLogging.swift:9`):
 
 ```swift
 import OSLog
@@ -98,16 +121,26 @@ final class AppLogger: NaviLogging {
 }
 ```
 
-Create a controller
+### 2. Create a controller
 
 ```swift
+// iOS 17+ / macOS 14+ — @Observable
 @Observable
 final class DemoController: NaviController {
-    var properties = NaviControllerProperties(logger: AppLogger())
+    var properties = NaviControllerProperties() // or NaviControllerProperties(logger: AppLogger())
 }
 ```
 
-Create the NavigationStack
+On iOS 16 / macOS 13 use `ObservableObject` instead (see `Examples/Basic-iOS16/Basic-iOS16/BasicExampleController.swift:11`):
+
+```swift
+@MainActor
+final class DemoController: NaviController, ObservableObject {
+    @Published var properties = NaviControllerProperties() // or with logger
+}
+```
+
+### 3. Create the NavigationStack
 
 ```swift
 @main
@@ -125,7 +158,7 @@ struct BasicApp: App {
 }
 ```
 
-Conform your destinations to DestinationRepresentable
+### 4. Conform your destinations to DestinationRepresentable
 
 ```swift
 @DestinationRepresentable
@@ -135,7 +168,7 @@ enum HomeDestinations {
 }
 ```
 
-Wire it up in SwiftUI
+### 5. Wire it up in SwiftUI
 
 ```swift
 struct HomeView: View {
@@ -157,7 +190,7 @@ struct HomeView: View {
 }
 ```
 
-Trigger navigation
+### 6. Trigger navigation
 
 ```swift
 func navigateToSettings() {
@@ -205,12 +238,12 @@ func deepLinkToEmailSettings() {
 
 ## 📖 Examples
 
-> Check out our examples to see Navi in action — from simple navigation flows to a full Coordinator pattern setup.
+> Check out our examples to see Navi in action.
 
 | Example | Status |
 |:--------|:------:|
-| Simple | ✅ Examples/Basic |
-| Coordinator | 🚧 Under construction |
+| Simple (iOS 17+) — `Examples/Basic` | ✅ |
+| Simple (iOS 16 / macOS 13) — `Examples/Basic-iOS16` | ✅ |
 
 ## 🧠 Design Philosophy
 
@@ -225,23 +258,29 @@ If you understand SwiftUI navigation, you already understand Navi.
 
 ## 📚 Documentation
 
-- Inline documentation is provided throughout the source code
-- Public APIs are intentionally small and easy to explore
-- The repository itself serves as the best reference
+- Inline documentation throughout the source (`Sources/Core/Navigation/NaviController.swift:14`, `Sources/Core/Navigation/DestinationRepresentable.swift:13`, `Sources/Core/Logger/NaviLogging.swift:9`)
+- Public API is intentionally small — explore `NaviController`, `DestinationRepresentable`, `@DestinationRepresentable` / `@OriginKey`
+- See `Examples/Basic` and `Examples/Basic-iOS16` for runnable setups
 
-More examples and guides may be added over time.
+## 📝 Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) and [GitHub Releases](https://github.com/SwiftMates/Navi/releases).
 
 ## 🤝 Contributing
 
 ### Contributions are welcome!
 
-1. If you'd like to help improve Navi:
-2. Fork the repository
-3. Create a new branch (git checkout -b feature/amazing-feature)
-4. Make your changes
-5. Commit your changes (git commit -m 'Add amazing feature')
-6. Push to the branch (git push origin feature/amazing-feature)
-7. Open a Pull Request
+1. Fork the repository
+2. Create a branch from `develop` (`develop` is the integration branch, PRs target `develop`):
+   ```sh
+   git checkout develop
+   git checkout -b feature/amazing-feature
+   ```
+3. Make your changes
+4. Run `swift test` and, if you touched examples, `bundle exec fastlane build_basic` / `build_basic_ios16` (see `.github/workflows/pr-validation.yml:12`)
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request against `develop`
 
 Bug reports, feature suggestions, and improvements are all appreciated.
 
