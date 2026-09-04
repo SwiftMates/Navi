@@ -2,30 +2,41 @@ name: PR Validation
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - develop
+      - main
 
 jobs:
-  format:
+  swiftformat:
     name: SwiftFormat Lint
     runs-on: macos-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.1
 
-      - name: Install swift-format
-        run: brew install swift-format
-
-      - name: Lint
-        run: swift-format lint --recursive --configuration .swift-format Sources Tests Examples
+      - name: Lint with swift-format (strict)
+        run: |
+          set -o pipefail
+          SWIFT_FORMAT="$(xcrun --find swift-format)"
+          "$SWIFT_FORMAT" lint --strict --parallel --configuration .swift-format \
+            --recursive Sources Tests Examples Plugins 2>&1 | tee /tmp/swiftformat.log | \
+          sed -n -E \
+            -e 's/^([^:]+):([0-9]+):([0-9]+): error: (.*)$/::error file=\1,line=\2,col=\3::\4/p' \
+            -e 's/^([^:]+):([0-9]+):([0-9]+): warning: (.*)$/::warning file=\1,line=\2,col=\3::\4/p'
+          STATUS="${PIPESTATUS[0]}"
+          if [ "$STATUS" -ne 0 ]; then
+            echo "swift-format found violations (see inline annotations above)"
+            exit "$STATUS"
+          fi
 
   test:
     name: Swift Package Tests
     runs-on: macos-latest
+    needs: swiftformat
+    env:
+      SWIFTFORMAT_STRICT: 1
 
     steps:
       - name: Checkout
@@ -33,3 +44,39 @@ jobs:
 
       - name: Run unit tests
         run: swift test
+
+  build-basic-example:
+    name: Build Basic Example
+    runs-on: macos-latest
+    needs: swiftformat
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Build Basic example
+        run: bundle exec fastlane build_basic
+
+  build-basic-ios16-example:
+    name: Build Basic iOS 16 Example
+    runs-on: macos-latest
+    needs: swiftformat
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Build Basic iOS 16 example
+        run: bundle exec fastlane build_basic_ios16

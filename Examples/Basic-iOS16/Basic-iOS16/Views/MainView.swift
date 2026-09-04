@@ -1,0 +1,41 @@
+//
+//  MainView.swift
+//  Basic
+//
+//  Created by David Pall on 2026. 07. 07..
+//
+
+import Navi
+import SwiftUI
+
+struct MainView: View {
+
+    @EnvironmentObject var controller: BasicExampleController
+
+    var body: some View {
+        VStack(spacing: 24) {
+            Button("Show View - A") {
+                controller.push(to: MainViewsDestinations.viewA)
+            }
+
+            Button("Deeplink to View - C") {
+                controller.deepLink(to: [
+                    MainViewsDestinations.viewA,
+                    ViewADestinations.viewB,
+                    ViewBDestinations.viewC,
+                ])
+            }
+        }
+        .navigationTitle("Main view")
+        .navigationDestination(for: MainViewsDestinations.self) { destination in
+            switch destination {
+            case .viewA: ViewA()
+            }
+        }
+    }
+}
+
+@DestinationRepresentable
+enum MainViewsDestinations {
+    @OriginKey case viewA
+}

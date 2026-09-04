@@ -18,6 +18,11 @@ let package = Package(
         .package(url: "https://github.com/swiftlang/swift-format", from: "603.0.0"),
     ],
     targets: [
+        .plugin(
+            name: "SwiftFormatLint",
+            capability: .buildTool(),
+            path: "Plugins/SwiftFormatLint"
+        ),
         .macro(
             name: "NaviMacrosPlugin",
             dependencies: [
@@ -25,7 +30,8 @@ let package = Package(
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
             ],
-            path: "Sources/NaviMacrosPlugin"
+            path: "Sources/NaviMacrosPlugin",
+            plugins: ["SwiftFormatLint"]
         ),
         .target(
             name: "Navi",
@@ -35,7 +41,8 @@ let package = Package(
                 "Logger",
                 "Navigation",
                 "Macros/DestinationMacro.swift"
-            ]
+            ],
+            plugins: ["SwiftFormatLint"]
         ),
         .testTarget(
             name: "NaviTests",
@@ -45,7 +52,8 @@ let package = Package(
                 .product(name: "SwiftSyntaxMacrosGenericTestSupport", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacroExpansion", package: "swift-syntax")
             ],
-            path: "Tests"
+            path: "Tests",
+            plugins: ["SwiftFormatLint"]
         )
     ],
     swiftLanguageModes: [.v6]

@@ -210,14 +210,14 @@ public struct OriginKeyMacro: PeerMacro {
 
 // MARK: - Syntax Helpers
 
-private extension EnumCaseElementSyntax {
+extension EnumCaseElementSyntax {
     /// Case name with surrounding backticks removed (keyword-safe): `default` → "default".
-    var canonicalName: String { name.identifier?.name ?? name.text }
+    fileprivate var canonicalName: String { name.identifier?.name ?? name.text }
 }
 
-private extension EnumCaseDeclSyntax {
+extension EnumCaseDeclSyntax {
     /// Whether this case declaration carries the attribute written as `@<name>`.
-    func hasAttribute(named name: String) -> Bool {
+    fileprivate func hasAttribute(named name: String) -> Bool {
         attributes.contains { element in
             element.as(AttributeSyntax.self)?
                 .attributeName

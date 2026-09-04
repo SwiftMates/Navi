@@ -11,7 +11,7 @@ import SwiftUI
 @main
 struct BasicApp: App {
 
-    @State private var controller = BasicExampleController()
+    @StateObject private var controller = BasicExampleController()
 
     var body: some Scene {
         WindowGroup {
@@ -22,7 +22,7 @@ struct BasicApp: App {
 
                 DebugView(viewCount: controller.properties.path.count)
             }
-            .environment(controller)
+            .environmentObject(controller)
         }
     }
 }
