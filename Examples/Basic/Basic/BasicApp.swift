@@ -15,7 +15,7 @@ struct BasicApp: App {
 
     var body: some Scene {
         WindowGroup {
-         ZStack(alignment: .bottom) {
+            ZStack(alignment: .bottom) {
                 NavigationStack(path: $controller.properties.path) {
                     MainView()
                 }
