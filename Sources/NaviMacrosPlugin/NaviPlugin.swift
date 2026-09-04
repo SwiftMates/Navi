@@ -12,6 +12,6 @@ import SwiftSyntaxMacros
 struct NaviPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
         DestinationRepresentableMacro.self,
-        OriginKeyMacro.self
+        OriginKeyMacro.self,
     ]
 }

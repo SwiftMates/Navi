@@ -5,13 +5,13 @@
 //  Created by David Pall on 2026. 07. 07..
 //
 
-import SwiftUI
 import Navi
+import SwiftUI
 
 struct ViewB: View {
-    
+
     @EnvironmentObject var controller: BasicExampleController
-    
+
     var body: some View {
         VStack(spacing: 24) {
             Button("Show View - C") {
