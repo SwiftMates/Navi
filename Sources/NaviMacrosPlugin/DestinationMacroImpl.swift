@@ -46,7 +46,8 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         if enumDecl.genericParameterClause != nil, casesWithOriginKey.isEmpty == false {
             for caseDecl in casesWithOriginKey {
                 context.diagnose(
-                    Diagnostic(node: caseDecl, message: NaviDiagnostic.originKeyInGenericEnum))
+                    Diagnostic(node: caseDecl, message: NaviDiagnostic.originKeyInGenericEnum)
+                )
             }
             return []
         }
@@ -56,7 +57,8 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         for element in originCaseElements {
             guard isValidSwiftIdentifier(element.canonicalName) else {
                 context.diagnose(
-                    Diagnostic(node: element, message: NaviDiagnostic.originKeyRawIdentifier))
+                    Diagnostic(node: element, message: NaviDiagnostic.originKeyRawIdentifier)
+                )
                 continue
             }
             originCases.append(element)
@@ -73,7 +75,8 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
                     let name = caseName.name.text
                     if originCaseNameSet.contains(name) {
                         SwitchCaseSyntax(
-                            "case .\(raw: name): return Origins.\(raw: caseName.canonicalName)")
+                            "case .\(raw: name): return Origins.\(raw: caseName.canonicalName)"
+                        )
                     } else {
                         SwitchCaseSyntax("case .\(raw: name): return nil")
                     }

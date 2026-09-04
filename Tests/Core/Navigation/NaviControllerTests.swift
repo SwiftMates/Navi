@@ -53,7 +53,8 @@ struct NaviControllerTests {
         controller.push(to: TestDestination.screenA)
         #expect(controller.properties.path.count == 2)
         #expect(
-            controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1)
+            controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1
+        )
     }
 
     @Test
@@ -66,7 +67,8 @@ struct NaviControllerTests {
         controller.pop()
         #expect(controller.properties.path.count == 1)
         #expect(
-            controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1)
+            controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1
+        )
     }
 
     @Test
@@ -89,9 +91,11 @@ struct NaviControllerTests {
         controller.pop(to: TestDestination.Origins.screenB)
         #expect(controller.properties.path.count == 2)
         #expect(
-            controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 2)
+            controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 2
+        )
         #expect(
-            controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == nil)
+            controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == nil
+        )
     }
 
     @Test
@@ -103,9 +107,11 @@ struct NaviControllerTests {
 
         #expect(controller.properties.path.count == 2)
         #expect(
-            controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1)
+            controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1
+        )
         #expect(
-            controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == nil)
+            controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == nil
+        )
     }
 
     @Test
@@ -123,7 +129,8 @@ struct NaviControllerTests {
         #expect(controller.properties.path.count == 3)
         // TODO: - Check screenC is not in origin keys
         #expect(
-            controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 3)
+            controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 3
+        )
     }
 
     @Test
@@ -142,9 +149,11 @@ struct NaviControllerTests {
         controller.pop()
         #expect(controller.properties.path.count == 1)
         #expect(
-            controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1)
+            controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1
+        )
         #expect(
-            controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == nil)
+            controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == nil
+        )
     }
 
     @Test
@@ -156,9 +165,11 @@ struct NaviControllerTests {
         controller.pop(to: TestDestination.Origins.screenC)
         #expect(controller.properties.path.count == 3)
         #expect(
-            controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 2)
+            controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 2
+        )
         #expect(
-            controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 3)
+            controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 3
+        )
     }
 
     @Test
@@ -169,7 +180,8 @@ struct NaviControllerTests {
         controller.push(to: TestDestination.screenB)
         #expect(controller.properties.path.count == 3)
         #expect(
-            controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 3)
+            controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 3
+        )
     }
 
     @Test
@@ -185,7 +197,8 @@ struct NaviControllerTests {
         #expect(controller.properties.path.count == 1)
         // origins are NOT reconciled — syncStackOrigins() only runs inside pop().
         #expect(
-            controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 2)
+            controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 2
+        )
     }
 
     @Test
@@ -198,7 +211,8 @@ struct NaviControllerTests {
         // Simulate two swipe-backs: direct NavigationPath mutation, bypassing pop().
         controller.properties.path.removeLast(2)
         #expect(
-            controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 3)
+            controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 3
+        )
 
         // Navigate back to the same screen; it now sits at a shallower depth.
         controller.push(to: TestDestination.screenC(randomData: "moreData"))
@@ -206,7 +220,8 @@ struct NaviControllerTests {
         #expect(controller.properties.path.count == 2)
         // Origin updated to the latest count (2), not the stale 3.
         #expect(
-            controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 2)
+            controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 2
+        )
     }
 
     @Test
@@ -246,7 +261,8 @@ struct NaviControllerTests {
         #expect(
             controller.logger.logInfoReceivedInvocations == [
                 "Path appended with destination: screenA."
-            ])
+            ]
+        )
         #expect(controller.logger.logInfoCallsCount == 1)
         #expect(controller.logger.logErrorCalled == false)
     }
@@ -261,7 +277,8 @@ struct NaviControllerTests {
             controller.logger.logInfoReceivedInvocations == [
                 "Path appended with destination: screenB.",
                 "Navigation origin \(TestDestination.Origins.screenB) registered as pop target at path index 1.",
-            ])
+            ]
+        )
         #expect(controller.logger.logInfoCallsCount == 2)
         #expect(controller.logger.logErrorCalled == false)
     }
@@ -277,7 +294,8 @@ struct NaviControllerTests {
             controller.logger.logInfoReceivedInvocations == [
                 "Path appended with destination: screenA.",
                 "Last path element removed.",
-            ])
+            ]
+        )
         #expect(controller.logger.logInfoCallsCount == 2)
         #expect(controller.logger.logErrorCalled == false)
     }
@@ -298,7 +316,8 @@ struct NaviControllerTests {
                 "Navigation origin \(TestDestination.Origins.screenC) registered as pop target at path index 2.",
                 "Last path element removed.",
                 "Navigation origin removed: Optional(\"\(TestDestination.Origins.screenC)\") from index: 2.",
-            ])
+            ]
+        )
         #expect(controller.logger.logInfoCallsCount == 6)
         #expect(controller.logger.logErrorCalled == false)
     }
@@ -316,7 +335,8 @@ struct NaviControllerTests {
                 "Navigation origin \(TestDestination.Origins.screenB) registered as pop target at path index 1.",
                 "All navigation origins cleared.",
                 "Navigation path cleared.",
-            ])
+            ]
+        )
         #expect(controller.logger.logInfoCallsCount == 4)
         #expect(controller.logger.logErrorCalled == false)
     }
@@ -339,7 +359,8 @@ struct NaviControllerTests {
                 "Path appended with destination: screenB.",
                 "Navigation origin \(TestDestination.Origins.screenB) registered as pop target at path index 2.",
                 "Deep-link path set to: \(newPath).",
-            ])
+            ]
+        )
         #expect(controller.logger.logInfoCallsCount == 6)
         #expect(controller.logger.logErrorCalled == false)
     }

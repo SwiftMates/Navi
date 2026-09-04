@@ -11,13 +11,18 @@ jobs:
   swiftformat:
     name: SwiftFormat Lint
     runs-on: macos-latest
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.1
 
       - name: Lint with swift-format (strict)
+        id: lint
         run: |
+          set +e
           set -o pipefail
           SWIFT_FORMAT="$(xcrun --find swift-format)"
           "$SWIFT_FORMAT" lint --strict --parallel --configuration .swift-format \
@@ -26,10 +31,84 @@ jobs:
             -e 's/^([^:]+):([0-9]+):([0-9]+): error: (.*)$/::error file=\1,line=\2,col=\3::\4/p' \
             -e 's/^([^:]+):([0-9]+):([0-9]+): warning: (.*)$/::warning file=\1,line=\2,col=\3::\4/p'
           STATUS="${PIPESTATUS[0]}"
+          echo "status=${STATUS}" >> "$GITHUB_OUTPUT"
+          echo "## SwiftFormat Lint" >> "$GITHUB_STEP_SUMMARY"
           if [ "$STATUS" -ne 0 ]; then
-            echo "swift-format found violations (see inline annotations above)"
-            exit "$STATUS"
+            echo "swift-format found violations:" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/swiftformat.log >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            echo "swift-format found violations (see annotations, summary, and PR comment)"
+          else
+            echo "swift-format clean." >> "$GITHUB_STEP_SUMMARY"
+            echo "swift-format clean."
           fi
+          exit "$STATUS"
+
+      - name: Upload lint log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: swiftformat-log
+          path: /tmp/swiftformat.log
+          if-no-files-found: warn
+
+      - name: Comment PR with lint results
+        if: always() && github.eventName == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- swiftformat-lint -->';
+            let log = '';
+            try {
+              log = fs.readFileSync('/tmp/swiftformat.log', 'utf8').trim();
+            } catch (e) {
+              log = '';
+            }
+            const status = '${{ steps.lint.outputs.status }}';
+            const failed = status !== '0';
+            const lines = log ? log.split('\n').filter(Boolean) : [];
+            const rows = lines.slice(0, 50).map((line) => {
+              const m = line.match(/^([^:]+):(\d+):(\d+):\s*(error|warning):\s*(.*)$/);
+              if (!m) return `| \`-\` | \`-\` | \`${line.slice(0, 120)}\` |`;
+              return `| \`${m[1]}:${m[2]}:${m[3]}\` | ${m[4]} | ${m[5]} |`;
+            });
+            let body = `${marker}\n`;
+            if (!failed) {
+              body += `### ✅ SwiftFormat clean\nNo violations.\n`;
+            } else {
+              body += `### ❌ SwiftFormat violations (${lines.length})\n\n`;
+              body += `| File | Severity | Message |\n| --- | --- | --- |\n${rows.join('\n')}\n`;
+              if (lines.length > 50) {
+                body += `\n_Showing first 50 of ${lines.length}. See full log in the workflow summary / artifact._\n`;
+              }
+              body += `\n<details><summary>Raw log</summary>\n\n\`\`\`\n${log.slice(0, 55000)}\n\`\`\`\n</details>\n`;
+              body += `\nRun \`make format\` locally and push again.\n`;
+            }
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(
+              (c) => c.body && c.body.includes(marker) && c.user.login === 'github-actions[bot]'
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
 
   test:
     name: Swift Package Tests

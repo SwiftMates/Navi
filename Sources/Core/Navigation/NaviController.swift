@@ -95,13 +95,15 @@ extension NaviController {
     public func pop(to origin: any OriginRepresentable) {
         guard let originIndex = properties.naviStackOrigins[origin.key] else {
             properties.logger?.logError(
-                "Navigation origin was not found ---> \(String(describing: origin)).")
+                "Navigation origin was not found ---> \(String(describing: origin))."
+            )
             assertionFailure("Navigation origin was not found ---> \(origin).")
             return
         }
         let indexToRemove = properties.path.count - originIndex
         properties.logger?.logInfo(
-            "Popping \(indexToRemove) destination(s) back to origin: \(origin).")
+            "Popping \(indexToRemove) destination(s) back to origin: \(origin)."
+        )
         pop(last: indexToRemove)
     }
 
