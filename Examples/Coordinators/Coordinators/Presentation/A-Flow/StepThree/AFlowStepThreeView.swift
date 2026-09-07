@@ -26,6 +26,10 @@ struct AFlowStepThreeView: View {
             Button("Show next coordinator") {
                 viewModel.onShowNextCoordinatorPressed()
             }
+            
+            Button("Go home") {
+                viewModel.onGoHomeTapped()
+            }
         }
         .navigationTitle("A-Flow Step Three")
     }

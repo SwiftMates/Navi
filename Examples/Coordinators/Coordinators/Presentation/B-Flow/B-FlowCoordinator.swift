@@ -22,10 +22,18 @@ struct BFlowCoordinator {
     
     let manager: NavigationController
     
+    // MARK: - Private properties
+    
+    private let onFinish: () -> Void
+    
     // MARK: - Lifecycle
     
-    init(manager: NavigationController) {
+    init(
+        manager: NavigationController,
+        onFinish: @escaping () -> Void
+    ) {
         self.manager = manager
+        self.onFinish = onFinish
     }
     
     // MARK: - Public functions
@@ -46,7 +54,9 @@ struct BFlowCoordinator {
     
     func onStepThree(_ action: BFlowStepThreeViewModel.Action) {
         switch action {
-        case .doneButtonTapped:
+        case .finish:
+            onFinish()
+        case .goHome:
             manager.popToRoot()
         }
     }

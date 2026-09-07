@@ -23,8 +23,12 @@ struct BFlowStepThreeView: View {
     
     var body: some View {
         VStack {
-            Button("Done") {
-                viewModel.onDoneButtonTapped()
+            Button("Finish coordinator") {
+                viewModel.onFinishCoordinator()
+            }
+            
+            Button("Go home") {
+                viewModel.onGoHomeTapped()
             }
         }
         .navigationTitle("B-Flow Step Three")

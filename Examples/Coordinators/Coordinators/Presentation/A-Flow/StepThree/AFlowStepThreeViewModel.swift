@@ -15,6 +15,7 @@ final class AFlowStepThreeViewModel {
     
     enum Action {
         case showNextCoordinator
+        case goHome
     }
     
     // MARK: - Public properties
@@ -31,5 +32,9 @@ final class AFlowStepThreeViewModel {
     
     func onShowNextCoordinatorPressed() {
         action(.showNextCoordinator)
+    }
+    
+    func onGoHomeTapped() {
+        action(.goHome)
     }
 }

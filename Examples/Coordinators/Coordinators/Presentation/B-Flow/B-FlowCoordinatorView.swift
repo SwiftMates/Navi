@@ -16,8 +16,11 @@ struct BFlowCoordinatorView: View {
     
     // MARK: - Lifecycle
     
-    init(manager: NavigationController) {
-        self.coordinator = BFlowCoordinator(manager: manager)
+    init(
+        manager: NavigationController,
+        onFinish: @escaping () -> Void
+    ) {
+        self.coordinator = BFlowCoordinator(manager: manager, onFinish: onFinish)
     }
     
     // MARK: - Content

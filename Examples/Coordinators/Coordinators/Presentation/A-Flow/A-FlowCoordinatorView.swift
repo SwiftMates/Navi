@@ -50,7 +50,11 @@ struct AFlowCoordinatorView: View {
     @ViewBuilder
     private func destination(for childCoordinator: AFlowCoordinator.Coordinators) -> some View {
         switch childCoordinator {
-        case .bFlow: BFlowCoordinatorView(manager: coordinator.manager)
+        case .bFlow:
+            BFlowCoordinatorView(
+                manager: coordinator.manager,
+                onFinish: coordinator.onBFlowFinish
+            )
         }
     }
 }

@@ -14,7 +14,7 @@ struct AFlowCoordinator {
     @DestinationRepresentable
     enum Destination {
         case stepTwo
-        case stepThree
+        @OriginKey case stepThree
     }
     
     @DestinationRepresentable
@@ -52,6 +52,12 @@ struct AFlowCoordinator {
         switch action {
         case .showNextCoordinator:
             manager.push(to: Coordinators.bFlow)
+        case .goHome:
+            manager.popToRoot()
         }
+    }
+    
+    func onBFlowFinish() {
+        manager.pop(to: Destination.Origins.stepThree)
     }
 }

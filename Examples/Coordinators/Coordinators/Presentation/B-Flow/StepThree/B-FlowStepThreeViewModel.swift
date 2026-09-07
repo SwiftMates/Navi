@@ -13,7 +13,8 @@ final class BFlowStepThreeViewModel {
     // MARK: - Nested types
     
     enum Action {
-        case doneButtonTapped
+        case finish
+        case goHome
     }
     
     // MARK: - Public properties
@@ -28,7 +29,11 @@ final class BFlowStepThreeViewModel {
     
     // MARK: - Public properties
     
-    func onDoneButtonTapped() {
-        action(.doneButtonTapped)
+    func onFinishCoordinator() {
+        action(.finish)
+    }
+    
+    func onGoHomeTapped() {
+        action(.goHome)
     }
 }
