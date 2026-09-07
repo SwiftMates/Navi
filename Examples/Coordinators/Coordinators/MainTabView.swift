@@ -17,16 +17,12 @@ struct MainTabView: View {
     
     var body: some View {
         TabView(selection: $viewModel.selectedTab) {
-            Tab("One", systemImage: "1.circle", value: .one) {
-                NavigationStackWrapper { AFlowCoordinatorView(manager: $0) }
+            Tab("Home", systemImage: "house", value: .one) {
+                NavigationStackWrapper { HomeCoordinatorView(manager: $0) }
             }
             
-            Tab("Two", systemImage: "2.circle", value: .two) {
-                Text("Tab two")
-            }
-            
-            Tab("Three", systemImage: "3.circle", value: .three) {
-                Text("Tab three")
+            Tab("Deeplinks", systemImage: "link", value: .two) {
+                Text("Deeplinks")
             }
         }
     }

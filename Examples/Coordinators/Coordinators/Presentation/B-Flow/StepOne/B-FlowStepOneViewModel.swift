@@ -1,20 +1,19 @@
 //
-//  AFlowStepThreeViewModel.swift
+//  BFlowStepOneViewModel.swift
 //  Coordinators
 //
-//  Created by David Pall on 2026. 08. 20..
+//  Created by David Pall on 2026. 09. 07..
 //
-
 
 import Foundation
 
 @Observable
-final class AFlowStepThreeViewModel {
+final class BFlowStepOneViewModel {
     
     // MARK: - Nested types
     
     enum Action {
-        case showNextCoordinator
+        case nextButtonTapped
     }
     
     // MARK: - Public properties
@@ -29,7 +28,7 @@ final class AFlowStepThreeViewModel {
     
     // MARK: - Public properties
     
-    func onShowNextCoordinatorPressed() {
-        action(.showNextCoordinator)
+    func onNextButtonTapped() {
+        action(.nextButtonTapped)
     }
 }

@@ -23,8 +23,8 @@ struct AFlowStepThreeView: View {
     
     var body: some View {
         VStack {
-            Button("Done") {
-                viewModel.ondoneButtonTapped()
+            Button("Show next coordinator") {
+                viewModel.onShowNextCoordinatorPressed()
             }
         }
         .navigationTitle("A-Flow Step Three")

@@ -23,7 +23,7 @@ struct AFlowStepTwoView: View {
     
     var body: some View {
         VStack {
-            Button("Show next step") {
+            Button("Show step three") {
                 viewModel.onNextButtonTapped()
             }
         }

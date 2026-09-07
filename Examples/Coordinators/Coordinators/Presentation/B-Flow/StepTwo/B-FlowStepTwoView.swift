@@ -1,21 +1,21 @@
 //
-//  A-FlowStepOneView.swift
+//  BFlowStepTwoView.swift
 //  Coordinators
 //
-//  Created by David Pall on 2026. 08. 20..
+//  Created by David Pall on 2026. 09. 07..
 //
 
 import SwiftUI
 
-struct AFlowStepOneView: View {
+struct BFlowStepTwoView: View {
     
     // MARK: - Properties
     
-    @State private var viewModel: AFlowStepOneViewModel
+    @State private var viewModel: BFlowStepTwoViewModel
     
     // MARK: - Lifecycle
     
-    init(action: @escaping (AFlowStepOneViewModel.Action) -> Void) {
+    init(action: @escaping (BFlowStepTwoViewModel.Action) -> Void) {
         _viewModel = State(initialValue: .init(action: action))
     }
     
@@ -23,10 +23,10 @@ struct AFlowStepOneView: View {
     
     var body: some View {
         VStack {
-            Button("Show step two") {
+            Button("Show step three") {
                 viewModel.onNextButtonTapped()
             }
         }
-        .navigationTitle("A-Flow Step One")
+        .navigationTitle("B-Flow Step Two")
     }
 }

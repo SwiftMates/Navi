@@ -1,13 +1,14 @@
 //
-//  A-FlowCoordinator.swift
+//  BFlowCoordinator.swift
 //  Coordinators
 //
-//  Created by David Pall on 2026. 08. 20..
+//  Created by David Pall on 2026. 09. 07..
 //
+
 
 import Navi
 
-struct AFlowCoordinator {
+struct BFlowCoordinator {
     
     // MARK: - Nested types
 
@@ -15,11 +16,6 @@ struct AFlowCoordinator {
     enum Destination {
         case stepTwo
         case stepThree
-    }
-    
-    @DestinationRepresentable
-    enum Coordinators {
-        case bFlow
     }
     
     // MARK: - Public properties
@@ -34,24 +30,24 @@ struct AFlowCoordinator {
     
     // MARK: - Public functions
     
-    func onStepOne(_ action: AFlowStepOneViewModel.Action) {
+    func onStepOne(_ action: BFlowStepOneViewModel.Action) {
         switch action {
         case .nextButtonTapped:
             manager.push(to: Destination.stepTwo)
         }
     }
     
-    func onStepTwo(_ action: AFlowStepTwoViewModel.Action) {
+    func onStepTwo(_ action: BFlowStepTwoViewModel.Action) {
         switch action {
         case .nextButtonTapped:
             manager.push(to: Destination.stepThree)
         }
     }
     
-    func onStepThree(_ action: AFlowStepThreeViewModel.Action) {
+    func onStepThree(_ action: BFlowStepThreeViewModel.Action) {
         switch action {
-        case .showNextCoordinator:
-            manager.push(to: Coordinators.bFlow)
+        case .doneButtonTapped:
+            manager.popToRoot()
         }
     }
 }
