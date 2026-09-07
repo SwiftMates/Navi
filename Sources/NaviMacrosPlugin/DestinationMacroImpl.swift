@@ -31,6 +31,13 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         let caseDecls = members.compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
         let elements = caseDecls.flatMap { $0.elements }
 
+        // A caseless enum has nothing to switch over; generating an empty
+        // `navigationOrigin` would be meaningless, so diagnose instead.
+        guard elements.isEmpty == false else {
+            context.diagnose(Diagnostic(node: enumDecl.name, message: NaviDiagnostic.noCases))
+            return []
+        }
+
         let casesWithOriginKey = caseDecls.filter { $0.hasAttribute(named: "OriginKey") }
         let originCaseElements = casesWithOriginKey.flatMap { $0.elements }
 
@@ -219,10 +226,13 @@ enum NaviDiagnostic: String, DiagnosticMessage {
     case notAnEnumCase
     case originKeyInGenericEnum
     case originKeyRawIdentifier
+    case noCases
 
     var message: String {
         switch self {
         case .notAnEnum: "@DestinationRepresentable can only be applied to an enum"
+        case .noCases:
+            "@DestinationRepresentable can only be applied to an enum with at least one case"
         case .notAnEnumCase: "@OriginKey can only be applied to an enum case"
         case .originKeyInGenericEnum:
             "@OriginKey is not supported on a case of a generic enum, because its generated origin key would be a static stored property, which Swift does not allow in generic types"
