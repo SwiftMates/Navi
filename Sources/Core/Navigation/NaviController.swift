@@ -47,7 +47,7 @@ public protocol NaviController: AnyObject {
 // MARK: - Default implementation
 
 @MainActor
-public extension NaviController {
+extension NaviController {
 
     // MARK: - Public methods
 
@@ -56,17 +56,19 @@ public extension NaviController {
     /// If the destination defines a navigation origin, the origin is tracked for keyed pop operations.
     ///
     /// - Parameter destination: The destination to append to the navigation path.
-    func push(to destination: any DestinationRepresentable) {
+    public func push(to destination: any DestinationRepresentable) {
         properties.path.append(destination)
         properties.logger?.logInfo("Path appended with destination: \(destination).")
         if let origin = destination.navigationOrigin {
             properties.naviStackOrigins[origin.key] = properties.path.count
-            properties.logger?.logInfo("Navigation origin \(origin) registered as pop target at path index \(properties.path.count).")
+            properties.logger?.logInfo(
+                "Navigation origin \(origin) registered as pop target at path index \(properties.path.count)."
+            )
         }
     }
 
     /// Removes the top-most destination from the stack when the path is not empty.
-    func pop() {
+    public func pop() {
         if properties.path.isEmpty == false {
             properties.path.removeLast()
             properties.logger?.logInfo("Last path element removed.")
@@ -77,7 +79,7 @@ public extension NaviController {
     }
 
     /// Clears all pushed destinations and resets tracked navigation origins.
-    func popToRoot() {
+    public func popToRoot() {
         properties.path = NavigationPath()
         syncStackOrigins(removeAll: true)
         properties.logger?.logInfo("Navigation path cleared.")
@@ -90,14 +92,18 @@ public extension NaviController {
     /// assertion is triggered in debug builds.
     ///
     /// - Parameter origin: The origin whose ``OriginRepresentable/key`` identifies the pop target.
-    func pop(to origin: any OriginRepresentable) {
+    public func pop(to origin: any OriginRepresentable) {
         guard let originIndex = properties.naviStackOrigins[origin.key] else {
-            properties.logger?.logError("Navigation origin was not found ---> \(String(describing: origin)).")
+            properties.logger?.logError(
+                "Navigation origin was not found ---> \(String(describing: origin))."
+            )
             assertionFailure("Navigation origin was not found ---> \(origin).")
             return
         }
         let indexToRemove = properties.path.count - originIndex
-        properties.logger?.logInfo("Popping \(indexToRemove) destination(s) back to origin: \(origin).")
+        properties.logger?.logInfo(
+            "Popping \(indexToRemove) destination(s) back to origin: \(origin)."
+        )
         pop(last: indexToRemove)
     }
 
@@ -108,9 +114,11 @@ public extension NaviController {
     /// This operation first resets to root and then pushes each destination in order.
     ///
     /// - Parameter newPath: Ordered destinations representing the desired route.
-    func deepLink(to newPath: [any DestinationRepresentable]) {
+    public func deepLink(to newPath: [any DestinationRepresentable]) {
         popToRoot()
-        newPath.forEach { push(to: $0) }
+        for destination in newPath {
+            push(to: destination)
+        }
         properties.logger?.logInfo("Deep-link path set to: \(newPath).")
     }
 
@@ -131,11 +139,13 @@ public extension NaviController {
         } else {
             for (key, index) in properties.naviStackOrigins where index > properties.path.count {
                 properties.naviStackOrigins.removeValue(forKey: key)
-                properties.logger?.logInfo("Navigation origin removed: \(String(describing: key.debugName)) from index: \(index).")
+                properties.logger?.logInfo(
+                    "Navigation origin removed: \(String(describing: key.debugName)) from index: \(index)."
+                )
             }
         }
     }
-    
+
     /// Removes the specified number of destinations from the end of the navigation stack.
     ///
     /// After removal, tracked navigation origins are synchronized so that any origins pointing
@@ -145,7 +155,9 @@ public extension NaviController {
     /// - Parameter indexCount: The number of trailing destinations to remove from the path.
     private func pop(last indexCount: Int) {
         guard indexCount <= properties.path.count else {
-            properties.logger?.logError("Cannot remove more element from the path than what it has ---> \(indexCount) is bigger than \(self.properties.path.count).")
+            properties.logger?.logError(
+                "Cannot remove more element from the path than what it has ---> \(indexCount) is bigger than \(self.properties.path.count)."
+            )
             assertionFailure("Cannot remove more elements than the path contains.")
             return
         }

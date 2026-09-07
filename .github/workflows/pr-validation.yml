@@ -8,9 +8,37 @@ on:
       - main
 
 jobs:
+  swiftformat:
+    name: SwiftFormat Lint
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Lint with swift-format (strict)
+        run: |
+          set +e
+          set -o pipefail
+          SWIFT_FORMAT="$(xcrun --find swift-format)"
+          "$SWIFT_FORMAT" lint --strict --parallel --configuration .swift-format \
+            --recursive Sources Tests Examples Plugins 2>&1 | tee /tmp/swiftformat.log | \
+          sed -n -E \
+            -e 's/^([^:]+):([0-9]+):([0-9]+): error: (.*)$/::error file=\1,line=\2,col=\3::\4/p' \
+            -e 's/^([^:]+):([0-9]+):([0-9]+): warning: (.*)$/::warning file=\1,line=\2,col=\3::\4/p'
+          STATUS="${PIPESTATUS[0]}"
+          if [ "$STATUS" -ne 0 ]; then
+            echo "swift-format found violations:"
+            cat /tmp/swiftformat.log
+            exit "$STATUS"
+          fi
+
   test:
     name: Swift Package Tests
     runs-on: macos-latest
+    needs: swiftformat
+    env:
+      SWIFTFORMAT_STRICT: 1
 
     steps:
       - name: Checkout
@@ -22,6 +50,7 @@ jobs:
   build-basic-example:
     name: Build Basic Example
     runs-on: macos-latest
+    needs: swiftformat
 
     steps:
       - name: Checkout
@@ -39,6 +68,7 @@ jobs:
   build-basic-ios16-example:
     name: Build Basic iOS 16 Example
     runs-on: macos-latest
+    needs: swiftformat
 
     steps:
       - name: Checkout

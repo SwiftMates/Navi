@@ -3,8 +3,8 @@
 //  Navi
 //
 
-import Testing
 import Navi
+import Testing
 
 // MARK: - DestinationRepresentable Runtime
 
@@ -84,11 +84,11 @@ struct DestinationRepresentableRuntimeTests {
     func `origin key is independent of the associated-value payload`() {
         #expect(
             MultiDestination.second(identifier: "1").navigationOrigin?.key
-            == MultiDestination.Origins.second.key
+                == MultiDestination.Origins.second.key
         )
         #expect(
             MultiDestination.second(identifier: "1").navigationOrigin?.key
-            == MultiDestination.second(identifier: "2").navigationOrigin?.key
+                == MultiDestination.second(identifier: "2").navigationOrigin?.key
         )
     }
 
@@ -102,7 +102,7 @@ struct DestinationRepresentableRuntimeTests {
     func `keyword-named marked case resolves its stripped origin key`() {
         #expect(
             KeywordDestination.`default`.navigationOrigin?.key
-            == KeywordDestination.Origins.`default`.key
+                == KeywordDestination.Origins.`default`.key
         )
         #expect(KeywordDestination.second.navigationOrigin == nil)
     }
@@ -111,7 +111,7 @@ struct DestinationRepresentableRuntimeTests {
     func `enum that pre-declares the conformance still resolves its origin key`() {
         #expect(
             PreConformingDestination.first.navigationOrigin?.key
-            == PreConformingDestination.Origins.first.key
+                == PreConformingDestination.Origins.first.key
         )
         #expect(PreConformingDestination.second.navigationOrigin == nil)
     }
@@ -133,7 +133,7 @@ struct DestinationRepresentableRuntimeTests {
         let keys: Set<NavigationOriginKey> = [
             MultiDestination.Origins.first.key,
             MultiDestination.Origins.second.key,
-            MultiDestination.Origins.third.key
+            MultiDestination.Origins.third.key,
         ]
         #expect(keys.count == 3)
     }
