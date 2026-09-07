@@ -22,7 +22,9 @@ struct AFlowStepTwoView: View {
     // MARK: - Content
     
     var body: some View {
-        VStack {
+        ZStack {
+            Color.green.opacity(0.3).ignoresSafeArea()
+            
             Button("Show step three") {
                 viewModel.onNextButtonTapped()
             }

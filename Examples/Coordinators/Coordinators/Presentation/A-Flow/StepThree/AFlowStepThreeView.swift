@@ -22,13 +22,17 @@ struct AFlowStepThreeView: View {
     // MARK: - Content
     
     var body: some View {
-        VStack {
-            Button("Show next coordinator") {
-                viewModel.onShowNextCoordinatorPressed()
-            }
+        ZStack {
+            Color.green.opacity(0.3).ignoresSafeArea()
             
-            Button("Go home") {
-                viewModel.onGoHomeTapped()
+            VStack {
+                Button("Show next coordinator") {
+                    viewModel.onShowNextCoordinatorPressed()
+                }
+                
+                Button("Go home") {
+                    viewModel.onGoHomeTapped()
+                }
             }
         }
         .navigationTitle("A-Flow Step Three")
