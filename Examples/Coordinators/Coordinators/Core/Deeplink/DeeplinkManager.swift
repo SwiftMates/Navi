@@ -8,18 +8,13 @@
 import Foundation
 import Navi
 
-
-protocol DeeplinkManagerProtocol {
-    func handle(_ deeplink: Deeplink) -> [any DestinationRepresentable]
-}
-
-final class DeeplinkManager: DeeplinkManagerProtocol {
-    func handle(_ deeplink: Deeplink) -> [any DestinationRepresentable] {
+struct DeeplinkManager {
+    func handle(_ deeplink: Deeplink) async -> [any DestinationRepresentable] {
         switch deeplink {
         case .homeTab(let homeTabDeeplink):
-            return HomeTabDeeplinkBuilder().build(for: homeTabDeeplink)
+            return await HomeTabDeeplinkBuilder().build(for: homeTabDeeplink)
         case .deeplinkTab(let deeplinkTabDeeplink):
-            return [] // TODO: - Forward to builder
+            return await DeeplinksTabDeeplinkBuilder().build(for: deeplinkTabDeeplink)
         }
     }
 }

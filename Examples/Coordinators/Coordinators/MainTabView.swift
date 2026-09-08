@@ -31,9 +31,27 @@ struct MainTabView: View {
                 }
             }
         }
-        .onReceive(
-            deeplinkPublisher.publisher,
-            perform: viewModel.onDeeplinkReceived
-        )
+        .onReceive(deeplinkPublisher.publisher) { deeplink in
+            Task {
+                await viewModel.onDeeplinkReceived(deeplink)
+            }
+        }
+        .overlay {
+            if viewModel.isDeeplinkLoading {
+                DeeplinkLoadingView()
+                    .ignoresSafeArea()
+            }
+        }
+    }
+    
+    private struct DeeplinkLoadingView: View {
+        var body: some View {
+            ZStack {
+                Color.white
+                
+                ProgressView()
+                    .foregroundStyle(.black)
+            }
+        }
     }
 }

@@ -20,18 +20,24 @@ final class MainTabViewModel {
     // MARK: - Public properties
     
     var selectedTab: Tabs = .home
+    var isDeeplinkLoading: Bool = false
     
-    let deeplinkManager: any DeeplinkManagerProtocol = DeeplinkManager()
+    let deeplinkManager = DeeplinkManager()
     let homeTabNavigationController = NavigationController()
     
     // MARK: - Public functions
     
-    // TODO: - Make it async and add loader
-    func onDeeplinkReceived(_ deeplink: Deeplink) {
+    func onDeeplinkReceived(_ deeplink: Deeplink) async {
+        isDeeplinkLoading = true
+        
+        defer {
+            isDeeplinkLoading = false
+        }
+        
         switch deeplink {
         case .homeTab:
             selectedTab = .home
-            let route = deeplinkManager.handle(deeplink)
+            let route = await deeplinkManager.handle(deeplink)
             homeTabNavigationController.deepLink(to: route)
         case .deeplinkTab:
             selectedTab = .deeplinks

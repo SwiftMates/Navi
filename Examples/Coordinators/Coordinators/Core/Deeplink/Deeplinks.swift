@@ -12,6 +12,7 @@ enum Deeplink {
 
 enum HomeTabDeeplink {
     case startBFlow
+    case stepTwoOfAFlow
 }
 
 enum DeeplinkTabDeeplink {
