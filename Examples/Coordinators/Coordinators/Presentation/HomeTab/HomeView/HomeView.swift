@@ -22,10 +22,13 @@ struct HomeView: View {
     // MARK: - Content
     
     var body: some View {
-        VStack {
-            Button("Show A-Flow") {
-                viewModel.onShowAFlowTapped()
-            }
+        ZStack {
+            Color.teal.opacity(0.3).ignoresSafeArea()
+            
+            ActionWithExplanationView(
+                title: "Start A-Flow",
+                description: "Starts the A-Flow coordinator with its starter view.",
+                action: viewModel.onShowAFlowTapped)
         }
         .navigationTitle("Home")
     }

@@ -25,9 +25,11 @@ struct BFlowStepTwoView: View {
         ZStack {
             Color.yellow.opacity(0.3).ignoresSafeArea()
             
-            Button("Show step three") {
-                viewModel.onNextButtonTapped()
-            }
+            ActionWithExplanationView(
+                title: "Next",
+                description: "Navigates to B-Flow Step Three.",
+                action: viewModel.onNextButtonTapped
+            )
         }
         .navigationTitle("B-Flow Step Two")
     }

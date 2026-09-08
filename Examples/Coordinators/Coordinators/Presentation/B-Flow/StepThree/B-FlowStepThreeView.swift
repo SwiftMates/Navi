@@ -25,14 +25,18 @@ struct BFlowStepThreeView: View {
         ZStack {
             Color.yellow.opacity(0.3).ignoresSafeArea()
     
-            VStack {
-                Button("Finish coordinator") {
-                    viewModel.onFinishCoordinator()
-                }
+            VStack(spacing: 24) {
+                ActionWithExplanationView(
+                    title: "Finish",
+                    description: "Closes the B-Flow coordinator.",
+                    action: viewModel.onFinishCoordinator
+                )
                 
-                Button("Go to root") {
-                    viewModel.onGoToRootTapped()
-                }
+                ActionWithExplanationView(
+                    title: "Go home",
+                    description: "Clears the navigation and pops back to the root.",
+                    action: viewModel.onGoToRootTapped
+                )
             }
         }
         .navigationTitle("B-Flow Step Three")

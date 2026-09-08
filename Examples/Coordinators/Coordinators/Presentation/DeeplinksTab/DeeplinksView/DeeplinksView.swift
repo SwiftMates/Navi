@@ -27,37 +27,44 @@ struct DeeplinksView: View {
     }
     
     private var content: some View {
-        Form {
-            deeplinkRowView(
-                title: "A-Flow: Step two (Home tab)",
-                description: "Simulates asynchronous data loading.\nNavigates to Step Two of the A-Flow on the Home tab.",
-                action: viewModel.onShowStepTwoOfAFlowOnHome)
-
-            deeplinkRowView(
-                title: "B-Flow: Start (Home tab)",
-                description: "Immediate navigation.\nNavigates to the start of the B-Flow on the Home tab (following the A-Flow).",
-                action: viewModel.onShowBFlowOnHomeTapped)
+        ZStack {
+            Color.orange.opacity(0.3).ignoresSafeArea()
             
-            deeplinkRowView(
-                title: "B-Flow: Start (Deeplinks tab)",
-                description: "Immediate navigation.\nNavigates to the start of the B-Flow on the Deeplinks tab.",
-                action: viewModel.onShowBFlowOnDeeplinks)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    
+                    sectionTitle(for: "On Home Tab")
+                    
+                    ActionWithExplanationView(
+                        title: "A-Flow: Step two",
+                        description: "Simulates asynchronous data loading.\nNavigates to Step Two of the A-Flow on the Home tab.",
+                        action: viewModel.onShowStepTwoOfAFlowOnHome)
+                    
+                    ActionWithExplanationView(
+                        title: "B-Flow: Start",
+                        description: "Immediate navigation.\nNavigates to the start of the B-Flow on the Home tab (following the A-Flow).",
+                        action: viewModel.onShowBFlowOnHomeTapped)
+                    
+                    Divider()
+                    
+                    sectionTitle(for: "On Deeplinks Tab")
+                    
+                    ActionWithExplanationView(
+                        title: "B-Flow: Start",
+                        description: "Immediate navigation.\nNavigates to the start of the B-Flow on the Deeplinks tab.",
+                        action: viewModel.onShowBFlowOnDeeplinks)
+                }
+            }
+            .scrollIndicators(.hidden)
+            .contentMargins(.vertical, 24, for: .scrollContent)
         }
     }
     
-    private func deeplinkRowView(
-        title: String,
-        description: String,
-        action: @escaping () -> Void
-    ) -> some View {
-        Section {
-            Button(title, action: action)
-        } footer: {
-            Text(description)
-        }
+    private func sectionTitle(for title: String) -> some View {
+        Text(title)
+            .font(.title2)
+            .bold()
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 24)
     }
-}
-
-#Preview {
-    DeeplinksView(action: {_ in })
 }

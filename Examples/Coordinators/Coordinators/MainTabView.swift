@@ -45,9 +45,11 @@ struct MainTabView: View {
     private struct DeeplinkLoadingView: View {
         var body: some View {
             ZStack {
-                Color.white
+                Rectangle()
+                    .glassEffect(.clear, in: .rect)
                 
                 ProgressView()
+                    .scaleEffect(2)
                     .foregroundStyle(.black)
             }
         }
