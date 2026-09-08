@@ -1,19 +1,19 @@
 //
-//  HomeCoordinator.swift
+//  DeeplinksCoordinator.swift
 //  Coordinators
 //
-//  Created by David Pall on 2026. 09. 07..
+//  Created by David Pall on 2026. 09. 08..
 //
 
 import Navi
 
-struct HomeCoordinator {
+struct DeeplinksCoordinator {
     
     // MARK: - Nested types
     
     @DestinationRepresentable
     enum Coordinators {
-        case aFlow
+        case bFlow
     }
     
     // MARK: - Public properties
@@ -28,9 +28,13 @@ struct HomeCoordinator {
     
     // MARK: - Public functions
     
-    func onHomeViewAction(_ action: HomeViewModel.Action) {
+    func onDeeplinksViewAction(_ action: DeeplinksViewModel.Action) {
         switch action {
-        case .onShowAFlow: manager.push(to: Coordinators.aFlow)
+        
         }
+    }
+    
+    func onBFlowFinish() {
+        manager.popToRoot()
     }
 }

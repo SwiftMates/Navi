@@ -1,16 +1,16 @@
 //
-//  HomeViewModel.swift
+//  DeeplinksViewModel.swift
 //  Coordinators
 //
-//  Created by David Pall on 2026. 09. 07..
+//  Created by David Pall on 2026. 09. 08..
 //
 
-final class HomeViewModel {
+final class DeeplinksViewModel {
     
     // MARK: - Nested types
     
     enum Action {
-        case onShowAFlow
+        
     }
     
     // MARK: - Public properties
@@ -25,7 +25,4 @@ final class HomeViewModel {
     
     // MARK: - Public functions
     
-    func onShowAFlowTapped() {
-        action(.onShowAFlow)
-    }
 }

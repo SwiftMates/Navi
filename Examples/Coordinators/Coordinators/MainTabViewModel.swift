@@ -24,6 +24,7 @@ final class MainTabViewModel {
     
     let deeplinkManager = DeeplinkManager()
     let homeTabNavigationController = NavigationController()
+    let deeplinksTabNavigationController = NavigationController()
     
     // MARK: - Public functions
     

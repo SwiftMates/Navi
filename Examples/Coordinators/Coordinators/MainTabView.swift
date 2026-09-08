@@ -24,10 +24,8 @@ struct MainTabView: View {
             }
             
             Tab("Deeplinks", systemImage: "link", value: .deeplinks) {
-                Button {
-                    deeplinkPublisher.go(to: .homeTab(.startBFlow))
-                } label: {
-                    Text("Try deeplink")
+                NavigationStackWrapper(manager: viewModel.deeplinksTabNavigationController) {
+                    DeeplinksCoordinatorView(manager: $0)
                 }
             }
         }
