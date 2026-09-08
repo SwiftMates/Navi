@@ -17,13 +17,23 @@ struct MainTabView: View {
     
     var body: some View {
         TabView(selection: $viewModel.selectedTab) {
-            Tab("Home", systemImage: "house", value: .one) {
-                NavigationStackWrapper { HomeCoordinatorView(manager: $0) }
+            Tab("Home", systemImage: "house", value: .home) {
+                NavigationStackWrapper(manager: viewModel.homeTabNavigationController) {
+                    HomeCoordinatorView(manager: $0)
+                }
             }
             
-            Tab("Deeplinks", systemImage: "link", value: .two) {
-                Text("Deeplinks")
+            Tab("Deeplinks", systemImage: "link", value: .deeplinks) {
+                Button {
+                    deeplinkPublisher.go(to: .homeTab(.startBFlow))
+                } label: {
+                    Text("Try deeplink")
+                }
             }
         }
+        .onReceive(
+            deeplinkPublisher.publisher,
+            perform: viewModel.onDeeplinkReceived
+        )
     }
 }

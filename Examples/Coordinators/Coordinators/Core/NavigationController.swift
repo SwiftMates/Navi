@@ -20,14 +20,4 @@ final class NavigationController: NaviController {
     init() {
         properties = NaviControllerProperties(logger: NavigationLogger())
     }
-    
-    // MARK: - Public functions
-    
-//    func push(_ screen: any ScreenRepresentable) {
-//        push(to: screen)
-//    }
-//    
-//    func start(_ coordinator: any CoordinatorRepresentable) {
-//        push(to: coordinator)
-//    }
 }
