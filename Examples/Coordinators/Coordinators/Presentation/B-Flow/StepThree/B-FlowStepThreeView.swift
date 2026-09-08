@@ -30,8 +30,8 @@ struct BFlowStepThreeView: View {
                     viewModel.onFinishCoordinator()
                 }
                 
-                Button("Go home") {
-                    viewModel.onGoHomeTapped()
+                Button("Go to root") {
+                    viewModel.onGoToRootTapped()
                 }
             }
         }

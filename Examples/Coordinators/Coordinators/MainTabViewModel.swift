@@ -35,13 +35,15 @@ final class MainTabViewModel {
             isDeeplinkLoading = false
         }
         
+        let route = await deeplinkManager.handle(deeplink)
+        
         switch deeplink {
         case .homeTab:
             selectedTab = .home
-            let route = await deeplinkManager.handle(deeplink)
             homeTabNavigationController.deepLink(to: route)
         case .deeplinkTab:
             selectedTab = .deeplinks
+            deeplinksTabNavigationController.deepLink(to: route)
         }
     }
 }

@@ -14,7 +14,7 @@ final class BFlowStepThreeViewModel {
     
     enum Action {
         case finish
-        case goHome
+        case goToRoot
     }
     
     // MARK: - Public properties
@@ -33,7 +33,7 @@ final class BFlowStepThreeViewModel {
         action(.finish)
     }
     
-    func onGoHomeTapped() {
-        action(.goHome)
+    func onGoToRootTapped() {
+        action(.goToRoot)
     }
 }

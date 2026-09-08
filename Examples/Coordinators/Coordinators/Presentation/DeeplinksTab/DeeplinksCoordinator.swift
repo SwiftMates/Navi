@@ -30,7 +30,12 @@ struct DeeplinksCoordinator {
     
     func onDeeplinksViewAction(_ action: DeeplinksViewModel.Action) {
         switch action {
-        
+        case .showBFlowOnHome:
+            deeplinkPublisher.go(to: .homeTab(.startBFlow))
+        case .showStepTwoOfAFlowOnHome:
+            deeplinkPublisher.go(to: .homeTab(.stepTwoOfAFlow))
+        case .showBFlowOnDeeplinks:
+            deeplinkPublisher.go(to: .deeplinkTab(.startBFlow))
         }
     }
     

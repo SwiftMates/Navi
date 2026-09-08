@@ -13,11 +13,15 @@ struct DeeplinksTabDeeplinkBuilder {
     
     func build(for deeplink: DeeplinkTabDeeplink) async -> [any DestinationRepresentable] {
         switch deeplink {
-            
+        case .startBFlow: startOfBFlowRoute
         }
     }
     
     // MARK: - Private functions
     
-    
+    private var startOfBFlowRoute: [any DestinationRepresentable] {
+        [
+            DeeplinksCoordinator.Coordinators.bFlow
+        ]
+    }
 }

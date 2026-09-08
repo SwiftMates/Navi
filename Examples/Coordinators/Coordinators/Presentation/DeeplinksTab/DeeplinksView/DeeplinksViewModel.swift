@@ -5,12 +5,16 @@
 //  Created by David Pall on 2026. 09. 08..
 //
 
+import Navi
+
 final class DeeplinksViewModel {
     
     // MARK: - Nested types
     
     enum Action {
-        
+        case showBFlowOnHome
+        case showStepTwoOfAFlowOnHome
+        case showBFlowOnDeeplinks
     }
     
     // MARK: - Public properties
@@ -25,4 +29,15 @@ final class DeeplinksViewModel {
     
     // MARK: - Public functions
     
+    func onShowBFlowOnHomeTapped() {
+        action(.showBFlowOnHome)
+    }
+    
+    func onShowStepTwoOfAFlowOnHome() {
+        action(.showStepTwoOfAFlowOnHome)
+    }
+    
+    func onShowBFlowOnDeeplinks() {
+        action(.showBFlowOnDeeplinks)
+    }
 }

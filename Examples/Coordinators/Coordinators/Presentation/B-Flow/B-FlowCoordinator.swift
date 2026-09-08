@@ -56,7 +56,7 @@ struct BFlowCoordinator {
         switch action {
         case .finish:
             onFinish()
-        case .goHome:
+        case .goToRoot:
             manager.popToRoot()
         }
     }

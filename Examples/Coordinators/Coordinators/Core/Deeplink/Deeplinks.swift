@@ -16,5 +16,5 @@ enum HomeTabDeeplink {
 }
 
 enum DeeplinkTabDeeplink {
-    
+    case startBFlow
 }
