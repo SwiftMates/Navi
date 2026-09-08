@@ -11,12 +11,12 @@ struct AFlowStepTwoView: View {
     
     // MARK: - Properties
     
-    @State private var viewModel: AFlowStepTwoViewModel
+    private let viewModel: AFlowStepTwoViewModel
     
     // MARK: - Lifecycle
     
     init(action: @escaping (AFlowStepTwoViewModel.Action) -> Void) {
-        _viewModel = State(initialValue: .init(action: action))
+        viewModel = .init(action: action)
     }
     
     // MARK: - Content

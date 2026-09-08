@@ -11,12 +11,12 @@ struct BFlowStepThreeView: View {
     
     // MARK: - Properties
     
-    @State private var viewModel: BFlowStepThreeViewModel
+    private let viewModel: BFlowStepThreeViewModel
     
     // MARK: - Lifecycle
     
     init(action: @escaping (BFlowStepThreeViewModel.Action) -> Void) {
-        _viewModel = State(initialValue: .init(action: action))
+        viewModel = .init(action: action)
     }
     
     // MARK: - Content

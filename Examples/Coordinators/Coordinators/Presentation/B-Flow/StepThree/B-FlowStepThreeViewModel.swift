@@ -5,9 +5,6 @@
 //  Created by David Pall on 2026. 09. 07..
 //
 
-import Foundation
-
-@Observable
 final class BFlowStepThreeViewModel {
     
     // MARK: - Nested types
