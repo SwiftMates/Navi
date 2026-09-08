@@ -39,7 +39,7 @@ platform :ios do
     )
   end
 
-  desc "Build the Coordinator example app for PR validation"
+  desc "Build the Coordinators example app for PR validation"
   lane :build_coordinators do
     disable_swift_syntax_prebuilts!
 
