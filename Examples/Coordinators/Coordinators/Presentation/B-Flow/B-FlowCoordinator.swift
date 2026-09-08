@@ -5,7 +5,6 @@
 //  Created by David Pall on 2026. 09. 07..
 //
 
-
 import Navi
 
 struct BFlowCoordinator {

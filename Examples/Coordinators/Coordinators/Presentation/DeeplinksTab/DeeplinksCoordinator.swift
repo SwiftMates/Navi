@@ -39,7 +39,7 @@ struct DeeplinksCoordinator {
         }
     }
     
-    func onBFlowFinish() {
+    func onBFlowFinished() {
         manager.popToRoot()
     }
 }

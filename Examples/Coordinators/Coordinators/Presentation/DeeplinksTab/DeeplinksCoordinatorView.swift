@@ -41,7 +41,7 @@ struct DeeplinksCoordinatorView: View {
         case .bFlow:
             BFlowCoordinatorView(
                 manager: coordinator.manager,
-                onFinish: coordinator.onBFlowFinish
+                onFinish: coordinator.onBFlowFinished
             )
         }
     }

@@ -26,13 +26,13 @@ struct BFlowStepThreeView: View {
             Color.yellow.opacity(0.3).ignoresSafeArea()
     
             VStack(spacing: 24) {
-                ActionWithExplanationView(
+                ButtonWithExplanation(
                     title: "Finish",
                     description: "Closes the B-Flow coordinator.",
                     action: viewModel.onFinishCoordinator
                 )
                 
-                ActionWithExplanationView(
+                ButtonWithExplanation(
                     title: "Go home",
                     description: "Clears the navigation and pops back to the root.",
                     action: viewModel.onGoToRootTapped

@@ -1,5 +1,5 @@
 //
-//  ActionWithExplanationView.swift
+//  ButtonWithExplanation.swift
 //  Coordinators
 //
 //  Created by David Pall on 2026. 09. 08..
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ActionWithExplanationView: View {
+struct ButtonWithExplanation: View {
     
     let title: String
     var description: String?

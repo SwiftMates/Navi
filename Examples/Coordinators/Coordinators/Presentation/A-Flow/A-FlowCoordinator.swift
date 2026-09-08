@@ -17,7 +17,6 @@ struct AFlowCoordinator {
         @OriginKey case stepThree
     }
     
-    // TODO: - Discuss if we should merge all destinations into one Enum (screens and other coordinators togehter)
     @DestinationRepresentable
     enum Coordinators {
         case bFlow

@@ -26,13 +26,13 @@ struct AFlowStepThreeView: View {
             Color.green.opacity(0.3).ignoresSafeArea()
             
             VStack(spacing: 24) {
-                ActionWithExplanationView(
+                ButtonWithExplanation(
                     title: "Next",
                     description: "Starts the B-Flow coordinator with its starter view.",
                     action: viewModel.onShowNextCoordinatorPressed
                 )
                 
-                ActionWithExplanationView(
+                ButtonWithExplanation(
                     title: "Go home",
                     description: "Clears the navigation and pops back to the root.",
                     action: viewModel.onGoHomeTapped

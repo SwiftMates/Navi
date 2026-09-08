@@ -25,7 +25,7 @@ struct HomeView: View {
         ZStack {
             Color.teal.opacity(0.3).ignoresSafeArea()
             
-            ActionWithExplanationView(
+            ButtonWithExplanation(
                 title: "Start A-Flow",
                 description: "Starts the A-Flow coordinator with its starter view.",
                 action: viewModel.onShowAFlowTapped)

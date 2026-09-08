@@ -35,12 +35,12 @@ struct DeeplinksView: View {
                     
                     sectionTitle(for: "On Home Tab")
                     
-                    ActionWithExplanationView(
+                    ButtonWithExplanation(
                         title: "A-Flow: Step two",
                         description: "Simulates asynchronous data loading.\nNavigates to Step Two of the A-Flow on the Home tab.",
                         action: viewModel.onShowStepTwoOfAFlowOnHome)
                     
-                    ActionWithExplanationView(
+                    ButtonWithExplanation(
                         title: "B-Flow: Start",
                         description: "Immediate navigation.\nNavigates to the start of the B-Flow on the Home tab (following the A-Flow).",
                         action: viewModel.onShowBFlowOnHomeTapped)
@@ -49,7 +49,7 @@ struct DeeplinksView: View {
                     
                     sectionTitle(for: "On Deeplinks Tab")
                     
-                    ActionWithExplanationView(
+                    ButtonWithExplanation(
                         title: "B-Flow: Start",
                         description: "Immediate navigation.\nNavigates to the start of the B-Flow on the Deeplinks tab.",
                         action: viewModel.onShowBFlowOnDeeplinks)
