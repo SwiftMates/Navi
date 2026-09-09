@@ -38,4 +38,20 @@ platform :ios do
       skip_codesigning: true
     )
   end
+
+  desc "Build the Coordinators example app for PR validation"
+  lane :build_coordinators do
+    disable_swift_syntax_prebuilts!
+
+    build_app(
+      project: "Examples/Coordinators/Coordinators.xcodeproj",
+      scheme: "Coordinators",
+      configuration: "Debug",
+      destination: "generic/platform=iOS Simulator",
+      clean: true,
+      skip_archive: true,
+      skip_package_ipa: true,
+      skip_codesigning: true
+    )
+  end
 end
