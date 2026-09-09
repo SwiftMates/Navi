@@ -29,6 +29,8 @@ final class DeeplinkPublisher: DeeplinkPublisherProtocol {
         self.continuation = continuation
     }
     
+    // MARK: - Public functions
+    
     /// Publishes the `DeepLink` for the Manager's subscriber
     /// - Parameter deepLink: Defines the Tab and the specific destination inside it
     func go(to deeplink: Deeplink) {
