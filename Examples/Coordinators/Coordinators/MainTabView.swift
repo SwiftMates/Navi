@@ -29,8 +29,8 @@ struct MainTabView: View {
                 }
             }
         }
-        .onReceive(deeplinkPublisher.publisher) { deeplink in
-            Task {
+        .task {
+            for await deeplink in deeplinkPublisher.stream {
                 await viewModel.onDeeplinkReceived(deeplink)
             }
         }
