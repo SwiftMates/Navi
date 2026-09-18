@@ -244,6 +244,7 @@ func deepLinkToEmailSettings() {
 |:--------|:------:|
 | Simple (iOS 17+) — `Examples/Basic` | ✅ |
 | Simple (iOS 16 / macOS 13) — `Examples/Basic-iOS16` | ✅ |
+| Coordinators - `Examples/Coordinators` | ✅ |
 
 ## 🧠 Design Philosophy
 

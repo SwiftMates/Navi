@@ -52,3 +52,20 @@ jobs:
 
       - name: Build Basic iOS 16 example
         run: bundle exec fastlane build_basic_ios16
+    
+  build-coordinators-example:
+    name: Build Coordinators Example
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Build Coordinators example
+        run: bundle exec fastlane build_coordinators
