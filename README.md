@@ -208,6 +208,22 @@ Yes. iOS 16+ / macOS 13+, designed for Swift 6.
 
 ---
 
+## Contributing
+
+Contributions are welcome.
+
+1. Fork the repository
+2. Create a branch from `develop`:
+   ```sh
+   git checkout develop
+   git checkout -b feature/your-feature
+   ```
+3. Make your changes
+4. Run `swift test` (and example builds if relevant)
+5. Open a Pull Request against `develop`
+
+---
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
