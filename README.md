@@ -4,150 +4,69 @@
 
 <p align="center">
     <a href="https://github.com/SwiftMates/Navi/actions/workflows/main.yml"><img src="https://github.com/SwiftMates/Navi/actions/workflows/main.yml/badge.svg?branch=main" alt="Main" /></a>
-    <a href="https://swift.org"><img src="https://img.shields.io/badge/Swift-6.0+-F05138?logo=swift" alt="Swift 6.0+" /></a>
-    <a href="Package.swift"><img src="https://img.shields.io/badge/Platforms-iOS%2016%2B%20%7C%20macOS%2013%2B-lightgrey" alt="Platforms" /></a>
+    <a href="https://swiftpackageindex.com/SwiftMates/Navi"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FSwiftMates%2FNavi%2Fbadge%3Ftype%3Dswift-versions" alt="Swift Version Compatibility" /></a>
+    <a href="https://swiftpackageindex.com/SwiftMates/Navi"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FSwiftMates%2FNavi%2Fbadge%3Ftype%3Dplatforms" alt="Platform Compatibility" /></a>
     <a href="https://swiftpackageindex.com/SwiftMates/Navi"><img src="https://img.shields.io/badge/SPM-compatible-brightgreen" alt="SPM" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue" alt="MIT" /></a>
 </p>
 
-A lightweight, Swift 6 native navigation package for SwiftUI's `NavigationStack`.
+**Type-safe SwiftUI navigation** built on `NavigationStack`.
 
-`Navi` is a simple, lightweight Swift package that makes working with SwiftUI's `NavigationStack` easier, cleaner, and more flexible — without imposing any architecture or heavy abstractions.
-
-It provides a small set of utilities that help you handle more complex navigation flows out of the box, while staying pure SwiftUI, easy to understand, and safe to use in any environment.
+Navi is a lightweight navigation layer for SwiftUI. It adds programmatic routing, deep linking, pop-to-destination, and destination macros to Apple’s `NavigationStack` — without imposing an application architecture. Pure Swift 6, iOS 16+, zero external dependencies.
 
 ---
 
-## ✨ Features
+## What is Navi?
 
-- ✅ **Built on SwiftUI's `NavigationStack`**
-- ✅ **Pure Swift 6**
-- ✅ **Lightweight & minimal API**
-- ✅ **No architecture enforcement**
-- ✅ **Works with any app structure**
-- ✅ **Easy to reason about and debug**
-- ✅ **Production-ready**
-- ✅ **MIT licensed**
+Navi is a type-safe navigation library for SwiftUI that builds on `NavigationStack`. It gives you compile-time safe routes, a clean programmatic API, multi-step deep linking, and pop-to-destination, while staying fully compatible with the native navigation model.
+
+It does **not** replace `NavigationStack`. It is a thin typed layer on top of it.
+
+**Who is it for?**  
+Developers who want structured, type-safe routes without adopting coordinators, TCA, or a large routing framework. It fits both small projects needing lightweight structure and large, modular codebases wanting a modern NavigationStack-native alternative to legacy coordinators.
 
 ---
 
-## 🚀 Motivation
+## Why Navi instead of raw NavigationStack?
 
-SwiftUI navigation has evolved significantly, but handling **non-trivial navigation flows** (deep links, programmatic navigation, pop back to specific screen, etc.) can still lead to:
-
-- Scattered navigation logic
-- Tight coupling between views
-- Boilerplate-heavy `NavigationPath` handling
-
-**Navi** exists to **simplify navigation logic** while staying **close to SwiftUI's mental model** — no magic, no hidden behavior, just helpful abstractions.
-
----
-
-## 🤔 Why Navi vs. Native NavigationStack?
-
-SwiftUI's `NavigationStack` is powerful, but as your app grows, you may encounter some friction:
-
-| Challenge | Native NavigationStack | Navi |
-|:----------|:---------------------:|:------:|
-| **Boilerplate** | Requires manual `NavigationPath` management | Handles path management for you |
-| **Programmatic navigation** | Verbose, requires passing bindings | Simple, centralized API |
-| **Type safety** | Easy to lose type info with `NavigationPath` | Maintains type-safe navigation |
-| **Deep linking** | Manual setup required | Easier to implement |
-| **Multi-step flows** | Complex state management | Streamlined handling |
-| **Decoupling views** | Views often know about destinations | Views stay focused on their content |
-| **Testing** | Navigation logic embedded in views | Navigation logic can be isolated |
-
-### In short:
-
-**Navi** helps when your navigation logic grows beyond a few screens — without forcing you into a specific architecture.
+| Need                        | Native `NavigationStack`              | Navi                                   |
+|-----------------------------|---------------------------------------|----------------------------------------|
+| Type-safe routes            | Easy to lose with `NavigationPath`    | Enum + macro, compile-time checked     |
+| Programmatic navigation     | Pass bindings or mutate path manually | `push(to:)` / `pop()`                  |
+| Deep linking                | Manual path construction              | `deepLink(to:)`                        |
+| Pop to a specific screen    | Manual path surgery                   | `@OriginKey` + `pop(to:)`              |
 
 ---
 
-## ✅ Requirements
+## Quick Start
 
-| Platform | Minimum |
-|:---------|:--------|
-| iOS      | 16.0+   |
-| macOS    | 13.0+   |
-| Swift    | 6.0+ (tools 6.3) |
-| Xcode    | 16.0+ |
+### 1. Create a controller
 
-Navi is a pure Swift 6 package. On iOS 17+ / macOS 14+ you can use the `@Observable`
-controller pattern (see `Examples/Basic`); on iOS 16 / macOS 13 use the `ObservableObject`
-pattern instead (see `Examples/Basic-iOS16`).
-
----
-
-## 📦 Installation
-
-### Swift Package Manager (SPM)
-
-Add Navi to your project via Xcode:
-
-1. Open your project in Xcode
-2. Go to **File → Add Packages…**
-3. Enter the repository URL: https://github.com/SwiftMates/Navi
-4. Select the version you want (recommended: latest)
-
-### Or add it directly to your `Package.swift`:
+**iOS 17+ / macOS 14+ (`@Observable`):**
 
 ```swift
-dependencies: [
-    .package(url: "https://github.com/SwiftMates/Navi.git", from: "1.0.0")
-]
-```
-
----
-
-## 🧩 Basic Usage
-
-### 1. (Optional) Provide a logger
-
-`NaviControllerProperties` works with or without a logger. If you want navigation events, conform to `NaviLogging`:
-
-```swift
-import OSLog
-
-final class AppLogger: NaviLogging {
-    private let logger = Logger(subsystem: "com.yourapp", category: "Navi")
-
-    func logInfo(_ message: String) {
-        logger.info("\(message, privacy: .public)")
-    }
-
-    func logError(_ message: String) {
-        logger.error("\(message, privacy: .public)")
-    }
-}
-```
-
-### 2. Create a controller
-
-```swift
-// iOS 17+ / macOS 14+ — @Observable
 @Observable
 final class DemoController: NaviController {
-    var properties = NaviControllerProperties() // or NaviControllerProperties(logger: AppLogger())
+    var properties = NaviControllerProperties()
 }
 ```
 
-On iOS 16 / macOS 13 use `ObservableObject` instead:
+**iOS 16 / macOS 13 (`ObservableObject`):**
 
 ```swift
 @MainActor
 final class DemoController: NaviController, ObservableObject {
-    @Published var properties = NaviControllerProperties() // or with logger
+    @Published var properties = NaviControllerProperties()
 }
 ```
 
-### 3. Create the NavigationStack
+### 2. Attach to NavigationStack
 
 ```swift
 @main
 struct BasicApp: App {
-    
     @State private var controller = DemoController()
-    
+
     var body: some Scene {
         WindowGroup {
             NavigationStack(path: $controller.properties.path) {
@@ -158,7 +77,7 @@ struct BasicApp: App {
 }
 ```
 
-### 4. Conform your destinations to DestinationRepresentable
+### 3. Define destinations
 
 ```swift
 @DestinationRepresentable
@@ -168,7 +87,7 @@ enum HomeDestinations {
 }
 ```
 
-### 5. Wire it up in SwiftUI
+### 4. Register and navigate
 
 ```swift
 struct HomeView: View {
@@ -188,25 +107,27 @@ struct HomeView: View {
         }
     }
 }
+
+// Navigate
+controller.push(to: HomeDestinations.settings)
+controller.pop()
 ```
 
-### 6. Trigger navigation
+---
+
+## Deep linking
 
 ```swift
-func navigateToSettings() {
-    controller.push(to: HomeDestinations.settings)
-}
-
-func navigateBack() {
-    controller.pop()
-}
+controller.deepLink(to: [
+    HomeDestinations.settings,
+    SettingsDestinations.notifications,
+    NotificationsDestinations.emailNotifications
+])
 ```
 
-## 🛠 Advanced Navigation
+---
 
-### ⏪ Pop to a specific screen in the stack
-
-Use @OriginKey to mark a destination as a pop-back anchor.
+## Pop to a destination
 
 ```swift
 @DestinationRepresentable
@@ -214,93 +135,102 @@ enum HomeDestinations {
     @OriginKey case settings
     case profile
 }
-```
 
-```swift
-func popBackToSettings() {
-    controller.pop(to: HomeDestinations.Origins.settings)
-}
-```
-
-### 🔗 Deep Linking
-
-```swift
-func deepLinkToEmailSettings() {
-    controller.deepLink(to: [
-        HomeDestinations.settings,
-        SettingsDestinations.notifications,
-        NotificationsDestinations.emailNotifications
-    ])
-}
+controller.pop(to: HomeDestinations.Origins.settings)
 ```
 
 ---
 
-## 📖 Examples
+## Examples
 
-> Check out our examples to see Navi in action.
+| Example                | Platform            | Status |
+|------------------------|---------------------|:------:|
+| `Examples/Basic`       | iOS 17+ / macOS 14+ | ✅     |
+| `Examples/Basic-iOS16` | iOS 16 / macOS 13   | ✅     |
+| `Examples/Coordinators`| iOS 16 / macOS 13   | ✅     |
 
-| Example | Status |
-|:--------|:------:|
-| Simple (iOS 17+) — `Examples/Basic` | ✅ |
-| Simple (iOS 16 / macOS 13) — `Examples/Basic-iOS16` | ✅ |
+---
 
-## 🧠 Design Philosophy
+## Requirements
 
-Navi follows a few simple principles:
-- Minimal API surface — Learn it in minutes
-- No forced architecture — Use it in any project, regardless of its architecture
-- Composable & flexible — Use only what you need
-- Easy to remove or replace — No lock-in
-- No runtime magic — Predictable behavior
+| Platform | Minimum          |
+|----------|------------------|
+| iOS      | 16.0+            |
+| macOS    | 13.0+            |
+| Swift    | 6.0+ (tools 6.3) |
+| Xcode    | 16.0+            |
 
-If you understand SwiftUI navigation, you already understand Navi.
+- iOS 17+ / macOS 14+ → prefer `@Observable` (`Examples/Basic`)
+- iOS 16 / macOS 13 → use `ObservableObject` (`Examples/Basic-iOS16`)
 
-## 📚 Documentation
+---
 
-- Inline documentation throughout the source
-- Public API is intentionally small — explore `NaviController`, `DestinationRepresentable`, `@DestinationRepresentable` / `@OriginKey`
-- See `Examples/Basic` and `Examples/Basic-iOS16` for runnable setups
+## Installation
 
-## 📝 Changelog
+**Xcode:** File → Add Packages… → `https://github.com/SwiftMates/Navi`
 
-See [CHANGELOG.md](CHANGELOG.md) and [GitHub Releases](https://github.com/SwiftMates/Navi/releases).
+**Package.swift:**
 
-## 🤝 Contributing
+```swift
+dependencies: [
+    .package(url: "https://github.com/SwiftMates/Navi.git", from: "1.0.0")
+]
+```
 
-### Contributions are welcome!
+---
+
+## FAQ
+
+**What is Navi?**  
+A type-safe navigation layer for SwiftUI built on `NavigationStack`. It adds programmatic navigation, deep linking, and pop-to-destination without architecture lock-in.
+
+**Does Navi replace NavigationStack?**  
+No. It works with `NavigationStack`.
+
+**Is Navi a SwiftUI router?**  
+Yes — a lightweight, type-safe one. `NavigationStack` remains the underlying container.
+
+**Does it require a specific architecture?**  
+No. Works with MVVM, TCA, coordinators, or none.
+
+**Does it support deep linking and programmatic navigation?**  
+Yes. Use `deepLink(to:)`, `push(to:)`, `pop()`, and `pop(to:)`.
+
+**How do I pop to a specific screen?**  
+Mark the destination with `@OriginKey`, then call `controller.pop(to: Destination.Origins.yourCase)`.
+
+**Does it support iOS 16 and Swift 6?**  
+Yes. iOS 16+ / macOS 13+, designed for Swift 6.
+
+---
+
+## Contributing
+
+Contributions are welcome.
 
 1. Fork the repository
-2. Create a branch from `develop` (`develop` is the integration branch, PRs target `develop`):
+2. Create a branch from `develop`:
    ```sh
    git checkout develop
-   git checkout -b feature/amazing-feature
+   git checkout -b feature/your-feature
    ```
 3. Make your changes
-4. Run `swift test` and, if you touched examples, `bundle exec fastlane build_basic` / `build_basic_ios16` (see `.github/workflows/pr-validation.yml:12`)
-5. Commit your changes (`git commit -m 'Add amazing feature'`)
-6. Push to the branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request against `develop`
+4. Run `swift test` (and example builds if relevant)
+5. Open a Pull Request against `develop`
 
-Bug reports, feature suggestions, and improvements are all appreciated.
+---
 
-## 📄 License
-
-Navi is available under the MIT License.
-You are free to use it in personal, open-source, and commercial projects.
-See the LICENSE file for more details.
-
-## ⭐ Show Your Support
+## Show Your Support
 
 If you find Navi helpful, please consider:
 - Giving it a ⭐ on GitHub
 - Sharing it with fellow developers
 - Contributing to its development
 
-## ❤️ Acknowledgements
+---
 
-Created and maintained by SwiftMates
+## License
 
-Built with love for the SwiftUI community 💙
+MIT. See [LICENSE](LICENSE).
 
-Made with ☕ and Swift
+Created by [SwiftMates](https://github.com/SwiftMates).
