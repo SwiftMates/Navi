@@ -10,8 +10,6 @@
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue" alt="MIT" /></a>
 </p>
 
-# Navi
-
 **Type-safe SwiftUI navigation** built on `NavigationStack`.
 
 Navi is a lightweight navigation layer for SwiftUI. It adds programmatic routing, deep linking, pop-to-destination, and destination macros to Apple’s `NavigationStack` — without imposing an application architecture. Pure Swift 6, iOS 16+, zero external dependencies.
@@ -25,7 +23,7 @@ Navi is a type-safe navigation library for SwiftUI that builds on `NavigationSta
 It does **not** replace `NavigationStack`. It is a thin typed layer on top of it.
 
 **Who is it for?**  
-Developers who want structured, type-safe routes without adopting coordinators, TCA, or a large routing framework.
+Developers who want structured, type-safe routes without adopting coordinators, TCA, or a large routing framework. It fits both small projects needing lightweight structure and large, modular codebases wanting a modern NavigationStack-native alternative to legacy coordinators.
 
 ---
 
@@ -37,8 +35,6 @@ Developers who want structured, type-safe routes without adopting coordinators, 
 | Programmatic navigation     | Pass bindings or mutate path manually | `push(to:)` / `pop()`                  |
 | Deep linking                | Manual path construction              | `deepLink(to:)`                        |
 | Pop to a specific screen    | Manual path surgery                   | `@OriginKey` + `pop(to:)`              |
-| Architecture required       | None                                  | None                                   |
-| External dependencies       | None                                  | None                                   |
 
 ---
 
@@ -145,6 +141,16 @@ controller.pop(to: HomeDestinations.Origins.settings)
 
 ---
 
+## Examples
+
+| Example                | Platform            | Status |
+|------------------------|---------------------|:------:|
+| `Examples/Basic`       | iOS 17+ / macOS 14+ | ✅     |
+| `Examples/Basic-iOS16` | iOS 16 / macOS 13   | ✅     |
+| `Examples/Coordinators`| iOS 16 / macOS 13   | ✅     |
+
+---
+
 ## Requirements
 
 | Platform | Minimum          |
@@ -198,16 +204,6 @@ Yes. iOS 16+ / macOS 13+, designed for Swift 6.
 
 ---
 
-## Examples
-
-| Example                | Platform            | Status |
-|------------------------|---------------------|:------:|
-| `Examples/Basic`       | iOS 17+ / macOS 14+ | ✅     |
-| `Examples/Basic-iOS16` | iOS 16 / macOS 13   | ✅     |
-| `Examples/Coordinators`| iOS 16 / macOS 13   | ✅     |
-
----
-
 ## Contributing
 
 Contributions are welcome.
@@ -221,6 +217,15 @@ Contributions are welcome.
 3. Make your changes
 4. Run `swift test` (and example builds if relevant)
 5. Open a Pull Request against `develop`
+
+---
+
+## Show Your Support
+
+If you find Navi helpful, please consider:
+- Giving it a ⭐ on GitHub
+- Sharing it with fellow developers
+- Contributing to its development
 
 ---
 
