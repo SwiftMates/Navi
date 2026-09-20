@@ -103,7 +103,7 @@ dependencies: [
 
 ### 1. (Optional) Provide a logger
 
-`NaviControllerProperties` works with or without a logger (`Sources/Core/Navigation/NaviControllerProperties.swift:27`). If you want navigation events, conform to `NaviLogging` (`Sources/Core/Logger/NaviLogging.swift:9`):
+`NaviControllerProperties` works with or without a logger. If you want navigation events, conform to `NaviLogging`:
 
 ```swift
 import OSLog
@@ -131,7 +131,7 @@ final class DemoController: NaviController {
 }
 ```
 
-On iOS 16 / macOS 13 use `ObservableObject` instead (see `Examples/Basic-iOS16/Basic-iOS16/BasicExampleController.swift:11`):
+On iOS 16 / macOS 13 use `ObservableObject` instead:
 
 ```swift
 @MainActor
@@ -259,7 +259,7 @@ If you understand SwiftUI navigation, you already understand Navi.
 
 ## 📚 Documentation
 
-- Inline documentation throughout the source (`Sources/Core/Navigation/NaviController.swift:14`, `Sources/Core/Navigation/DestinationRepresentable.swift:13`, `Sources/Core/Logger/NaviLogging.swift:9`)
+- Inline documentation throughout the source
 - Public API is intentionally small — explore `NaviController`, `DestinationRepresentable`, `@DestinationRepresentable` / `@OriginKey`
 - See `Examples/Basic` and `Examples/Basic-iOS16` for runnable setups
 
