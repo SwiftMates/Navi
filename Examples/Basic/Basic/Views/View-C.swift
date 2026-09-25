@@ -5,23 +5,23 @@
 //  Created by David Pall on 2026. 07. 07..
 //
 
-import SwiftUI
 import Navi
+import SwiftUI
 
 struct ViewC: View {
-    
+
     @Environment(BasicExampleController.self) var controller
-    
+
     var body: some View {
         VStack(spacing: 24) {
             Button("Pop to View - A") {
                 controller.pop(to: MainViewsDestinations.Origins.viewA)
             }
-            
+
             Button("Pop") {
                 controller.pop()
             }
-            
+
             Button("Pop to root") {
                 controller.popToRoot()
             }

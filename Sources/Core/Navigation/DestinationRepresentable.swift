@@ -21,10 +21,10 @@ public protocol DestinationRepresentable: Hashable {
 
 // MARK: - Default Implementation
 
-public extension DestinationRepresentable {
+extension DestinationRepresentable {
     /// The default origin marker for a destination.
     ///
     /// Returns `nil` by default. Conforming types can override this to provide an
     /// ``OriginRepresentable`` value when they want to be used as a pop target.
-    var navigationOrigin: (any OriginRepresentable)? { nil }
+    public var navigationOrigin: (any OriginRepresentable)? { nil }
 }
