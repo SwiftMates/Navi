@@ -1,0 +1,36 @@
+//
+//  AFlowStepThreeViewModel.swift
+//  Coordinators
+//
+//  Created by David Pall on 2026. 08. 20..
+//
+
+final class AFlowStepThreeViewModel {
+    
+    // MARK: - Nested types
+    
+    enum Action {
+        case showNextCoordinator
+        case goHome
+    }
+    
+    // MARK: - Public properties
+    
+    let action: (Action) -> Void
+    
+    // MARK: - Lifecycle
+    
+    init(action: @escaping (Action) -> Void) {
+        self.action = action
+    }
+    
+    // MARK: - Public properties
+    
+    func onShowNextCoordinatorPressed() {
+        action(.showNextCoordinator)
+    }
+    
+    func onGoHomeTapped() {
+        action(.goHome)
+    }
+}

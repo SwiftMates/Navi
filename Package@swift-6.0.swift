@@ -1,4 +1,4 @@
-// swift-tools-version: 6.4
+// swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -14,15 +14,9 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/swiftlang/swift-format", .upToNextMajor(from: "604.0.0")),
-        .package(url: "https://github.com/apple/swift-syntax", .upToNextMajor(from: "604.0.0"))
+        .package(url: "https://github.com/apple/swift-syntax", .upToNextMajor(from: "600.0.0"))
     ],
     targets: [
-        .plugin(
-            name: "SwiftFormatLint",
-            capability: .buildTool(),
-            path: "Plugins/SwiftFormatLint"
-        ),
         .macro(
             name: "NaviMacrosPlugin",
             dependencies: [
@@ -30,8 +24,7 @@ let package = Package(
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
             ],
-            path: "Sources/NaviMacrosPlugin",
-            plugins: ["SwiftFormatLint"]
+            path: "Sources/NaviMacrosPlugin"
         ),
         .target(
             name: "Navi",
@@ -41,8 +34,7 @@ let package = Package(
                 "Logger",
                 "Navigation",
                 "Macros/DestinationMacro.swift"
-            ],
-            plugins: ["SwiftFormatLint"]
+            ]
         ),
         .testTarget(
             name: "NaviTests",
@@ -52,8 +44,7 @@ let package = Package(
                 .product(name: "SwiftSyntaxMacrosGenericTestSupport", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacroExpansion", package: "swift-syntax")
             ],
-            path: "Tests",
-            plugins: ["SwiftFormatLint"]
+            path: "Tests"
         )
     ],
     swiftLanguageModes: [.v6]
