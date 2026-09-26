@@ -1,5 +1,5 @@
 //
-//  Navigable.swift
+//  DestinationRepresentable.swift
 //  Navi
 //
 //  Created by David Pall on 2026. 01. 15..
