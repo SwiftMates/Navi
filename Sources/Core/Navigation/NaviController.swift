@@ -56,9 +56,18 @@ public extension NaviController {
     /// If the destination defines a navigation origin, the origin is tracked for keyed pop operations.
     ///
     /// - Parameter destination: The destination to append to the navigation path.
-    func push(to destination: any DestinationRepresentable) {
+    func push<D: DestinationRepresentable>(to destination: D) {
         properties.path.append(destination)
-        properties.logger?.logInfo("Path appended with destination: \(destination).")
+        let loggingRawData = NaviLoggingInfoModel.RawData(
+            destination: destination,
+            origin: destination.navigationOrigin,
+            pathCount: properties.path.count
+        )
+        let loggingInfoModel = NaviLoggingInfoModel(
+            message: "Path appended with the new destination.",
+            rawData: loggingRawData
+        )
+        properties.logger?.logInfo(loggingInfoModel)
         if let origin = destination.navigationOrigin {
             properties.naviStackOrigins[origin.key] = properties.path.count
             properties.logger?.logInfo("Navigation origin \(origin) registered as pop target at path index \(properties.path.count).")

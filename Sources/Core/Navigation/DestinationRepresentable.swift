@@ -11,12 +11,13 @@
 /// and may optionally expose an ``OriginRepresentable`` value via ``navigationOrigin``
 /// to mark their position in the stack for keyed pop operations.
 public protocol DestinationRepresentable: Hashable {
+    associatedtype O: OriginRepresentable
     /// An optional origin marker used by the controller to track this destination's position in the stack.
     ///
     /// When non-`nil`, the controller records the destination's index under the origin's
     /// ``OriginRepresentable/key`` at push time, allowing later navigation back to this point
     /// via ``NaviController/pop(to:)``.
-    var navigationOrigin: (any OriginRepresentable)? { get }
+    var navigationOrigin: O? { get }
 }
 
 // MARK: - Default Implementation
@@ -26,5 +27,5 @@ public extension DestinationRepresentable {
     ///
     /// Returns `nil` by default. Conforming types can override this to provide an
     /// ``OriginRepresentable`` value when they want to be used as a pop target.
-    var navigationOrigin: (any OriginRepresentable)? { nil }
+    var navigationOrigin: O? { nil }
 }
