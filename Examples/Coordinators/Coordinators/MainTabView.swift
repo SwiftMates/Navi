@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct MainTabView: View {
-    
+
     // MARK: - Properties
-    
+
     @State private var viewModel = MainTabViewModel()
-    
+
     // MARK: - Content
-    
+
     var body: some View {
         TabView(selection: $viewModel.selectedTab) {
             Tab("Home", systemImage: "house", value: .home) {
@@ -22,7 +22,7 @@ struct MainTabView: View {
                     HomeCoordinatorView(manager: $0)
                 }
             }
-            
+
             Tab("Deeplinks", systemImage: "link", value: .deeplinks) {
                 NavigationStackWrapper(manager: viewModel.deeplinksTabNavigationController) {
                     DeeplinksCoordinatorView(manager: $0)
@@ -41,13 +41,13 @@ struct MainTabView: View {
             }
         }
     }
-    
+
     private struct DeeplinkLoadingView: View {
         var body: some View {
             ZStack {
                 Rectangle()
                     .glassEffect(.clear, in: .rect)
-                
+
                 ProgressView()
                     .scaleEffect(2)
                     .foregroundStyle(.black)

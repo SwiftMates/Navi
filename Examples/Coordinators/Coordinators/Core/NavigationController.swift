@@ -10,13 +10,13 @@ import Navi
 
 @Observable
 final class NavigationController: NaviController {
-    
+
     // MARK: - Properties
-    
+
     var properties: NaviControllerProperties
-    
+
     // MARK: - Lifecycle
-    
+
     init() {
         properties = NaviControllerProperties(logger: NavigationLogger())
     }

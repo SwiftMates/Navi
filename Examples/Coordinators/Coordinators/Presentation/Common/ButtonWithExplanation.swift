@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct ButtonWithExplanation: View {
-    
+
     let title: String
     var description: String?
     let action: () -> Void
-    
+
     var body: some View {
         Button {
             action()
@@ -21,7 +21,7 @@ struct ButtonWithExplanation: View {
                 Text(title)
                     .font(.headline)
                     .foregroundStyle(.black)
-                
+
                 if let description {
                     Text(description)
                         .font(.subheadline)
