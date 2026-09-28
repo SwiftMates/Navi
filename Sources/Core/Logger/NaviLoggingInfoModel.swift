@@ -5,10 +5,10 @@
 //  Created by Lazar-Kiss Mark on 27/09/2026.
 //
 
-public struct NaviLoggingInfoModel<D: DestinationRepresentable, O: OriginRepresentable> {
+public struct NaviLoggingInfoModel {
     struct RawData {
-        let destination: D
-        let origin: O?
+        let destination: any DestinationRepresentable
+        let origin: (any OriginRepresentable)?
         let pathCount: Int
     }
 

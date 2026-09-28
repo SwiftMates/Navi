@@ -17,9 +17,11 @@ public protocol NaviLogging {
     /// - Parameter message: The message to record.
     func logError(_ message: String)
     
-    func logInfo<D: DestinationRepresentable, O: OriginRepresentable>(_ info: NaviLoggingInfoModel<D, O>)
+    func logInfo(_ info: NaviLoggingInfoModel)
 }
 
 public extension NaviLogging {
-    
+    func logInfo(_ info: NaviLoggingInfoModel) {
+        logInfo(info.message)
+    }
 }

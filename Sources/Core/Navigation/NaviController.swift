@@ -22,7 +22,7 @@ public protocol NaviController: AnyObject {
     /// Pushes a destination onto the current navigation stack.
     ///
     /// - Parameter destination: The destination to append to the navigation path.
-    func push(to destination: any DestinationRepresentable)
+    func push<D: DestinationRepresentable>(to destination: D)
 
     /// Removes the top-most destination from the navigation stack, if available.
     func pop()
@@ -64,7 +64,7 @@ public extension NaviController {
             pathCount: properties.path.count
         )
         let loggingInfoModel = NaviLoggingInfoModel(
-            message: "Path appended with the new destination.",
+            message: "Path appended with the new destination successfully.",
             rawData: loggingRawData
         )
         properties.logger?.logInfo(loggingInfoModel)

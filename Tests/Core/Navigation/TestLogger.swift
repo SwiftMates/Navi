@@ -13,10 +13,17 @@ final class TestLogger: NaviLogging {
 
     var logInfoCallsCount = 0
     var logInfoReceivedInvocations: [String] = []
+    var logInfoReceivedInfoModels: [NaviLoggingInfoModel] = []
 
     func logInfo(_ message: String) {
         logInfoCallsCount += 1
         logInfoReceivedInvocations.append(message)
+    }
+
+    func logInfo(_ info: NaviLoggingInfoModel) {
+        logInfoCallsCount += 1
+        logInfoReceivedInvocations.append(info.message)
+        logInfoReceivedInfoModels.append(info)
     }
 
     // MARK: - logError
