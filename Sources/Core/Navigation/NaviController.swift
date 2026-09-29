@@ -1,5 +1,5 @@
 //
-//  NaviCoordinator.swift
+//  NaviController.swift
 //  Navi
 //
 //  Created by David Pall on 2026. 01. 15..
