@@ -22,7 +22,7 @@ public protocol NaviController: AnyObject {
     /// Pushes a destination onto the current navigation stack.
     ///
     /// - Parameter destination: The destination to append to the navigation path.
-    func push(to destination: any DestinationRepresentable)
+    func push<D: DestinationRepresentable>(to destination: D)
 
     /// Removes the top-most destination from the navigation stack, if available.
     func pop()
@@ -56,23 +56,31 @@ public extension NaviController {
     /// If the destination defines a navigation origin, the origin is tracked for keyed pop operations.
     ///
     /// - Parameter destination: The destination to append to the navigation path.
-    func push(to destination: any DestinationRepresentable) {
+    func push<D: DestinationRepresentable>(to destination: D) {
         properties.path.append(destination)
-        properties.logger?.logInfo("Path appended with destination: \(destination).")
+        
         if let origin = destination.navigationOrigin {
             properties.naviStackOrigins[origin.key] = properties.path.count
-            properties.logger?.logInfo("Navigation origin \(origin) registered as pop target at path index \(properties.path.count).")
         }
+
+        logInfo(
+            destination: destination,
+            origin: destination.navigationOrigin,
+            message: "Path appended with the new destination (and origin) successfully.",
+            pathCount: properties.path.count
+        )
     }
 
     /// Removes the top-most destination from the stack when the path is not empty.
     func pop() {
         if properties.path.isEmpty == false {
             properties.path.removeLast()
-            properties.logger?.logInfo("Last path element removed.")
             syncStackOrigins()
-        } else {
-            properties.logger?.logError("Attempted to pop but navigation path is already empty.")
+            
+            logInfo(
+                message: "Last path element removed.",
+                pathCount: properties.path.count
+            )
         }
     }
 
@@ -80,7 +88,11 @@ public extension NaviController {
     func popToRoot() {
         properties.path = NavigationPath()
         syncStackOrigins(removeAll: true)
-        properties.logger?.logInfo("Navigation path cleared.")
+
+        logInfo(
+            message: "Navigation path cleared.",
+            pathCount: properties.path.count
+        )
     }
 
     /// Pops the stack back to the destination associated with the given origin.
@@ -92,12 +104,23 @@ public extension NaviController {
     /// - Parameter origin: The origin whose ``OriginRepresentable/key`` identifies the pop target.
     func pop(to origin: any OriginRepresentable) {
         guard let originIndex = properties.naviStackOrigins[origin.key] else {
-            properties.logger?.logError("Navigation origin was not found ---> \(String(describing: origin)).")
+            logError(
+                origin: origin,
+                message: "Navigation origin was not found.",
+                pathCount: properties.path.count
+            )
+            
             assertionFailure("Navigation origin was not found ---> \(origin).")
             return
         }
         let indexToRemove = properties.path.count - originIndex
-        properties.logger?.logInfo("Popping \(indexToRemove) destination(s) back to origin: \(origin).")
+        
+        logInfo(
+            origin: origin,
+            message: "Popping back to origin.",
+            pathCount: properties.path.count
+        )
+        
         pop(last: indexToRemove)
     }
 
@@ -111,7 +134,11 @@ public extension NaviController {
     func deepLink(to newPath: [any DestinationRepresentable]) {
         popToRoot()
         newPath.forEach { push(to: $0) }
-        properties.logger?.logInfo("Deep-link path set to: \(newPath).")
+
+        logInfo(
+            message: "Deep-link path set to new path.",
+            pathCount: properties.path.count
+        )
     }
 
     // MARK: - Private methods
@@ -127,11 +154,20 @@ public extension NaviController {
     private func syncStackOrigins(removeAll: Bool = false) {
         if removeAll {
             properties.naviStackOrigins.removeAll()
-            properties.logger?.logInfo("All navigation origins cleared.")
+            
+            logInfo(
+                message: "All navigation origins cleared.",
+                pathCount: properties.path.count
+            )
         } else {
             for (key, index) in properties.naviStackOrigins where index > properties.path.count {
                 properties.naviStackOrigins.removeValue(forKey: key)
                 properties.logger?.logInfo("Navigation origin removed: \(String(describing: key.debugName)) from index: \(index).")
+                
+                logInfo(
+                    message: "Navigation origin removed.",
+                    pathCount: properties.path.count
+                )
             }
         }
     }
@@ -151,5 +187,39 @@ public extension NaviController {
         }
         properties.path.removeLast(indexCount)
         syncStackOrigins()
+    }
+    
+    private func logInfo(
+        destination: (any DestinationRepresentable)? = nil,
+        origin: (any OriginRepresentable)? = nil,
+        message: String,
+        pathCount: Int
+    ) {
+        let loggingRawData = NaviLoggingInfoModel.RawData(
+            pathCount: pathCount
+        )
+        let loggingInfoModel = NaviLoggingInfoModel(
+            message: message,
+            rawData: loggingRawData
+        )
+        
+        properties.logger?.logInfo(loggingInfoModel)
+    }
+    
+    private func logError(
+        destination: (any DestinationRepresentable)? = nil,
+        origin: (any OriginRepresentable)? = nil,
+        message: String,
+        pathCount: Int
+    ) {
+        let loggingRawData = NaviLoggingInfoModel.RawData(
+            pathCount: pathCount
+        )
+        let loggingInfoModel = NaviLoggingInfoModel(
+            message: message,
+            rawData: loggingRawData
+        )
+        
+        properties.logger?.logError(loggingInfoModel)
     }
 }
