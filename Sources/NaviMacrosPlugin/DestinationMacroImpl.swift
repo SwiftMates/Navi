@@ -5,9 +5,9 @@
 //  Created by David Pall on 2026. 07. 21..
 //
 
+import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
-import SwiftDiagnostics
 
 public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
 
@@ -45,7 +45,9 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         // inside them), so a generic enum can't host the `Origins` enum's origin keys.
         if enumDecl.genericParameterClause != nil, casesWithOriginKey.isEmpty == false {
             for caseDecl in casesWithOriginKey {
-                context.diagnose(Diagnostic(node: caseDecl, message: NaviDiagnostic.originKeyInGenericEnum))
+                context.diagnose(
+                    Diagnostic(node: caseDecl, message: NaviDiagnostic.originKeyInGenericEnum)
+                )
             }
             return []
         }
@@ -54,7 +56,9 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         var originCases: [EnumCaseElementSyntax] = []
         for element in originCaseElements {
             guard isValidSwiftIdentifier(element.canonicalName) else {
-                context.diagnose(Diagnostic(node: element, message: NaviDiagnostic.originKeyRawIdentifier))
+                context.diagnose(
+                    Diagnostic(node: element, message: NaviDiagnostic.originKeyRawIdentifier)
+                )
                 continue
             }
             originCases.append(element)
@@ -63,12 +67,16 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
 
         // MARK: navigationOrigin on the parent enum
 
-        let navigationOriginProperty = try VariableDeclSyntax("var navigationOrigin: (any OriginRepresentable)?") {
+        let navigationOriginProperty = try VariableDeclSyntax(
+            "var navigationOrigin: (any OriginRepresentable)?"
+        ) {
             try SwitchExprSyntax("switch self") {
                 for caseName in elements {
                     let name = caseName.name.text
                     if originCaseNameSet.contains(name) {
-                        SwitchCaseSyntax("case .\(raw: name): return Origins.\(raw: caseName.canonicalName)")
+                        SwitchCaseSyntax(
+                            "case .\(raw: name): return Origins.\(raw: caseName.canonicalName)"
+                        )
                     } else {
                         SwitchCaseSyntax("case .\(raw: name): return nil")
                     }
@@ -93,7 +101,9 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
             try VariableDeclSyntax("var key: NavigationOriginKey") {
                 try SwitchExprSyntax("switch self") {
                     for element in originCases {
-                        SwitchCaseSyntax("case .\(raw: element.name.text): Self.\(raw: element.canonicalName)OriginKey")
+                        SwitchCaseSyntax(
+                            "case .\(raw: element.name.text): Self.\(raw: element.canonicalName)OriginKey"
+                        )
                     }
                 }
             }
@@ -150,7 +160,8 @@ public struct DestinationRepresentableMacro: MemberMacro, ExtensionMacro {
         // Hashable-refining DestinationRepresentable conformance fails to compile
         // for a generic enum whose parameter isn't already Hashable. `nil` when
         // the enum is non-generic, preserving the current output.
-        let whereClause: GenericWhereClauseSyntax? = genericParameters.isEmpty
+        let whereClause: GenericWhereClauseSyntax? =
+            genericParameters.isEmpty
             ? nil
             : GenericWhereClauseSyntax {
                 for parameter in genericParameters {
@@ -202,14 +213,14 @@ public struct OriginKeyMacro: PeerMacro {
 
 // MARK: - Syntax Helpers
 
-private extension EnumCaseElementSyntax {
+extension EnumCaseElementSyntax {
     /// Case name with surrounding backticks removed (keyword-safe): `default` → "default".
-    var canonicalName: String { name.identifier?.name ?? name.text }
+    fileprivate var canonicalName: String { name.identifier?.name ?? name.text }
 }
 
-private extension EnumCaseDeclSyntax {
+extension EnumCaseDeclSyntax {
     /// Whether this case declaration carries the attribute written as `@<name>`.
-    func hasAttribute(named name: String) -> Bool {
+    fileprivate func hasAttribute(named name: String) -> Bool {
         attributes.contains { element in
             element.as(AttributeSyntax.self)?
                 .attributeName

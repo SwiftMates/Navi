@@ -8,35 +8,35 @@
 import Navi
 
 final class DeeplinksViewModel {
-    
+
     // MARK: - Nested types
-    
+
     enum Action {
         case showBFlowOnHome
         case showStepTwoOfAFlowOnHome
         case showBFlowOnDeeplinks
     }
-    
+
     // MARK: - Public properties
-    
+
     let action: (Action) -> Void
-    
+
     // MARK: - Lifecycle
-    
+
     init(action: @escaping (Action) -> Void) {
         self.action = action
     }
-    
+
     // MARK: - Public functions
-    
+
     func onShowBFlowOnHomeTapped() {
         action(.showBFlowOnHome)
     }
-    
+
     func onShowStepTwoOfAFlowOnHome() {
         action(.showStepTwoOfAFlowOnHome)
     }
-    
+
     func onShowBFlowOnDeeplinks() {
         action(.showBFlowOnDeeplinks)
     }

@@ -12,7 +12,7 @@ import SwiftUI
 /// `NaviControllerProperties` owns the current `NavigationPath` and internal bookkeeping
 /// used by the controller to support keyed stack navigation.
 public struct NaviControllerProperties {
-    
+
     /// The current navigation path rendered by SwiftUI navigation containers.
     public var path: NavigationPath
 

@@ -8,23 +8,23 @@
 import SwiftUI
 
 struct AFlowStepTwoView: View {
-    
+
     // MARK: - Properties
-    
+
     private let viewModel: AFlowStepTwoViewModel
-    
+
     // MARK: - Lifecycle
-    
+
     init(action: @escaping (AFlowStepTwoViewModel.Action) -> Void) {
         viewModel = .init(action: action)
     }
-    
+
     // MARK: - Content
-    
+
     var body: some View {
         ZStack {
             Color.green.opacity(0.3).ignoresSafeArea()
-            
+
             ButtonWithExplanation(
                 title: "Next",
                 description: "Navigates to A-Flow Step Three.",

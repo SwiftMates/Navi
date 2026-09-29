@@ -5,16 +5,16 @@
 //  Created by David Pall on 2026. 08. 20..
 //
 
-import SwiftUI
 import Navi
+import SwiftUI
 
 struct NavigationStackWrapper<Content: View>: View {
-    
+
     // MARK: - Properties
-    
+
     @State private var manager: NavigationController
     let content: (NavigationController) -> Content
-    
+
     // MARK: - Lifecycle
 
     init(
@@ -31,9 +31,9 @@ struct NavigationStackWrapper<Content: View>: View {
         _manager = State(initialValue: NavigationController())
         self.content = content
     }
-    
+
     // MARK: - Content
-    
+
     var body: some View {
         NavigationStack(path: $manager.properties.path) {
             content(manager)
