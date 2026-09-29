@@ -18,6 +18,7 @@ public protocol NaviLogging {
     func logError(_ message: String)
     
     func logInfo(_ info: NaviLoggingInfoModel)
+    func logError(_ info: NaviLoggingInfoModel)
 }
 
 public extension NaviLogging {

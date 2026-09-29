@@ -6,13 +6,16 @@
 //
 
 public struct NaviLoggingInfoModel {
+    // MARK: - Nested types
+
     struct RawData {
-        let destination: any DestinationRepresentable
-        let origin: (any OriginRepresentable)?
+        var destination: (any DestinationRepresentable)?
+        var origin: (any OriginRepresentable)?
         let pathCount: Int
     }
 
-    let message: String
-    
+    // MARK: - Public properties
+
+    let message: String    
     let rawData: RawData
 }
