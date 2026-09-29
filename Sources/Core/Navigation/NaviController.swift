@@ -22,7 +22,7 @@ public protocol NaviController: AnyObject {
     /// Pushes a destination onto the current navigation stack.
     ///
     /// - Parameter destination: The destination to append to the navigation path.
-    func push(to destination: any DestinationRepresentable)
+    func push<D:  DestinationRepresentable>(to destination: D)
 
     /// Removes the top-most destination from the navigation stack, if available.
     func pop()
@@ -34,7 +34,7 @@ public protocol NaviController: AnyObject {
     ///
     /// - Parameter origin: The origin whose ``OriginRepresentable/key`` identifies a previously
     ///   tracked navigation position in the stack.
-    func pop(to origin: any OriginRepresentable)
+    func pop<O: OriginRepresentable>(to origin: O)
 
     // MARK: Deeplinking
 
@@ -56,7 +56,7 @@ public extension NaviController {
     /// If the destination defines a navigation origin, the origin is tracked for keyed pop operations.
     ///
     /// - Parameter destination: The destination to append to the navigation path.
-    func push(to destination: any DestinationRepresentable) {
+    func push<D:  DestinationRepresentable>(to destination: D) {
         properties.path.append(destination)
         properties.logger?.logInfo("Path appended with destination: \(destination).")
         if let origin = destination.navigationOrigin {
@@ -90,7 +90,7 @@ public extension NaviController {
     /// assertion is triggered in debug builds.
     ///
     /// - Parameter origin: The origin whose ``OriginRepresentable/key`` identifies the pop target.
-    func pop(to origin: any OriginRepresentable) {
+    func pop<O: OriginRepresentable>(to origin: O) {
         guard let originIndex = properties.naviStackOrigins[origin.key] else {
             properties.logger?.logError("Navigation origin was not found ---> \(String(describing: origin)).")
             assertionFailure("Navigation origin was not found ---> \(origin).")
