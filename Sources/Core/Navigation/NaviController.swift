@@ -1,5 +1,5 @@
 //
-//  NaviCoordinator.swift
+//  NaviController.swift
 //  Navi
 //
 //  Created by David Pall on 2026. 01. 15..
@@ -34,7 +34,7 @@ public protocol NaviController: AnyObject {
     ///
     /// - Parameter origin: The origin whose ``OriginRepresentable/key`` identifies a previously
     ///   tracked navigation position in the stack.
-    func pop(to origin: any OriginRepresentable)
+    func pop<O: OriginRepresentable>(to origin: O)
 
     // MARK: Deeplinking
 
@@ -102,7 +102,7 @@ public extension NaviController {
     /// assertion is triggered in debug builds.
     ///
     /// - Parameter origin: The origin whose ``OriginRepresentable/key`` identifies the pop target.
-    func pop(to origin: any OriginRepresentable) {
+    func pop<O: OriginRepresentable>(to origin: O) {
         guard let originIndex = properties.naviStackOrigins[origin.key] else {
             logError(
                 origin: origin,
