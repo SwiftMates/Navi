@@ -16,43 +16,21 @@ import Foundation
 struct NaviControllerTests {
     // MARK: - Nested types
 
-    enum TestDestination: DestinationRepresentable {
+    @DestinationRepresentable
+    enum TestDestination {
         case screenA
-        case screenB
-        case screenC(randomData: String)
+        @OriginKey case screenB
+        @OriginKey case screenC(randomData: String)
         case screenD(randomData: String)
-
-        var navigationOrigin: (any OriginRepresentable)? {
-            switch self {
-            case .screenB: return Origins.screenB
-            case .screenC: return Origins.screenC
-            default: return nil
-            }
-        }
-        
-        enum Origins: OriginRepresentable {
-            case screenB
-            case screenC
-            
-            var key: NavigationOriginKey {
-                switch self {
-                case .screenB: Self.screenBOriginKey
-                case .screenC: Self.screenCOriginKey
-                }
-            }
-            
-            static let screenBOriginKey = NavigationOriginKey(debugName: "screenB")
-            static let screenCOriginKey = NavigationOriginKey(debugName: "screenC")
-        }
     }
-
+    
     @Test
     func `push should add destinations and set stack origins when destinations are pushed`() {
         let controller: TestNaviController = TestNaviController()
         controller.push(to: TestDestination.screenB)
         controller.push(to: TestDestination.screenA)
         #expect(controller.properties.path.count == 2)
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenB.key] == 1)
     }
 
     @Test
@@ -62,7 +40,7 @@ struct NaviControllerTests {
         controller.push(to: TestDestination.screenA)
         controller.pop()
         #expect(controller.properties.path.count == 1)
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenB.key] == 1)
     }
 
     @Test
@@ -84,8 +62,8 @@ struct NaviControllerTests {
         controller.push(to: TestDestination.screenC(randomData: "testData"))
         controller.pop(to: TestDestination.Origins.screenB)
         #expect(controller.properties.path.count == 2)
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 2)
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == nil)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenB.key] == 2)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenC.key] == nil)
     }
 
     @Test
@@ -96,8 +74,8 @@ struct NaviControllerTests {
         controller.push(to: TestDestination.screenD(randomData: "testData"))
 
         #expect(controller.properties.path.count == 2)
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1)
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == nil)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenB.key] == 1)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenC.key] == nil)
     }
 
     @Test
@@ -112,7 +90,7 @@ struct NaviControllerTests {
         controller.deepLink(to: newPath)
         #expect(controller.properties.path.count == 3)
         // TODO: - Check screenC is not in origin keys
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 3)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenB.key] == 3)
     }
 
     @Test
@@ -130,8 +108,8 @@ struct NaviControllerTests {
         controller.push(to: TestDestination.screenC(randomData: "testData"))
         controller.pop()
         #expect(controller.properties.path.count == 1)
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1)
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == nil)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenB.key] == 1)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenC.key] == nil)
     }
 
     @Test
@@ -142,8 +120,8 @@ struct NaviControllerTests {
         controller.push(to: TestDestination.screenC(randomData: "testData"))
         controller.pop(to: TestDestination.Origins.screenC)
         #expect(controller.properties.path.count == 3)
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 2)
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 3)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenB.key] == 2)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenC.key] == 3)
     }
 
     @Test
@@ -153,7 +131,7 @@ struct NaviControllerTests {
         controller.push(to: TestDestination.screenA)
         controller.push(to: TestDestination.screenB)
         #expect(controller.properties.path.count == 3)
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 3)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenB.key] == 3)
     }
 
     @Test
@@ -168,7 +146,7 @@ struct NaviControllerTests {
 
         #expect(controller.properties.path.count == 1)
         // origins are NOT reconciled — syncStackOrigins() only runs inside pop().
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 2)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenC.key] == 2)
     }
 
     @Test
@@ -180,14 +158,14 @@ struct NaviControllerTests {
 
         // Simulate two swipe-backs: direct NavigationPath mutation, bypassing pop().
         controller.properties.path.removeLast(2)
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 3)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenC.key] == 3)
 
         // Navigate back to the same screen; it now sits at a shallower depth.
         controller.push(to: TestDestination.screenC(randomData: "moreData"))
 
         #expect(controller.properties.path.count == 2)
         // Origin updated to the latest count (2), not the stale 3.
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 2)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenC.key] == 2)
     }
 
     @Test
@@ -214,54 +192,72 @@ struct NaviControllerTests {
         controller.deepLink(to: newPath)
 
         #expect(controller.properties.path.count == 2)
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 2)
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == nil)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenB.key] == 2)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenC.key] == nil)
     }
 
     @Test
-    func `push should log appended destination when destination has no navigation origin`() {
+    func `push should log appended destination when destination has no navigation origin`() throws {
         let controller: TestNaviController = TestNaviController()
 
         controller.push(to: TestDestination.screenA)
 
         #expect(controller.logger.logInfoReceivedInvocations == [
-            "Path appended with destination: screenA."
+            "Path appended with the new destination (and origin) successfully."
         ])
         #expect(controller.logger.logInfoCallsCount == 1)
         #expect(controller.logger.logErrorCalled == false)
+
+        let info = controller.logger.logInfoReceivedInfoModels.first
+        let destiantion = try #require(info?.rawData.destination as? TestDestination)
+        #expect(destiantion == TestDestination.screenA)
+        #expect(info?.rawData.pathCount == 1)
+        #expect(info?.rawData.origin == nil)
     }
 
     @Test
-    func `push should log appended destination and origin when destination has navigation origin`() {
+    func `push should log appended destination and origin when destination has navigation origin`() throws {
         let controller: TestNaviController = TestNaviController()
 
         controller.push(to: TestDestination.screenB)
 
         #expect(controller.logger.logInfoReceivedInvocations == [
-            "Path appended with destination: screenB.",
-            "Navigation origin \(TestDestination.Origins.screenB) registered as pop target at path index 1."
+            "Path appended with the new destination (and origin) successfully."
         ])
-        #expect(controller.logger.logInfoCallsCount == 2)
+        #expect(controller.logger.logInfoCallsCount == 1)
         #expect(controller.logger.logErrorCalled == false)
+
+        let info = controller.logger.logInfoReceivedInfoModels.first
+        let destiantion = try #require(info?.rawData.destination as? TestDestination)
+        #expect(destiantion == TestDestination.screenB)
+        #expect(info?.rawData.pathCount == 1)
+        #expect(info?.rawData.origin?.key == TestDestination.Origins.screenB.key)
+        #expect(info?.message == "Path appended with the new destination (and origin) successfully.")
     }
 
     @Test
-    func `pop should log last path element removed when stack is not empty`() {
+    func `pop should log last path element removed when stack is not empty`() throws {
         let controller: TestNaviController = TestNaviController()
 
         controller.push(to: TestDestination.screenA)
         controller.pop()
 
         #expect(controller.logger.logInfoReceivedInvocations == [
-            "Path appended with destination: screenA.",
+            "Path appended with the new destination (and origin) successfully.",
             "Last path element removed."
         ])
         #expect(controller.logger.logInfoCallsCount == 2)
         #expect(controller.logger.logErrorCalled == false)
+
+        let info = try #require(controller.logger.logInfoReceivedInfoModels.last)
+        #expect(info.message == "Last path element removed.")
+        #expect(info.rawData.pathCount == 0)
+        #expect(info.rawData.destination == nil)
+        #expect(info.rawData.origin == nil)
     }
 
     @Test
-    func `pop should log removed origin when popped destination has navigation origin`() {
+    func `pop should log removed origin when popped destination has navigation origin`() throws {
         let controller: TestNaviController = TestNaviController()
 
         controller.push(to: TestDestination.screenB)
@@ -269,36 +265,49 @@ struct NaviControllerTests {
         controller.pop()
 
         #expect(controller.logger.logInfoReceivedInvocations == [
-            "Path appended with destination: screenB.",
-            "Navigation origin \(TestDestination.Origins.screenB) registered as pop target at path index 1.",
-            "Path appended with destination: screenC(randomData: \"testData\").",
-            "Navigation origin \(TestDestination.Origins.screenC) registered as pop target at path index 2.",
-            "Last path element removed.",
-            "Navigation origin removed: Optional(\"\(TestDestination.Origins.screenC)\") from index: 2."
+            "Path appended with the new destination (and origin) successfully.",
+            "Path appended with the new destination (and origin) successfully.",
+            "Navigation origin removed.",
+            "Last path element removed."
         ])
-        #expect(controller.logger.logInfoCallsCount == 6)
+        #expect(controller.logger.logInfoCallsCount == 4)
         #expect(controller.logger.logErrorCalled == false)
+
+        let models = controller.logger.logInfoReceivedInfoModels
+        #expect(models.count == 4)
+        #expect(models[2].message == "Navigation origin removed.")
+        #expect(models[2].rawData.pathCount == 1)
+        #expect(models[2].rawData.destination == nil)
+        #expect(models[2].rawData.origin == nil)
+        #expect(models[3].message == "Last path element removed.")
+        #expect(models[3].rawData.pathCount == 1)
     }
 
     @Test
-    func `popToRoot should log origins cleared and path cleared`() {
+    func `popToRoot should log origins cleared and path cleared`() throws {
         let controller: TestNaviController = TestNaviController()
 
         controller.push(to: TestDestination.screenB)
         controller.popToRoot()
 
         #expect(controller.logger.logInfoReceivedInvocations == [
-            "Path appended with destination: screenB.",
-            "Navigation origin \(TestDestination.Origins.screenB) registered as pop target at path index 1.",
+            "Path appended with the new destination (and origin) successfully.",
             "All navigation origins cleared.",
             "Navigation path cleared."
         ])
-        #expect(controller.logger.logInfoCallsCount == 4)
+        #expect(controller.logger.logInfoCallsCount == 3)
         #expect(controller.logger.logErrorCalled == false)
+
+        let models = controller.logger.logInfoReceivedInfoModels
+        #expect(models.count == 3)
+        #expect(models[1].message == "All navigation origins cleared.")
+        #expect(models[1].rawData.pathCount == 0)
+        #expect(models[2].message == "Navigation path cleared.")
+        #expect(models[2].rawData.pathCount == 0)
     }
 
     @Test
-    func `deepLink should log root clearing pushed destinations and final path`() {
+    func `deepLink should log root clearing pushed destinations and final path`() throws {
         let controller: TestNaviController = TestNaviController()
         let newPath: [any DestinationRepresentable] = [
             TestDestination.screenA,
@@ -310,12 +319,39 @@ struct NaviControllerTests {
         #expect(controller.logger.logInfoReceivedInvocations == [
             "All navigation origins cleared.",
             "Navigation path cleared.",
-            "Path appended with destination: screenA.",
-            "Path appended with destination: screenB.",
-            "Navigation origin \(TestDestination.Origins.screenB) registered as pop target at path index 2.",
-            "Deep-link path set to: \(newPath)."
+            "Path appended with the new destination (and origin) successfully.",
+            "Path appended with the new destination (and origin) successfully.",
+            "Deep-link path set to new path."
         ])
-        #expect(controller.logger.logInfoCallsCount == 6)
+        #expect(controller.logger.logInfoCallsCount == 5)
         #expect(controller.logger.logErrorCalled == false)
+
+        let models = controller.logger.logInfoReceivedInfoModels
+        #expect(models.count == 5)
+        let finalInfo = try #require(models.last)
+        #expect(finalInfo.message == "Deep-link path set to new path.")
+        #expect(finalInfo.rawData.pathCount == 2)
+        let pushedInfo = try #require(models.dropLast().last)
+        let pushedDestination = try #require(pushedInfo.rawData.destination as? TestDestination)
+        #expect(pushedDestination == TestDestination.screenB)
+        #expect(pushedInfo.rawData.origin?.key == TestDestination.Origins.screenB.key)
+        #expect(pushedInfo.rawData.pathCount == 2)
+    }
+
+    @Test
+    func `pop to known origin should log popping back to origin`() throws {
+        let controller: TestNaviController = TestNaviController()
+        controller.push(to: TestDestination.screenA)
+        controller.push(to: TestDestination.screenB)
+        controller.push(to: TestDestination.screenC(randomData: "testData"))
+        controller.pop(to: TestDestination.Origins.screenB)
+
+        #expect(controller.properties.path.count == 2)
+        #expect(controller.logger.logErrorCalled == false)
+        let popInfo = try #require(
+            controller.logger.logInfoReceivedInfoModels.first(where: { $0.message == "Popping back to origin." })
+        )
+        #expect(popInfo.rawData.origin?.key == TestDestination.Origins.screenB.key)
+        #expect(popInfo.rawData.pathCount == 3)
     }
 }
