@@ -162,7 +162,6 @@ public extension NaviController {
         } else {
             for (key, index) in properties.naviStackOrigins where index > properties.path.count {
                 properties.naviStackOrigins.removeValue(forKey: key)
-                properties.logger?.logInfo("Navigation origin removed: \(String(describing: key.debugName)) from index: \(index).")
                 
                 logInfo(
                     message: "Navigation origin removed.",
@@ -181,13 +180,18 @@ public extension NaviController {
     /// - Parameter indexCount: The number of trailing destinations to remove from the path.
     private func pop(last indexCount: Int) {
         guard indexCount <= properties.path.count else {
-            properties.logger?.logError("Cannot remove more element from the path than what it has ---> \(indexCount) is bigger than \(self.properties.path.count).")
+            logError(
+                message: "Cannot remove more element from the path than what it has",
+                pathCount: properties.path.count
+            )
             assertionFailure("Cannot remove more elements than the path contains.")
             return
         }
         properties.path.removeLast(indexCount)
         syncStackOrigins()
     }
+    
+    // MARK: Helpers
     
     private func logInfo(
         destination: (any DestinationRepresentable)? = nil,
@@ -196,6 +200,8 @@ public extension NaviController {
         pathCount: Int
     ) {
         let loggingRawData = NaviLoggingInfoModel.RawData(
+            destination: destination,
+            origin: origin,
             pathCount: pathCount
         )
         let loggingInfoModel = NaviLoggingInfoModel(
@@ -213,6 +219,8 @@ public extension NaviController {
         pathCount: Int
     ) {
         let loggingRawData = NaviLoggingInfoModel.RawData(
+            destination: destination,
+            origin: origin,
             pathCount: pathCount
         )
         let loggingInfoModel = NaviLoggingInfoModel(

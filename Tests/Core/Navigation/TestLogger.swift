@@ -29,11 +29,20 @@ final class TestLogger: NaviLogging {
     // MARK: - logError
 
     var logErrorCallsCount = 0
+    var logErrorReceivedInvocations: [String] = []
+    var logErrorReceivedInfoModels: [NaviLoggingInfoModel] = []
     var logErrorCalled: Bool {
         logErrorCallsCount > 0
     }
 
     func logError(_ message: String) {
         logErrorCallsCount += 1
+        logErrorReceivedInvocations.append(message)
+    }
+
+    func logError(_ info: NaviLoggingInfoModel) {
+        logErrorCallsCount += 1
+        logErrorReceivedInvocations.append(info.message)
+        logErrorReceivedInfoModels.append(info)
     }
 }
