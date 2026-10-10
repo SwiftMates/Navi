@@ -8,14 +8,14 @@
 public struct NaviLoggingInfoModel {
     // MARK: - Nested types
 
-    struct RawData {
-        var destination: (any DestinationRepresentable)?
-        var origin: (any OriginRepresentable)?
-        let pathCount: Int
+    public struct RawData {
+        public var destination: (any DestinationRepresentable)?
+        public var origin: (any OriginRepresentable)?
+        public let pathCount: Int
     }
 
     // MARK: - Public properties
 
-    let message: String    
-    let rawData: RawData
+    public let message: String
+    public let rawData: RawData
 }

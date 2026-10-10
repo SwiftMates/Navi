@@ -32,4 +32,12 @@ final class NavigationLogger: NaviLogging {
     func logError(_ message: String) {
         logger.error("\(message, privacy: .public)")
     }
+
+    func logInfo(_ info: NaviLoggingInfoModel) {
+        logger.info("\(info.message, privacy: .public) | pathCount: \(info.rawData.pathCount, privacy: .public)")
+    }
+
+    func logError(_ info: NaviLoggingInfoModel) {
+        logger.error("\(info.message, privacy: .public) | pathCount: \(info.rawData.pathCount, privacy: .public)")
+    }
 }
