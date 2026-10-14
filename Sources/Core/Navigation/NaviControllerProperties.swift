@@ -14,10 +14,17 @@ import SwiftUI
 public struct NaviControllerProperties {
     
     /// The current navigation path rendered by SwiftUI navigation containers.
-    public var path: NavigationPath
+    public var path: NavigationPath {
+        didSet {
+            print("AAA - \(oldValue.count)")
+            print("AAA - \(path.count)")
+            onPathChange?()
+        }
+    }
 
     var naviStackOrigins: [NavigationOriginKey: Int]
     let logger: (any NaviLogging)?
+    let onPathChange: (() -> Void)?
 
     // MARK: - Lifecycle
 
