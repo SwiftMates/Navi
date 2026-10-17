@@ -8,6 +8,7 @@
 
 import Testing
 import Foundation
+import SwiftUI
 @testable import Navi
 
 // MARK: - Unit tests suite
@@ -157,18 +158,18 @@ struct NaviControllerTests {
     }
 
     @Test
-    func `manually removing last path element does not sync origins`() {
+    func `direct path mutation should prune removed origin metadata when a destination is removed`() {
         let controller: TestNaviController = TestNaviController()
         controller.push(to: TestDestination.screenB)
         controller.push(to: TestDestination.screenC(randomData: "testData"))
 
         // Simulate a swipe-back / system back button: SwiftUI mutates the bound
-        // NavigationPath directly, bypassing pop() and syncStackOrigins().
+        // NavigationPath directly, bypassing pop().
         controller.properties.path.removeLast()
 
         #expect(controller.properties.path.count == 1)
-        // origins are NOT reconciled — syncStackOrigins() only runs inside pop().
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 2)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == nil)
     }
 
     @Test
@@ -180,7 +181,8 @@ struct NaviControllerTests {
 
         // Simulate two swipe-backs: direct NavigationPath mutation, bypassing pop().
         controller.properties.path.removeLast(2)
-        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 3)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenBOriginKey] == 1)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == nil)
 
         // Navigate back to the same screen; it now sits at a shallower depth.
         controller.push(to: TestDestination.screenC(randomData: "moreData"))
@@ -188,6 +190,19 @@ struct NaviControllerTests {
         #expect(controller.properties.path.count == 2)
         // Origin updated to the latest count (2), not the stale 3.
         #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 2)
+    }
+
+    @Test
+    func `direct path replacement should clear origins when the path is emptied`() {
+        let controller: TestNaviController = TestNaviController()
+        controller.push(to: TestDestination.screenB)
+        controller.push(to: TestDestination.screenC(randomData: "testData"))
+
+        // Simulate SwiftUI writing an empty path through the binding.
+        controller.properties.path = NavigationPath()
+
+        #expect(controller.properties.path.count == 0)
+        #expect(controller.properties.naviStackOrigins.isEmpty)
     }
 
     @Test
@@ -273,8 +288,8 @@ struct NaviControllerTests {
             "Navigation origin \(TestDestination.Origins.screenB) registered as pop target at path index 1.",
             "Path appended with destination: screenC(randomData: \"testData\").",
             "Navigation origin \(TestDestination.Origins.screenC) registered as pop target at path index 2.",
-            "Last path element removed.",
-            "Navigation origin removed: Optional(\"\(TestDestination.Origins.screenC)\") from index: 2."
+            "Navigation origin removed: Optional(\"\(TestDestination.Origins.screenC)\") from index: 2.",
+            "Last path element removed."
         ])
         #expect(controller.logger.logInfoCallsCount == 6)
         #expect(controller.logger.logErrorCalled == false)
@@ -308,14 +323,13 @@ struct NaviControllerTests {
         controller.deepLink(to: newPath)
 
         #expect(controller.logger.logInfoReceivedInvocations == [
-            "All navigation origins cleared.",
             "Navigation path cleared.",
             "Path appended with destination: screenA.",
             "Path appended with destination: screenB.",
             "Navigation origin \(TestDestination.Origins.screenB) registered as pop target at path index 2.",
             "Deep-link path set to: \(newPath)."
         ])
-        #expect(controller.logger.logInfoCallsCount == 6)
+        #expect(controller.logger.logInfoCallsCount == 5)
         #expect(controller.logger.logErrorCalled == false)
     }
 }
