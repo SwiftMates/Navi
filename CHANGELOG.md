@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Agent Skill for Navi (`.agents/skills/navi/SKILL.md`) that teaches AI coding agents the correct Navi patterns (`@DestinationRepresentable`, `@OriginKey`, `push` / `pop` / `popToRoot` / `deepLink`, controller variants per OS version) instead of falling back to raw `NavigationPath`
+- Claude Code discovery via symlink `.claude/skills/navi` → `../../.agents/skills/navi`
+- README "Agent Skills" section documenting automatic discovery and `npx skills add` installation
+
 ## [1.0.0] - 2026-08-31
 
 First stable release. `develop` (`de14eed`) is 14 commits ahead of `0.0.4`.

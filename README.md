@@ -229,6 +229,41 @@ If you find Navi helpful, please consider:
 
 ---
 
+## Agent Skills
+
+This package includes an **Agent Skill** that teaches AI coding agents the correct way to use Navi.
+
+### Supported agents
+- Cursor
+- Claude Code
+- Codex / OpenAI
+- Gemini CLI
+- OpenCode
+- GitHub Copilot
+- Windsurf and other Agent Skills-compatible tools
+
+### Automatic discovery
+When this repository is open, compatible agents automatically detect the skill from:
+
+```
+.agents/skills/navi/
+```
+
+Claude Code also finds it via the symlink in `.claude/skills/navi`.
+
+### Manual / global install
+```bash
+# Install globally (available in all projects)
+npx skills add SwiftMates/Navi --skill navi -g
+
+# Install only into the current project
+npx skills add SwiftMates/Navi --skill navi
+```
+
+Once installed, agents will correctly use `@DestinationRepresentable`, `@OriginKey`, `push`/`pop`/`deepLink`, and the right controller patterns instead of falling back to raw `NavigationPath`.
+
+---
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
