@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Agent Skill for Navi (`.agents/skills/navi/SKILL.md`) that teaches AI coding agents the correct Navi patterns (`@DestinationRepresentable`, `@OriginKey`, `push` / `pop` / `popToRoot` / `deepLink`, controller variants per OS version) instead of falling back to raw `NavigationPath`
+- Claude Code discovery via symlink `.claude/skills/navi` → `../../.agents/skills/navi`
+- README "Agent Skills" section documenting automatic discovery and `npx skills add` installation
+- Skill references under `.agents/skills/navi/references/`: `api.md` (current generic `push`/`pop(to:)` signatures, `NaviControllerProperties` public surface, macro expansion, diagnostics, origin semantics), `examples.md` (iOS 16/17 controllers, per-screen destination enums, multi-stack tabs, feature coordinators, multi-feature deep links, logging), `migration.md` (raw `NavigationPath`, typed path arrays, classic coordinators, gotchas, verification checklist)
+- Origin-key constraints in `SKILL.md`: `@OriginKey` is per case (last push wins), unsupported in generic enums and on raw-identifier cases, generated members stay internal for `public` enums, and origins are not reconciled after a system/swipe-back
+
+### Changed
+- README Agent Skills section now maps each agent to its project-scope skills directory, documents `gh skill install … --allow-hidden-dirs`, `--agent` targeting for tools such as Windsurf, and the default-branch requirement for install commands
+
 ## [1.0.0] - 2026-08-31
 
 First stable release. `develop` (`de14eed`) is 14 commits ahead of `0.0.4`.
