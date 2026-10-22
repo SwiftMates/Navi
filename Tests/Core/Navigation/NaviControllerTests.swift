@@ -8,7 +8,7 @@
 
 import Testing
 import Foundation
-import SwiftUI
+
 @testable import Navi
 
 // MARK: - Unit tests suite
