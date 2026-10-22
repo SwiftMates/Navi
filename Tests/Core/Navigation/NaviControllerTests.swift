@@ -158,6 +158,19 @@ struct NaviControllerTests {
     }
 
     @Test
+    func `push should not reconcile origins when a destination is appended`() {
+        let controller: TestNaviController = TestNaviController()
+        controller.push(to: TestDestination.screenB)
+        controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] = 99
+
+        controller.push(to: TestDestination.screenA)
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == 99)
+
+        controller.pop()
+        #expect(controller.properties.naviStackOrigins[TestDestination.Origins.screenCOriginKey] == nil)
+    }
+
+    @Test
     func `direct path mutation should prune removed origin metadata when a destination is removed`() {
         let controller: TestNaviController = TestNaviController()
         controller.push(to: TestDestination.screenB)

@@ -19,11 +19,12 @@ public struct NaviControllerProperties {
     
     /// The current navigation path rendered by SwiftUI navigation containers.
     ///
-    /// The path is the source of truth for the stack. Whenever it changes — including when
+    /// The path is the source of truth for the stack. Whenever destinations are removed — including when
     /// SwiftUI mutates it directly for a system back button or swipe-to-go-back gesture —
     /// tracked navigation origins are reconciled so they only ever reference a valid index.
     public var path: NavigationPath {
         didSet {
+            guard path.count < oldValue.count else { return }
             syncStackOrigins()
         }
     }
@@ -52,7 +53,7 @@ public struct NaviControllerProperties {
 
     /// Removes tracked navigation origins that no longer correspond to a valid path index.
     ///
-    /// Called after every mutation of ``path`` so ``naviStackOrigins`` stays in sync with the
+    /// Called after destinations are removed from ``path`` so ``naviStackOrigins`` stays in sync with the
     /// current stack state, whether the change came from the controller or from SwiftUI
     /// writing into the bound path.
     private mutating func syncStackOrigins() {
