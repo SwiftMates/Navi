@@ -229,6 +229,56 @@ If you find Navi helpful, please consider:
 
 ---
 
+## Agent Skills
+
+This package includes an **Agent Skill** that teaches AI coding agents the correct way to use Navi.
+
+### Supported agents
+The skill lives in the project-scope directory shared by most Agent Skills-compatible tools, so Cursor, Codex, Gemini CLI, OpenCode, GitHub Copilot, Amp, and Claude Code pick it up automatically:
+
+| Agent | Project path |
+|---|---|
+| Cursor, Codex, Gemini CLI, OpenCode, GitHub Copilot, Amp, Antigravity | `.agents/skills/navi/` |
+| Claude Code | `.claude/skills/navi` (symlink) |
+
+Windsurf and other tools with their own project directory can be targeted explicitly with `--agent`/`-a` when installing (see below).
+
+### Automatic discovery
+When this repository is open, compatible agents detect the skill from:
+
+```
+.agents/skills/navi/
+├── SKILL.md
+└── references/
+    ├── api.md
+    ├── examples.md
+    └── migration.md
+```
+
+`SKILL.md` stays short and is loaded when the skill activates;
+`references/` is only read when the agent needs the full API, examples, or migration guidance.
+
+### Manual / global install
+```bash
+# Install globally (available in all projects)
+npx skills add SwiftMates/Navi --skill navi -g
+
+# Install only into the current project
+npx skills add SwiftMates/Navi --skill navi
+
+# Target specific agents (e.g. Windsurf, whose project directory is .windsurf/skills/)
+npx skills add SwiftMates/Navi --skill navi -a windsurf
+
+# GitHub CLI alternative (needs --allow-hidden-dirs, because .agents/ is a hidden directory)
+gh skill install SwiftMates/Navi navi --allow-hidden-dirs --scope user
+```
+
+Install commands resolve against the default branch, so the skill has to be merged there before it can be fetched by name.
+
+Once installed, agents will correctly use `@DestinationRepresentable`, `@OriginKey`, `push`/`pop`/`deepLink`, and the right controller patterns instead of falling back to raw `NavigationPath`.
+
+---
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
