@@ -66,8 +66,6 @@ public extension NaviController {
     }
 
     /// Removes the top-most destination from the stack when the path is not empty.
-    ///
-    /// Tracked navigation origins are reconciled as part of the path mutation.
     func pop() {
         if properties.path.isEmpty == false {
             properties.path.removeLast()
@@ -78,9 +76,6 @@ public extension NaviController {
     }
 
     /// Clears all pushed destinations and resets tracked navigation origins.
-    ///
-    /// Setting the path to an empty `NavigationPath` discards the tracked origins as part of
-    /// the assignment, so no separate cleanup is required here.
     func popToRoot() {
         properties.path = NavigationPath()
         properties.logger?.logInfo("Navigation path cleared.")
@@ -121,9 +116,7 @@ public extension NaviController {
 
     /// Removes the specified number of destinations from the end of the navigation stack.
     ///
-    /// Removing destinations also discards any tracked origins pointing beyond the new path
-    /// length. If the requested count exceeds the current path length, the operation is aborted
-    /// and an error is logged.
+    /// If the requested count exceeds the current path length, the operation is aborted and an error is logged.
     ///
     /// - Parameter indexCount: The number of trailing destinations to remove from the path.
     private func pop(last indexCount: Int) {

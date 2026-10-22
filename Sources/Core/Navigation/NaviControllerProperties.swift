@@ -11,17 +11,13 @@ import SwiftUI
 ///
 /// `NaviControllerProperties` owns the current `NavigationPath` and internal bookkeeping
 /// used by the controller to support keyed stack navigation.
-///
-/// The type is main-actor isolated: navigation state is only mutated on the main actor,
-/// whether by the controller or by SwiftUI writing into the bound path.
 @MainActor
 public struct NaviControllerProperties {
     
     /// The current navigation path rendered by SwiftUI navigation containers.
     ///
-    /// The path is the source of truth for the stack. Whenever destinations are removed — including when
-    /// SwiftUI mutates it directly for a system back button or swipe-to-go-back gesture —
-    /// tracked navigation origins are reconciled so they only ever reference a valid index.
+    /// When destinations are removed, tracked origins are reconciled — including when SwiftUI
+    /// mutates the path directly for the system back button or swipe-to-go-back.
     public var path: NavigationPath {
         didSet {
             guard path.count < oldValue.count else { return }
@@ -30,10 +26,6 @@ public struct NaviControllerProperties {
     }
 
     /// Tracked positions of keyed navigation origins.
-    ///
-    /// Kept internal on purpose: `@MainActor` does not isolate plain stored properties of a
-    /// value type, so exposing this would expose mutable state without isolation enforcement.
-    /// Back it with an accessor before making it public.
     var naviStackOrigins: [NavigationOriginKey: Int]
 
     let logger: (any NaviLogging)?
@@ -51,11 +43,7 @@ public struct NaviControllerProperties {
 
     // MARK: - Private methods
 
-    /// Removes tracked navigation origins that no longer correspond to a valid path index.
-    ///
-    /// Called after destinations are removed from ``path`` so ``naviStackOrigins`` stays in sync with the
-    /// current stack state, whether the change came from the controller or from SwiftUI
-    /// writing into the bound path.
+    /// Removes tracked navigation origins that no longer point to a valid path index.
     private mutating func syncStackOrigins() {
         guard naviStackOrigins.isEmpty == false else { return }
 
