@@ -18,7 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - README Agent Skills section now maps each agent to its project-scope skills directory, documents `gh skill install … --allow-hidden-dirs`, `--agent` targeting for tools such as Windsurf, and the default-branch requirement for install commands
-- The `Navi` target no longer restricts itself with a `sources:` allowlist, so every file under `Sources/Core` belongs to the target and SwiftPM discovers `Navi.docc` as documentation rather than a resource (no `Bundle.module` resource bundle is generated)
 
 ## [1.0.0] - 2026-08-31
 
