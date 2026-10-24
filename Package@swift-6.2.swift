@@ -29,12 +29,7 @@ let package = Package(
         .target(
             name: "Navi",
             dependencies: ["NaviMacrosPlugin"],
-            path: "Sources/Core",
-            sources: [
-                "Logger",
-                "Navigation",
-                "Macros/DestinationMacro.swift"
-            ]
+            path: "Sources/Core"
         ),
         .testTarget(
             name: "NaviTests",
