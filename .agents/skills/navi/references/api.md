@@ -8,7 +8,7 @@ Source of truth: `Sources/Core/` and `Sources/NaviMacrosPlugin/`. Signatures bel
 | Item | Value |
 |---|---|
 | iOS / macOS | 16.0+ / 13.0+ |
-| Swift | 6.0+ (tools 6.0–6.4 via `Package@swift-*.swift`) |
+| Swift | 6.1+ (tools 6.1–6.4 via `Package@swift-*.swift`) |
 | Xcode | 16.0+ |
 | Runtime dependencies | none |
 | Build-time dependency | `swift-syntax` (macro plugin target `NaviMacrosPlugin` only) |
