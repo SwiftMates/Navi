@@ -11,12 +11,23 @@ import SwiftUI
 ///
 /// `NaviControllerProperties` owns the current `NavigationPath` and internal bookkeeping
 /// used by the controller to support keyed stack navigation.
+@MainActor
 public struct NaviControllerProperties {
     
     /// The current navigation path rendered by SwiftUI navigation containers.
-    public var path: NavigationPath
+    ///
+    /// When destinations are removed, tracked origins are reconciled — including when SwiftUI
+    /// mutates the path directly for the system back button or swipe-to-go-back.
+    public var path: NavigationPath {
+        didSet {
+            guard path.count < oldValue.count else { return }
+            syncStackOrigins()
+        }
+    }
 
+    /// Tracked positions of keyed navigation origins.
     var naviStackOrigins: [NavigationOriginKey: Int]
+
     let logger: (any NaviLogging)?
 
     // MARK: - Lifecycle
@@ -28,5 +39,22 @@ public struct NaviControllerProperties {
         self.path = NavigationPath()
         self.naviStackOrigins = [:]
         self.logger = logger
+    }
+
+    // MARK: - Private methods
+
+    /// Removes tracked navigation origins that no longer point to a valid path index.
+    private mutating func syncStackOrigins() {
+        guard naviStackOrigins.isEmpty == false else { return }
+
+        if path.isEmpty {
+            naviStackOrigins.removeAll()
+            logger?.logInfo("All navigation origins cleared.")
+        } else {
+            for (key, index) in naviStackOrigins where index > path.count {
+                naviStackOrigins.removeValue(forKey: key)
+                logger?.logInfo("Navigation origin removed: \(String(describing: key.debugName)) from index: \(index).")
+            }
+        }
     }
 }

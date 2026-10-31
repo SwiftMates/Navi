@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- `NaviControllerProperties` reconciles `naviStackOrigins` only when destinations are removed from `path`, so origins stay valid when SwiftUI mutates the bound path directly (system back button, swipe-to-go-back) (`Sources/Core/Navigation/NaviControllerProperties.swift:25`) (#41)
+- `NaviControllerProperties` is now `@MainActor`-isolated, matching `NaviController` — navigation state cannot be mutated off the main actor (`Sources/Core/Navigation/NaviControllerProperties.swift:17`)
+- `NaviController` no longer calls `syncStackOrigins()`: pruning is owned by `NaviControllerProperties`, and an empty path clears tracked origins as part of the assignment (`Sources/Core/Navigation/NaviController.swift`)
+- `NaviLogging` documents that implementations must be synchronous and must not mutate navigation state, since log calls occur inside path mutations (`Sources/Core/Logger/NaviLogging.swift:10`)
 ### Added
 - Agent Skill for Navi (`.agents/skills/navi/SKILL.md`) that teaches AI coding agents the correct Navi patterns (`@DestinationRepresentable`, `@OriginKey`, `push` / `pop` / `popToRoot` / `deepLink`, controller variants per OS version) instead of falling back to raw `NavigationPath`
 - Claude Code discovery via symlink `.claude/skills/navi` → `../../.agents/skills/navi`
