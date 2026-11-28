@@ -70,7 +70,6 @@ public extension NaviController {
         if properties.path.isEmpty == false {
             properties.path.removeLast()
             properties.logger?.logInfo("Last path element removed.")
-            syncStackOrigins()
         } else {
             properties.logger?.logError("Attempted to pop but navigation path is already empty.")
         }
@@ -79,7 +78,6 @@ public extension NaviController {
     /// Clears all pushed destinations and resets tracked navigation origins.
     func popToRoot() {
         properties.path = NavigationPath()
-        syncStackOrigins(removeAll: true)
         properties.logger?.logInfo("Navigation path cleared.")
     }
 
@@ -116,31 +114,9 @@ public extension NaviController {
 
     // MARK: - Private methods
 
-    /// Removes tracked navigation origins that no longer correspond to a valid path index.
-    ///
-    /// Called after mutations to ``NaviControllerProperties/path`` to keep
-    /// ``NaviControllerProperties/naviStackOrigins`` in sync with the current stack state.
-    ///
-    /// - Parameter removeAll: When `true`, clears all tracked origins regardless of index.
-    ///   When `false` (the default), removes only those origins whose stored index exceeds
-    ///   the current path count.
-    private func syncStackOrigins(removeAll: Bool = false) {
-        if removeAll {
-            properties.naviStackOrigins.removeAll()
-            properties.logger?.logInfo("All navigation origins cleared.")
-        } else {
-            for (key, index) in properties.naviStackOrigins where index > properties.path.count {
-                properties.naviStackOrigins.removeValue(forKey: key)
-                properties.logger?.logInfo("Navigation origin removed: \(String(describing: key.debugName)) from index: \(index).")
-            }
-        }
-    }
-    
     /// Removes the specified number of destinations from the end of the navigation stack.
     ///
-    /// After removal, tracked navigation origins are synchronized so that any origins pointing
-    /// beyond the new path length are discarded. If the requested count exceeds the current
-    /// path length, the operation is aborted and an error is logged.
+    /// If the requested count exceeds the current path length, the operation is aborted and an error is logged.
     ///
     /// - Parameter indexCount: The number of trailing destinations to remove from the path.
     private func pop(last indexCount: Int) {
@@ -150,6 +126,5 @@ public extension NaviController {
             return
         }
         properties.path.removeLast(indexCount)
-        syncStackOrigins()
     }
 }
