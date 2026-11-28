@@ -17,11 +17,20 @@ public struct NaviControllerProperties {
     /// The current navigation path rendered by SwiftUI navigation containers.
     ///
     /// When destinations are removed, tracked origins are reconciled — including when SwiftUI
-    /// mutates the path directly for the system back button or swipe-to-go-back.
+    /// mutates the path directly for the system back button or swipe-to-go-back — and any
+    /// installed back-navigation bridge is notified.
     public var path: NavigationPath {
         didSet {
             guard path.count < oldValue.count else { return }
+
+            let removedCount = oldValue.count - path.count
             syncStackOrigins()
+
+            // Snapshot and clear before notifying, so a mutation triggered from inside the
+            // bridge cannot observe a stale source or have its own source overwritten.
+            let source = currentSource
+            currentSource = .systemOrGesture
+            onPathDidShrink?(removedCount, path.count, source)
         }
     }
 
@@ -29,6 +38,38 @@ public struct NaviControllerProperties {
     var naviStackOrigins: [NavigationOriginKey: Int]
 
     let logger: (any NaviLogging)?
+
+    // MARK: - Back-navigation bridge
+
+    /// Notifies a controller that destinations were removed from the path.
+    ///
+    /// Installed by ``NaviController/enableBackNotifications()``. Internal plumbing — this is
+    /// not part of the public API surface.
+    var onPathDidShrink: ((Int, Int, NavigationBackSource) -> Void)?
+
+    /// The source attributed to the next path reduction.
+    ///
+    /// Defaults to ``NavigationBackSource/systemOrGesture`` so that direct mutations of ``path``
+    /// (system back button, swipe-to-go-back) are classified correctly. Navi's programmatic
+    /// operations set ``NavigationBackSource/programmatic`` before mutating and always reset it
+    /// afterwards.
+    var currentSource: NavigationBackSource = .systemOrGesture
+
+    /// Attributes the next path reduction to ``NavigationBackSource/programmatic``.
+    ///
+    /// Skipped when already set so that repeated calls do not invalidate observers holding
+    /// this value.
+    mutating func markProgrammaticMutation() {
+        guard currentSource != .programmatic else { return }
+        currentSource = .programmatic
+    }
+
+    /// Restores the resting source so later direct path mutations are classified as
+    /// ``NavigationBackSource/systemOrGesture``.
+    mutating func resetMutationSource() {
+        guard currentSource != .systemOrGesture else { return }
+        currentSource = .systemOrGesture
+    }
 
     // MARK: - Lifecycle
 

@@ -27,6 +27,10 @@ Lightweight layer on `NavigationStack`. Prefer Navi over raw `NavigationPath` mu
 @Observable
 final class AppController: NaviController {
     var properties = NaviControllerProperties()
+
+    init() {
+        enableBackNotifications()   // only if you override didNavigateBack
+    }
 }
 ```
 
@@ -35,6 +39,10 @@ final class AppController: NaviController {
 @MainActor
 final class AppController: NaviController, ObservableObject {
     @Published var properties = NaviControllerProperties()
+
+    init() {
+        enableBackNotifications()   // only if you override didNavigateBack
+    }
 }
 ```
 
@@ -82,6 +90,23 @@ in order. `pop(to:)` leaves the origin screen on the stack and removes only what
 `push`/`pop(to:)` are generic in the destination/origin type; pass concrete cases (`any` array elements also work via
 implicit existential opening).
 
+## Reacting to Back Navigation
+
+```swift
+func didNavigateBack(removedCount: Int, newCount: Int, source: NavigationBackSource) {
+    if source == .systemOrGesture { /* user swiped or tapped back */ }
+}
+```
+
+`didNavigateBack` is a no-op unless `enableBackNotifications()` is called once after `properties` is created. It
+fires for `pop()` / `pop(to:)` / `popToRoot()` (`.programmatic`) and for the system back button / swipe
+(`.systemOrGesture`).
+
+Two rules:
+- Never read or write `properties` inside the callback — it runs inside the write access to `properties`, so any
+  re-entrant access traps with an exclusivity violation. Use the passed values, or state stored outside `properties`.
+- Replacing `properties` drops the bridge; call `enableBackNotifications()` again.
+
 ## View Wiring
 
 ```swift
@@ -103,8 +128,10 @@ Pass the controller via environment or initializer as needed. Keep destination e
 
 - `pop(to:)` for an origin that was never pushed (or for a case without `@OriginKey`) logs an error and
   `assertionFailure`s — a debug crash, a silent no-op in release.
-- A swipe-back / system back mutates the bound path directly: origins are only reconciled on the next `pop()`
-  (prune) or `push` (overwrite). Don't `pop(to:)` right after a user-driven back.
+- A swipe-back / system back mutates the bound path directly. Origins are still pruned (`path.didSet` does it), but
+  no Navi method runs — use `didNavigateBack` to react.
+- `didNavigateBack` must not touch `properties`; the runtime traps on re-entrant access. Call
+  `enableBackNotifications()` once after creating `properties`.
 - Origins are keyed per **case**, so two pushes of the same case with different payloads share one key — the last
   push wins. Don't rely on `@OriginKey` to return to a specific value.
 - `deepLink(to:)` always resets to root first, then pushes the sequence.
@@ -130,6 +157,7 @@ Load these only when the short rules above are not enough:
 | Pop to root         | `controller.popToRoot()` |
 | Pop to marked origin| `controller.pop(to: Destination.Origins.case)` |
 | Deep link           | `controller.deepLink(to: [dest1, dest2, ...])` |
+| React to back       | override `didNavigateBack(removedCount:newCount:source:)` + `enableBackNotifications()` |
 
 ## Requirements
 - iOS 16.0+ / macOS 13.0+

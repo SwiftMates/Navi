@@ -141,6 +141,33 @@ controller.pop(to: HomeDestinations.Origins.settings)
 
 ---
 
+## Reacting to back navigation
+
+```swift
+@Observable
+final class AppController: NaviController {
+    var properties = NaviControllerProperties()
+    private(set) var lastBackWasUserInitiated = false
+
+    init() {
+        enableBackNotifications()
+    }
+
+    func didNavigateBack(removedCount: Int, newCount: Int, source: NavigationBackSource) {
+        lastBackWasUserInitiated = source == .systemOrGesture
+    }
+}
+```
+
+`didNavigateBack` fires for `pop()`, `pop(to:)`, and `popToRoot()` with `source == .programmatic`, and for the system
+back button or swipe-to-go-back with `.systemOrGesture`. It stays a no-op until `enableBackNotifications()` installs
+the bridge, which is called once and holds the controller weakly.
+
+The callback runs inside the path mutation, so don't read or write `properties` from it — the runtime traps on
+re-entrant access. Work from the passed values and keep reaction state elsewhere.
+
+---
+
 ## Examples
 
 | Example                | Platform            | Status |

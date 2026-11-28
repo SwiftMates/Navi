@@ -42,6 +42,31 @@ public protocol NaviController: AnyObject {
     ///
     /// - Parameter newPath: The destination sequence to apply as a deep-link route.
     func deepLink(to newPath: [any DestinationRepresentable])
+
+    // MARK: Back navigation
+
+    /// Called after destinations are removed from the navigation path.
+    ///
+    /// Invoked for programmatic pops and for system-driven backs (back button or
+    /// swipe-to-go-back). The call happens synchronously, inside the path mutation, after
+    /// tracked origins have been reconciled.
+    ///
+    /// Default implementations do nothing; override to react to back navigation.
+    ///
+    /// - Important: Do not read from or write to ``properties`` in this method.
+    ///   The callback runs inside the write access to `properties`, so any re-entrant access
+    ///   traps with a Swift exclusivity violation rather than merely misbehaving. Work from the
+    ///   passed values and from state stored outside `properties`.
+    ///
+    /// - Parameters:
+    ///   - removedCount: Number of destinations removed by this change.
+    ///   - newCount: ``NaviControllerProperties/path`` count after the change.
+    ///   - source: Whether the change was programmatic or user initiated.
+    func didNavigateBack(
+        removedCount: Int,
+        newCount: Int,
+        source: NavigationBackSource
+    )
 }
 
 // MARK: - Default implementation
@@ -68,6 +93,8 @@ public extension NaviController {
     /// Removes the top-most destination from the stack when the path is not empty.
     func pop() {
         if properties.path.isEmpty == false {
+            properties.markProgrammaticMutation()
+            defer { properties.resetMutationSource() }
             properties.path.removeLast()
             properties.logger?.logInfo("Last path element removed.")
         } else {
@@ -77,6 +104,8 @@ public extension NaviController {
 
     /// Clears all pushed destinations and resets tracked navigation origins.
     func popToRoot() {
+        properties.markProgrammaticMutation()
+        defer { properties.resetMutationSource() }
         properties.path = NavigationPath()
         properties.logger?.logInfo("Navigation path cleared.")
     }
@@ -95,8 +124,38 @@ public extension NaviController {
             return
         }
         let indexToRemove = properties.path.count - originIndex
+        properties.markProgrammaticMutation()
+        defer { properties.resetMutationSource() }
         properties.logger?.logInfo("Popping \(indexToRemove) destination(s) back to origin: \(origin).")
         pop(last: indexToRemove)
+    }
+
+    // MARK: - Back navigation
+
+    /// Default implementation: no-op. Conformers override to react to back navigation.
+    func didNavigateBack(
+        removedCount: Int,
+        newCount: Int,
+        source: NavigationBackSource
+    ) {}
+
+    /// Installs the bridge that forwards path reductions to ``didNavigateBack(removedCount:newCount:source:)``.
+    ///
+    /// Call once, after ``properties`` is initialized — typically at the end of `init`.
+    /// Calling it again only replaces the existing bridge. The bridge holds the controller
+    /// weakly, so no retain cycle is created.
+    ///
+    /// - Important: The bridge is stored inside ``properties``. Replacing that value
+    ///   (for example `properties = NaviControllerProperties()`) removes it, and this method
+    ///   has to be called again.
+    func enableBackNotifications() {
+        properties.onPathDidShrink = { [weak self] removedCount, newCount, source in
+            self?.didNavigateBack(
+                removedCount: removedCount,
+                newCount: newCount,
+                source: source
+            )
+        }
     }
 
     // MARK: - Deep-link

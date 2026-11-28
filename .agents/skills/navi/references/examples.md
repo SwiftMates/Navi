@@ -263,3 +263,36 @@ StackDepthBadge(count: controller.properties.path.count)
 
 `properties.path` is the only public state. `properties.naviStackOrigins` is internal to the Navi module — a
 consumer app cannot inspect tracked origins, only `path.count`.
+
+## Reacting to back navigation
+
+```swift
+@Observable
+final class AppController: NaviController {
+    var properties = NaviControllerProperties()
+
+    /// State kept outside `properties`: the callback must not touch it.
+    private(set) var lastBackWasUserInitiated = false
+
+    init() {
+        enableBackNotifications()
+    }
+
+    func didNavigateBack(removedCount: Int, newCount: Int, source: NavigationBackSource) {
+        lastBackWasUserInitiated = source == .systemOrGesture
+    }
+}
+```
+
+`enableBackNotifications()` installs a weak bridge, so it creates no retain cycle. Without the call, `didNavigateBack`
+is a no-op — that keeps the feature free for controllers that only push and pop.
+
+The callback is delivered synchronously, inside the path mutation, which means:
+
+- `removedCount` is the total for that mutation: a `popToRoot()` from depth 3 reports `3`.
+- Reading or writing `properties` here traps with a Swift exclusivity violation. Use the passed values instead, and
+  keep reaction state outside `properties` (the example above does).
+- `deepLink(to:)` notifies once, for its root reset, before the pushes land.
+
+The system back button and the swipe gesture share `.systemOrGesture`; SwiftUI does not expose which one occurred.
+

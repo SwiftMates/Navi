@@ -27,11 +27,13 @@ public protocol NaviController: AnyObject {
     func popToRoot()
     func pop<O: OriginRepresentable>(to origin: O)
     func deepLink(to newPath: [any DestinationRepresentable])
+    func didNavigateBack(removedCount: Int, newCount: Int, source: NavigationBackSource)
 }
 ```
 
 - All members are main-actor isolated; the whole extension of default implementations is `@MainActor`.
 - Every method has a default implementation, so a conformance only has to supply `properties`.
+- `didNavigateBack` is a requirement with a no-op default; override it to react to back navigation.
 - `push` and `pop(to:)` are **generic** in the destination/origin type (`D: DestinationRepresentable`,
   `O: OriginRepresentable`) rather than taking existentials; only `deepLink(to:)` accepts
   `[any DestinationRepresentable]`. Passing an existential from such an array to `push` still works through
@@ -79,9 +81,24 @@ public struct NaviControllerProperties {
 }
 ```
 
-Only `path` is public. `naviStackOrigins` and `logger` are internal — read them only from inside the Navi
-module (tests use `@testable import Navi`). The struct is a value type, so the controller must expose it as a
-mutable `var` for `NavigationStack(path: $controller.properties.path)` to bind.
+Only `path` is public. `naviStackOrigins`, `logger`, and the back-navigation bridge (`onPathDidShrink`,
+`currentSource`) are internal — read them only from inside the Navi module (tests use `@testable import Navi`).
+The struct is a value type, so the controller must expose it as a mutable `var` for
+`NavigationStack(path: $controller.properties.path)` to bind.
+
+### `NavigationBackSource`
+
+```swift
+public enum NavigationBackSource: Sendable, Equatable {
+    case programmatic
+    case systemOrGesture
+}
+```
+
+`.programmatic` is reported for `pop()`, `pop(to:)`, and `popToRoot()` (including the `popToRoot()` step of
+`deepLink(to:)`). `.systemOrGesture` is reported for anything that mutates the bound path outside the Navi API —
+the system back button and the interactive swipe-to-go-back gesture. SwiftUI does not distinguish those two, so
+they share a case.
 
 ### `NavigationOriginKey`
 
@@ -191,14 +208,57 @@ but the case has no origin — `pop(to:)` for it is a debug assertion.
 | `pop(to: origin)` | Removes `count - originIndex` trailing destinations — the origin screen itself **stays** | Removes origins of the popped screens; a stale index equal to the top means "no change" |
 | `deepLink(to: [ … ])` | `popToRoot()` first, then pushes the array in order | Origins are re-registered by the pushes; the last occurrence of a repeated case wins |
 
+Back notifications, when enabled, are delivered from the same path-shrink detection that prunes origins:
+
+| Situation | Callback |
+|---|---|
+| `pop()`, `pop(to:)`, `popToRoot()` that reduce the path | one call, `source: .programmatic` |
+| `pop()` on an empty path, `pop(to:)` at the current top, `popToRoot()` on an empty path | no call |
+| `push`, or a path assignment that does not reduce the count | no call |
+| system back button / swipe-to-go-back | one call, `source: .systemOrGesture` |
+| multi-level removal in one mutation | one call with the total `removedCount` |
+
 Consequences worth planning around:
 
 - Pushing the same `@OriginKey` case twice overwrites the stored index with the most recent depth, so
   `pop(to:)` always targets the **shallowest path back to the latest occurrence**.
-- SwiftUI's swipe-back / system back button mutates the bound `NavigationPath` directly and bypasses `pop()`, so
-  origins are not reconciled until the next `pop()` (prune) or `push` (overwrite). If you need `pop(to:)` right
-  after a user-driven back, re-push or use `pop()`/`popToRoot()` instead.
-- Assigning `properties.path` yourself (or calling `path.append`/`removeLast`) skips origin bookkeeping entirely.
-  Prefer the controller API everywhere.
+- SwiftUI's swipe-back / system back button mutates the bound `NavigationPath` directly and bypasses `pop()`.
+  Origins are still reconciled — `NaviControllerProperties` prunes them from `path.didSet` — but no Navi method
+  runs, so use `didNavigateBack` (see below) when you need to react.
+- Assigning `properties.path` yourself (or calling `path.append`/`removeLast`) skips origin *registration* for the
+  new destinations, but still prunes origins and still notifies `didNavigateBack`.
 - `pop(to:)` for an origin that was never pushed logs an error and calls `assertionFailure` — a debug crash, a
   silent no-op in release.
+
+### Reacting to back navigation
+
+`didNavigateBack` is a no-op until ``enableBackNotifications()`` installs the bridge. Call it once, after
+`properties` is initialized:
+
+```swift
+@Observable
+final class AppController: NaviController {
+    var properties = NaviControllerProperties()
+
+    init() {
+        enableBackNotifications()
+    }
+
+    func didNavigateBack(removedCount: Int, newCount: Int, source: NavigationBackSource) {
+        switch source {
+        case .programmatic: break
+        case .systemOrGesture: break
+        }
+    }
+}
+```
+
+Two hard rules, both enforced by the Swift runtime rather than by convention:
+
+- **Never touch `properties` inside the callback.** It runs inside the write access to `properties`, so a
+  re-entrant read or write traps (`Simultaneous accesses to …`) instead of merely misbehaving. Work from
+  `removedCount` / `newCount` / `source`, or store the state you need outside `properties`.
+- **The bridge lives in the struct.** Replacing the value (`properties = NaviControllerProperties()`) drops it;
+  call `enableBackNotifications()` again. Copying `properties` elsewhere copies the bridge, but the controller
+  reference inside it is weak.
+
